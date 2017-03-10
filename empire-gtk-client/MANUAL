@@ -1,0 +1,19 @@
+
+- To move the canvas :  shift + arrows
+
+- To move selection : arrows
+
+- Make a city build something : right-click on the city
+
+
+- For the moment, one cannot move units, attack.
+
+
+
+- The GUI can display games played by two IAs:
+  Choose the gtk client in empire-scripts/execute-ia.sh and launch :
+  $ ./execute-ia.sh 1 1
+
+
+
+

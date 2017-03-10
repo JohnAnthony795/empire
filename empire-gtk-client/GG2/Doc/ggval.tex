@@ -1,0 +1,91 @@
+\documentclass[12pt,a4paper] {article}
+
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{tikz}
+\usepackage{mymargins}
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes}
+\usetikzlibrary{snakes}
+\usetikzlibrary{decorations.markings}
+\usetikzlibrary{positioning}
+
+\begin{document}
+
+\tikzstyle{ggval}=[ellipse, draw=red, thick, text=blue, font=\sf]
+\tikzstyle{prod}=[rectangle, draw=brown, thick, text=black, inner ysep=8pt, inner xsep=16pt]
+\tikzstyle{outs}=[->, >=stealth, thick]
+\tikzstyle{ins}=[->, >=stealth, thick, dotted]
+
+\begin{tikzpicture}
+
+\tikzstyle{every label}=[text=red, font=\footnotesize]
+  
+\node[ggval](view) at (12em,12em) {view} ;
+\node[prod, right=of view](prod) {prod} ;
+  
+%% 
+%% EINT   EFLOAT
+%%
+\node[ggval,label=-60:float, label=-120:int](eint) at (0,0) {eint / efloat} ;
+
+\node[prod, above=of eint](eintp) {?target} ;
+\node[prod, below=of eint](eints) {?setter} ;
+
+\draw[outs] (eint) -- node[right]{get\_vprod} (eintp) ;
+\draw[ins] (eints) -- (eint) ;
+
+%% 
+%% LINT LFLOAT LLABEL
+%%
+\node[ggval,label=-80:float, label=-140:int, label=-30:string](lint) at (14em,0) {\begin{tabular}{c}lint / lfloat\\/ llabel\end{tabular}} ;
+\node[prod, below=of lint](lints) {} ;
+\draw[ins, solid] (lints) -- (lint) ;
+
+%% 
+%% ESTRING
+%%
+\node[ggval,label=-80:string](estr) at (28em,0) {estring} ;
+
+\node[prod, above=of estr](estrp) {?target} ;
+\node[prod, below=of estr](estrs) {?setter} ;
+
+\draw[outs] (estr) -- node[right]{get\_vprod} (estrp) ;
+\draw[ins] (estrs) -- (estr) ;
+
+%% 
+%% COMBO_LIST
+%%
+\node[ggval,label=-80:$\alpha$ option](ecomb) at (0,-18em) {combo\_list} ;
+
+\node[prod, above=of ecomb](ecombp) {?target} ;
+\node[prod, below=of ecomb](ecombs) {?setter} ;
+
+\draw[outs] (ecomb) -- node[right]{get\_vprod} (ecombp) ;
+\draw[ins] (ecombs) -- (ecomb) ;
+
+%% 
+%% CHOICE_LIST
+%%
+\node[ggval,label=-80:$\alpha$](echoice) at (14em,-18em) {choice\_list} ;
+
+\node[prod, above=of echoice](echoicep) {?target} ;
+\node[prod, below=of echoice](echoices) {?setter} ;
+
+\draw[outs] (echoice) -- node[right]{get\_vprod} (echoicep) ;
+\draw[ins] (echoices) -- (echoice) ;
+
+%% 
+%% VAL_POPUP
+%%
+\node[ggval,label=-80:$\alpha$](epopup) at (28em,-18em) {popup\_list} ;
+
+\node[prod, above=of epopup](epopupp) {?target} ;
+\node[prod, below=of epopup](epopups) {?setter} ;
+
+\draw[outs] (epopup) -- node[right]{get\_vprod} (epopupp) ;
+\draw[ins] (epopups) -- (epopup) ;
+
+\end{tikzpicture}
+
+\end{document}

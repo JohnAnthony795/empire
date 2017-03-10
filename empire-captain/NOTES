@@ -1,0 +1,8 @@
+saut si 10 tours sans rien !
+ajouter wait et moveto_transport dans move_body
+flight ?
+  ajouter pnr
+  si bien avant pnr : scout
+  sinon si proche pnr : essayer atteindre ville ou transport
+  si pnr depasse : scout
+

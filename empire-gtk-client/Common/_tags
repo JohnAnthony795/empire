@@ -1,0 +1,9 @@
+<Files>: include
+
+<**/serialize.ml*> or <**/deserialize.ml*>: package(bitstring,bitstring.syntax), syntax(bitstring.syntax,camlp4o)
+
+## <**/*>: package(bolt), syntax(bolt,camlp4o)
+
+<unionRegexp.*>: package(pcre)
+
+<transcode.*>: package(text)

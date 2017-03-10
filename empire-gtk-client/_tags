@@ -1,0 +1,15 @@
+<src>      : include
+<GG2>      : include
+<test>     : include
+<Common>   : include
+<Common/Sets>: include
+<LwtUtils> : include
+<IppoGui>  : include
+
+<**/*> : package(lwt,lwt.ppx,fileutils,pcre)
+<**/*> : package(lwt.unix, lwt.glib), debug
+<**/*> : package(lablgtk2,text)
+
+
+
+

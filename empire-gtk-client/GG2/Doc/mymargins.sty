@@ -1,0 +1,31 @@
+%%
+%% FORMAT DU PAPIER : A4
+%%
+\setlength{\textheight}{297mm}
+\setlength{\textwidth}{210mm}
+
+%%
+%% MARGES
+%%
+\newlength{\bottommargin}
+\setlength{\bottommargin}{28mm}
+\setlength{\topmargin}{28mm}
+%
+\newlength{\myleftmargin}
+\newlength{\myrightmargin}
+\setlength{\myleftmargin}{20mm}
+\setlength{\myrightmargin}{\myleftmargin}
+
+% Calculs sur les marges
+\addtolength{\textheight}{-\topmargin}
+\addtolength{\textheight}{-\bottommargin}
+\addtolength{\topmargin}{-1in}
+%
+\setlength{\headheight}{0mm}
+\setlength{\headsep}{0mm}
+\setlength{\footskip}{0mm}
+%
+\setlength{\oddsidemargin}{\myleftmargin}\addtolength{\oddsidemargin}{-1in}
+\setlength{\evensidemargin}{\oddsidemargin}
+\addtolength{\textwidth}{-\myleftmargin}
+\addtolength{\textwidth}{-\myrightmargin}

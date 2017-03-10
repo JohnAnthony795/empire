@@ -1,0 +1,14 @@
+Feb 27 10:14:30.2459 [pid 14661] Clienmpire.ml [info] Launching Empire client
+Feb 27 10:14:30.3178 [pid 14661] src/connect.ml [info] Connecting...
+Feb 27 10:14:30.3180 [pid 14661] src/connect.ml [info] Connected.
+Feb 27 10:14:30.4513 [pid 14661] src/connect.ml [info] Size is 44, 44
+  cat(2) -> TRANSPORT
+  cat(0) -> ARMY
+  cat(3) -> PATROL
+  cat(1) -> FIGHT
+  cat(4) -> BATTLESHIP
+Feb 27 10:14:34.0074 [pid 14661] src/connect.ml [warning] Connect: server is not ready. Cannot emit end_turn
+Feb 27 10:17:43.3720 [pid 14661] src/connect.ml [error] wait_for_turn cannot read this data: winner 1
+Feb 27 10:17:45.1166 [pid 14661] Error [fatal] ***************************************** Cliempire error ****************************************************************
+Feb 27 10:17:45.1167 [pid 14661] Error [fatal] 
+Feb 27 10:17:45.1167 [pid 14661] Error [fatal] : End_of_file

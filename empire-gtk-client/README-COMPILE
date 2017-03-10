@@ -1,0 +1,29 @@
+======  Known bugs  =======
+
+The move/disappearing display of units is not complete.
+
+
+
+
+
+========  Requires  ==========
+
+Required opam packages (possibly non-exhaustive list)
+
+ocamlbuild
+ocamlfind
+
+conf-gnomecanvas    (install the linux packages gtk, gtk-dev, gnome-dev, gnomecanvas-dev, cairo-dev)
+conf-libev          (install libev-dev)
+
+curses
+fileutils
+lablgtk
+lwt_glib
+lwt_react
+lwt
+pcre
+react
+text
+
+

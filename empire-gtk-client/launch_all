@@ -1,0 +1,3 @@
+./server.native &
+./cliempire.native > /tmp/client1 &
+./cliempire.native
