@@ -1,0 +1,6 @@
+"Resource: /home/lriviere/Documents/ProjetTuT/empire/darwin/types.ml": "B\023\157lB\020\172\181\236rT\028\184sS\150"
+"Rule: ocaml: ml & cmi -> cmx & o (%=main )": "u\2379QnS2\184\153\232\199\\d22{"
+"Rule: ocaml: ml -> cmo & cmi (%=main )": "A\030jI6\152\193\222x\139>>\164\143d\229"
+"Rule: ocaml dependencies ml (%=main )": ")M\015\239\022\204`\222^>\196\165\225\163\167\220"
+"Resource: /home/lriviere/Documents/ProjetTuT/empire/darwin/main.ml": "\140\169\"\247^\219\221V\153\139\n5\153\130~t"
+"Rule: ocaml: cmx* & o* -> native (%=main )": "\176\245\184\015a\175\189\011\194\015a\n\217\186\130M"

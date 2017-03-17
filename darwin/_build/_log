@@ -1,0 +1,8 @@
+### Starting build.
+# Target: types.ml.depends, tags: { extension:ml, file:types.ml, ocaml, ocamldep, quiet }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamldep.opt -modules types.ml > types.ml.depends
++ /home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamldep.opt -modules types.ml > types.ml.depends
+File "types.ml", line 29, characters 1-2:
+Error: Syntax error
+Command exited with code 2.
+# Compilation unsuccessful.
