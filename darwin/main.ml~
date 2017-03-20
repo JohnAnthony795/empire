@@ -9,4 +9,6 @@ Le main lit et exploite les arbres, puis utilise interfaceCom pour communiquer l
 -Compute_Action : t_ID -> t_action (Parcour d'arbre:(appelle le datamanager pour avoir des infos précises))
 
 *)
+open types.ml;;
 
+print_tree arbre0;;
