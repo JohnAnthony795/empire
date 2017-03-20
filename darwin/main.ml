@@ -5,13 +5,64 @@ Le main lit et exploite les arbres, puis utilise interfaceCom pour communiquer l
 @Retour:	score d'adaptabilité (fonction de : victoire, couverture, nombre d'unité, villes...)
 
 
--Read_Arbre : string/FILE -> t_foret (Lecture d'arbre from fichier)
+-read_arbre : string/FILE -> t_foret (Lecture d'arbre from fichier)
 -Compute_Action : t_ID -> t_action (Parcour d'arbre:(appelle le datamanager pour avoir des infos précises))
 
 *)
 
 
-open Types;;
+open Types
+open Printf
 
-print_tree arbre0 0;;
+let file = "IA.ads";;  
 
+print_tree arbre0 0
+
+
+let read_arbre fichier =
+let parseline line = 
+	(Leaf End_turn,Leaf End_turn,Leaf End_turn,Leaf End_turn,Leaf End_turn,Leaf End_turn)
+in
+
+
+	let ic = open_in fichier in
+	try 
+    	let stringarbre = input_line ic in  (* read line from in_channel and discard \n *)
+    		print_endline stringarbre;          (* write the result to stdout *)
+    		flush stdout;                (* write on the underlying device now *)
+		let forest = parseline stringarbre in
+   			close_in ic;                  (* close the input channel *) 
+			forest
+  
+ 	 with e ->                      (* some unexpected exception occurs *)
+   		 close_in_noerr ic;           (* emergency closing *)
+    		 raise e                      (* exit with error: files are closed but
+                                    		channels are not flushed *)
+
+
+
+let write_arbre fichier forest =
+let forest_toString (tarmy,tpatrol,tbattleship,ttransporter,tfight,tcity) =
+	let rec arbre_tostring t =
+		match t with
+			 Leaf a -> "action" (*Action tostring à definir*)
+			|Node (t1,p,t2) -> "(" ^ (arbre_tostring t1) ^ "," ^ (pred_to_string p) ^ "," ^ (arbre_tostring t2) ^ ")"
+	in
+	
+	  arbre_tostring tarmy ^ "#"
+	^ arbre_tostring tpatrol ^ "#"
+	^ arbre_tostring tbattleship ^ "#"
+	^ arbre_tostring ttransporter ^ "#"
+	^ arbre_tostring tfight ^ "#"
+	^ arbre_tostring tcity
+in
+  (* Write message to file *)
+  let oc = open_out fichier in    
+  	fprintf oc "%s\n" (forest_toString forest);   
+ 	close_out oc;             	 (* flush and close the channel *)
+
+ 
+;;
+write_arbre file (Leaf End_turn,Leaf End_turn,Leaf End_turn,Leaf End_turn,Leaf End_turn,Leaf End_turn);;
+read_arbre file;;
+  

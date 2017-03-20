@@ -46,6 +46,12 @@ type t_arbre =
 	|Node of (t_arbre * t_predicat * t_arbre)
 	;;
 
+(*type arbre_de =
+	 Army_tree of t_arbre
+	|Patrol_tree of t_arbre
+	;;                     A VOIR*)
+
+type t_foret =  t_arbre * t_arbre * t_arbre * t_arbre * t_arbre * t_arbre ;; (* 5 uniés , ville , (stratégie ?) *)
 
 
 (* Fonction qui renvoie un arbre basique *)

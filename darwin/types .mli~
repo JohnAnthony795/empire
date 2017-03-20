@@ -48,8 +48,6 @@ Nb_unite_allie_proche (ARMY,7,Inf),
 	)
 );;
 
-type t_foret =  t_arbre * t_arbre * t_arbre * t_arbre * t_arbre * t_arbre ;; (* 5 uniés , ville , (stratégie ?) *)
-
 (*print arbre*)
 val pred_to_string : t_predicat -> String
 val print_action : t_action * int -> unit
