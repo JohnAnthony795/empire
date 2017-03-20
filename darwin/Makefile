@@ -22,8 +22,8 @@ intf:
 
 clean:
 	rm -rf _build
-	rm -rf Main.native
-	rm -rf Main.byte
+	rm -rf main.native
+	rm -rf main.byte
 
 dep:
 	ocamldep -one-line $(DIRECTORIES) $(SOURCES) | \

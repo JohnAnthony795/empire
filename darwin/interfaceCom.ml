@@ -6,55 +6,110 @@
 
 (* Fonctions publiques à faire :
    	- send : t_action -> unit 	//reçoit un type action de Tree/main, le convertit en string et l'envoie au serveur par le socket
+   	- init_socket : unit -> unit 
 
    	Fonctions privées :
    	- send_to_server : string -> unit	//l'envoi concret du message par le socket
    	- action_to_string : t_action -> string
    	- traiter_message : string -> unit //parser qui appelle les fonctions appropriées (du package DATA) ou qui se termine s'il recoit get_action (pour rendre la main au main)
 
-
 *) 
+
+(* Actions possibles :
+   	- end_game
+   	- end_turn
+   	- dump_map
+   	- fog_off (cheat qui sera désactivé)
+   	- moves ; pid ; q ; r
+   	- move ; pid ; dir_id
+   	- set_city_production ; cid ; pid
+   	- get_width
+   	- get_height
+   	- get_piece_types_names
+   	- can_move ; pid ; did
+   	- can_enter ; pid ; did
+   	- can_attack ; pid ; did
+   	- get_piece_id_by_loc ; q ; r
+   	- get_transported_names_by_loc ; q ; r
+   	- get_info_city ; cid
+   	- get_info_piece ; pid
+   	- get_city_production ; cid
+   	- get_list_cities
+   	- get_list_pieces
+   	- get_list_movables
+   	- get_city_id_by_loc ; q ; r
+*)
 
 let rec action_to_string action = 
   match action with
-  | Head :: [] -> Head
-  | Head :: Tail -> Head ^ " " ^ (action_to_string Tail)
+  | head :: [] -> head
+  | head :: tail -> head ^ " " ^ (action_to_string tail)
+  | _ -> failwith "Fail action_to_string"
 ;;
- 
+
+(* Création d'un socket client et connexion au serveur *)
+let init_socket server port =
+  let server_addr = (gethostbyname server).h_addr_list.(0) in
+  let socket = Unix.socket PF_INET SOCK_STREAM 0 in
+  Unix.connect socket (ADDR_INET(server_addr, port)) ;
+  socket
+;;
+
+(* TODO: autoriser le passage de port en argument (cf. main() dans empire-client/sources/Main.ml) *)
+(* variable globale pour stocker le socket *)
+let socket_client = init_socket "localhost" 9301 ;;
+
 (*  pid : piece_id
-	ppid : parent_piece_id
-	tp_pid: transport_piece_id
-	cid : city_id
-	jid : numéro d'un joueur (0 ou 1)
-	ptid : piece_type_id (TODO : quelles valeurs possibles ?)
-	hits : piece.p_hits  (TODO : points de vie restants ? points de vie perdus ?)
+    	ppid : parent_piece_id
+    	tp_pid: transport_piece_id
+    	cid : city_id
+    	jid : numéro d'un joueur (0 ou 1)
+    	ptid : piece_type_id (0-> ARMY, 1-> FIGHT, 2-> TRANSPORT, 3-> PATROL, 4-> BATTLESHIP)
+    	hits : piece.p_hits  (points de vie restants)
 *)
 let traiter_message message =
-  let listeInfo = split message in
-  
-  try match listeInfo with
-  | [ "set_visible" ; q ; r ; terrain ; "none" ]
-  | [ "set_visible" ; q ; r ; terrain ; "city" ; cid ]
-  | [ "set_visible" ; q ; r ; terrain ; "owned_city" ; cid ; jid ]
-  | [ "set_visible" ; q ; r ; terrain ; "piece" ; jid ; pid ; ptid ; hits ]
-  | [ "set_explored" ; q ; r ; terrain ]
-  | [ "get_action" ]
-  | [ "delete_piece" ; pid ]
-  | [ "create_piece" ; pid ; ptid ; cid ; hits ]
-  | [ "move" ; pid ; q ; r ]
-  | [ "lose_city" ; cid ]
-  | [ "leave_terrain" ; pid ; q ; r ]
-  | [ "enter_city" ; pid ; cid ]
-  | [ "enter_piece" ; pid ; tp_pid ]
-  | [ "leave_city" ; pid ; cid ]
-  | [ "leave_piece" ; pid ; ppid ]
-  | [ "ok-invasion" ; cid ; q ; r ]
-  | [ "ko-invasion" ; cid ; q ; r ]
-  | [ "city-units-limit" ; cid ]
-  | [ "created-units-limit" ; cid ]
-  | Hd :: _ -> Printf.printf "Erreur dans traiter_message : %s non reconnu" Hd
-  with 
-	| (* catch erreur *)
+  let listeMsg = split message in
+  let tlMsg = List.tl listeMsg in
+
+  match List.hd listeMsg with
+    | "set_visible" -> traiter_set_visible tlMsg
+    | "set_explored" -> traiter_set_explored tlMsg
+    | "get_action" -> ()
+    | "delete_piece" -> traiter_delete_piece tlMsg
+    | "create_piece" -> traiter_create_piece tlMsg
+    | "move" -> traiter_move tlMsg
+    | "lose_city" -> traiter_lose_city tlMsg
+    | "leave_terrain" -> traiter_leave_terrain tlMsg
+    | "enter_city" -> traiter_enter_city tlMsg
+    | "enter_piece" -> traiter_enter_piece tlMsg
+    | "leave_city" -> traiter_leave_city tlMsg
+    | "leave_piece" -> traiter_leave_piece tlMsg
+    | "ok-invasion" -> traiter_ok-invasion tlMsg
+    | "ko-invasion" -> traiter_ko-invasion tlMsg
+    | "city-units-limit" -> traiter_city-units-limit tlMsg
+    | "created-units-limit" -> traiter_created-units-limit tlMsg
+    | Hd :: _ -> Printf.printf "Erreur dans traiter_message : %s non reconnu" Hd
+  	| _ -> failwith "LeCamlEstMortViveLeCaml"
+;;
+
+(*  SEND : t_action -> unit						Fonction "publique"
+	Reçoit un type action de Tree/main, le convertit en string et l'envoie au serveur par le socket *)
+let send action =
+	send_to_server (action_to_string action)
+;;
+
+(*  SEND_TO_SERVER : string -> unit
+	L'envoi concret du message par le socket *)
+let send_to_server message =
+  let channel_out = Unix.out_channel_of_descr socket_client in
+  output_string channel_out (message ^ "\n") ;
+  flush channel_out
+;;
+
+  (* Fonctions auxiliaires pour extraire le début ou la fin d'un String *)
+  let str_start str len = String.sub str 0 len ;;
+
+let str_end str offset = String.sub str offset (String.length str - offset) ;;
 
 (* Fonction auxiliaire pour séparer un message (str) en liste de strings
    Délimiteur : ' ' *)
@@ -67,18 +122,7 @@ let split str =
     end else
     if String.length str = 0 then List.rev toks else
       List.rev (str :: toks) in
-  aux str [] ;;
-
-
-
-
-
-
-
-
-
-
-
-
+  aux str 
+;;
 
 
