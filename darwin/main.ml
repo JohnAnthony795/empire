@@ -10,3 +10,8 @@ Le main lit et exploite les arbres, puis utilise interfaceCom pour communiquer l
 
 *)
 
+
+open Types;;
+
+print_tree arbre0 0;;
+

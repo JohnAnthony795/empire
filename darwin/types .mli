@@ -1,16 +1,3 @@
-(*
-Définition des types customs utilisés:    
-	- Type de retour pour les fonctions (SUCCES/FAILURE ? unit ? bool ?)
-
-Définir des fonctions d'affichage des types.
-Il semble que les types doivent avoir des majuscules.
-*)
-
-(*#directory "../empire-server/_build/sources/"*)
-(*open Ebase (*... fichier avec les types*) *)
-
-open Printf;;
-
 type direction = Up | Down | Right | Left | Upleft | Downright ;; (* 0 | 1 | 2 | 3 | 4 | 5;;*) (* 2|1|
 						   3| |0
 					            |4|5 *)
@@ -50,17 +37,22 @@ type t_arbre =
 
 (* Fonction qui renvoie un arbre basique *)
 
-let arbre0 = Node (Leaf End_turn,Nb_unite_allie_proche (ARMY,7,Inf),Node (Leaf End_turn,Nb_unite_allie_proche (ARMY,7,Inf),Leaf End_turn));;
+let arbre0 = 
+Node (
+	Leaf End_turn,
+Nb_unite_allie_proche (ARMY,7,Inf),
+	Node (
+		Leaf End_turn,
+	Nb_unite_allie_proche (ARMY,7,Inf),
+		Leaf End_turn
+	)
+);;
 
 (*print arbre*)
-let pred_to_string p = "predicat";;
-let print_action a d = printf "%s action" (String.make d ' ');;
-let print_pred p depth =
-	printf "%d:%s\n" depth (String.make depth ' ' ^ (pred_to_string p)) ;;
-let rec print_tree t depth =
-	match t with
-		Leaf a -> print_action a depth
-	       |Node (t1,p,t2) -> (print_pred p (depth); print_tree t1 (depth+1) ;print_tree t2 (depth+1)) ;;
+val pred_to_string : t_predicat -> String
+val print_action : t_action * int -> unit
+val print_pred : t_predicat * int -> unit
+val print_tree t_tree * int -> unit
 
 
 
