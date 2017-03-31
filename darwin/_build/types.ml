@@ -60,8 +60,7 @@ let arbre0 = Node (Leaf End_turn,Nb_unite_allie_proche (ARMY,7,Inf),Node (Leaf E
 
 (*print arbre   ### A PIMPER ###*)
 (*EN particulier compléter prédicats_tostring  + les sous-call*)
-(*Note: Point positif, les arbres sont bien verbeux. Par contre cela pose t'il des problèmes des parsing dans les fichiers?
-	Peut-etre creer une fonction "code_arbre" similaire mais avec des formats genre  INSTR:val1:val2   par exemple ET pour End_Turn  ou NBUAP:A|5|<  pour "moins de 5 ARMY aliée proche" *)
+(*Note: Point positif, les arbres sont bien verbeux. Par contre cela pose t'il des problèmes des parsing dans les fichiers?*)
 
 (*fonctions privéees de print des types:*)
 
