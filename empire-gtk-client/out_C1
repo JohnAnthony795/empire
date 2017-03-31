@@ -1,10 +1,10 @@
-Mar 20 13:55:48.9062 [pid 5384] Clienmpire.ml [info] Launching Empire client
-Mar 20 13:55:49.1281 [pid 5384] src/connect.ml [info] Connecting...
-Mar 20 13:55:49.1284 [pid 5384] src/connect.ml [info] Connected.
-Mar 20 13:55:49.4980 [pid 5384] src/connect.ml [info] Size is 44, 44
+Mar 31 14:51:23.1233 [pid 4473] Clienmpire.ml [info] Launching Empire client
+Mar 31 14:51:23.1923 [pid 4473] src/connect.ml [info] Connecting...
+Mar 31 14:51:23.1925 [pid 4473] src/connect.ml [info] Connected.
+Mar 31 14:51:23.8828 [pid 4473] src/connect.ml [info] Size is 44, 44
   cat(2) -> TRANSPORT
   cat(0) -> ARMY
   cat(3) -> PATROL
   cat(1) -> FIGHT
   cat(4) -> BATTLESHIP
-Mar 20 13:56:52.9854 [pid 5384] src/connect.ml [warning] Connect: server is not ready. Cannot emit end_turn
+Mar 31 14:54:03.8353 [pid 4473] src/connect.ml [error] wait_for_turn cannot read this data: winner 1

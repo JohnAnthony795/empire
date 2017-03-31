@@ -96,6 +96,7 @@ let traiter_message message =
 	Reçoit un type action de Tree/main, le convertit en string et l'envoie au serveur par le socket *)
 let send action =
 	send_to_server (action_to_string action)
+	(* bloquant : traiter_message jusqu'au prochain get_action *)
 ;;
 
 (*  SEND_TO_SERVER : string -> unit

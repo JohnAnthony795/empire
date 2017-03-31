@@ -1,4 +1,4 @@
-rm out*
+rm out_*
 rm empire-client/Main.*
 rm empire-server/Main.native
 rm empire-gtk-client/cliempire.native
