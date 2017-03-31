@@ -37,7 +37,7 @@ type t_arbre =
 
 val arbre0 : t_arbre
 
-type t_foret =  t_arbre * t_arbre * t_arbre * t_arbre * t_arbre * t_arbre ;; (* 5 unités , ville , ( ajouter stratégie globale???) *)
+type t_foret =  t_arbre * t_arbre * t_arbre * t_arbre * t_arbre * t_arbre ;; (* 5 uniés , ville , (stratégie ?) *)
 
 (*print arbre*)
 val pred_to_string : t_predicat -> string
