@@ -1,5 +1,5 @@
 (*
-Définition des types customs utilisés:    
+Définition des types customs utilisés:
 	- Type de retour pour les fonctions (SUCCES/FAILURE ? unit ? bool ?)
 
 Définir des fonctions d'affichage des types.
@@ -22,14 +22,14 @@ type piece_type_id= int;;
 
 type move = piece_id * direction ;;  (* si pas déjà défini*)
 
-type set_city_production = 
+type set_city_production =
 	city_id * piece_type_id
 	;;  (*définition dans Server/Empire.ml*)
 
-type t_action = 
-	 Move of move 
-	|Set_city_prod of set_city_production 
-	|End_turn 
+type t_action =
+	 Move of move
+	|Set_city_prod of set_city_production
+	|End_turn
 	;;
 
 type comparateur = Inf | Sup | Eq | InfEq | SupEq;;
@@ -41,8 +41,8 @@ type t_predicat= (* rajouter des prédicats en masse*)
 	|Nb_ville_allie_proche of (int * comparateur)
 	;;
 
-type t_arbre = 
-	Leaf of t_action 
+type t_arbre =
+	Leaf of t_action
 	|Node of (t_arbre * t_predicat * t_arbre)
 	;;
 
@@ -66,7 +66,7 @@ let arbre0 = Node (Leaf End_turn,Nb_unite_allie_proche (ARMY,7,Inf),Node (Leaf E
 (*fonctions privéees de print des types:*)
 
 let comparateur_to_string c = match c with
-		 Inf -> "<" 
+		 Inf -> "<"
 		| Sup -> ">"
 		| Eq -> "="
 		| InfEq -> "<="
@@ -77,7 +77,7 @@ let unite_to_string u = match u with
 		  ARMY -> "ARMY"
 		| TRANSPORT -> "TRANSPORT"
 		| FIGHT -> "FIGHT"
-		| BATTLESHIP -> "BATTLESHIP" 
+		| BATTLESHIP -> "BATTLESHIP"
 		| PATROL -> "PATROL"
 		;;
 
@@ -91,24 +91,23 @@ let direction_to_string d = match d with
 		;;
 
 (*fonctions publiques de print/string*)
-let pred_to_string p = match p with 
-		 Nb_unite_allie_proche (u,n,c) -> "Nb de "^ (unite_to_string u) ^ " allies proche " ^ (comparateur_to_string c) ^ " " ^ (string_of_int n) ^ "?"  
-		|Nb_ville_allie_proche (n,c) -> "Nb de villes allies proche " ^ (comparateur_to_string c) ^ " " ^ (string_of_int n) ^ "?"  
+let pred_to_string p = match p with   (*tenir à jour avec les prédicats ;)*)
+		 Nb_unite_allie_proche (u,n,c) -> "Nb de "^ (unite_to_string u) ^ " allies proche " ^ (comparateur_to_string c) ^ " " ^ (string_of_int n) ^ "?"
+		|Nb_ville_allie_proche (n,c) -> "Nb de villes allies proche " ^ (comparateur_to_string c) ^ " " ^ (string_of_int n) ^ "?"
+		|_ -> "predicat"
 		;;
 let action_to_string a = match a with
-		 Move (id,dir) -> "Move id°" ^ (string_of_int id) ^ " " ^ (direction_to_string dir) 
-		|Set_city_prod (id,p_type) -> "Set_city_prod id°" ^ (string_of_int id) ^ " " ^ (string_of_int p_type) (*clarifier le piece type id avec un piece type id to string??*) 
+		 Move (id,dir) -> "Move id°" ^ (string_of_int id) ^ " " ^ (direction_to_string dir)
+		|Set_city_prod (id,p_type) -> "Set_city_prod id°" ^ (string_of_int id) ^ " " ^ (string_of_int p_type) (*clarifier le piece type id avec un piece type id to string??*)
 		|End_turn -> "End_turn"
+		|_ -> "action"
 		;;
 
 
 let print_action a d = printf "%s\n" ((String.make d '~') ^ (String.make d '~') ^ (action_to_string a));; (*moche mais on peut mettre que un carac*)
 let print_pred p depth =
 	printf "%s\n" ((String.make depth '~') ^ (String.make depth '~') ^ (pred_to_string p)) ;;
-let rec print_tree t depth =    
+let rec print_tree t depth =
 	match t with
-		Leaf a -> print_action a depth
+					Leaf a -> print_action a depth
 	       |Node (t1,p,t2) -> (print_tree t1 (depth+1) ; print_pred p (depth);print_tree t2 (depth+1)) ;;
-
-
-
