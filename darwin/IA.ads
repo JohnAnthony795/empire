@@ -1,1 +1,1 @@
-End_turn#End_turn#End_turn#End_turn#End_turn#(End_turn,Nb de ARMY allies proche < 7?,(End_turn,Nb de ARMY allies proche < 7?,End_turn))
+!ET#!ET#!ET#!ET#!ET#(!ET,?NBUAP:A:7:<,(!ET,?NBUAP:A:7:<,!ET))

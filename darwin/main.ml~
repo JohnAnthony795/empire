@@ -24,7 +24,7 @@ let () =
 
 let read_arbre fichier =
 	let parseline line = (*lit la ligne retourne le t_foret ( peut etre regarder ocamllex qui fait de l'analyse syntaxique a part.)*)
-		(*let arbres_string = Str.split (Str.regexp "#") line in   (*tokens est une list de string representant chacun un arbre.*)
+		let arbres_string = Str.split (Str.regexp "#") line in   (*tokens est une list de string representant chacun un arbre.*)
 			let rec parsetree st = (*convertit un arbre en string en un t_arbre*) 
 				(*definitions des parseurs de predicat et action*)
 				let parseaction act =
@@ -60,8 +60,8 @@ let read_arbre fichier =
 			in
 				match arbres_string with
 					 st1::st2::st3::st4::st5::st6::[] -> ((parsetree st1),(parsetree st2),(parsetree st3),(parsetree st4),(parsetree st5),(parsetree st6))
-					|_ -> failwith "FICHIER NON CONFORME %!" *)
-		(Leaf End_turn,Leaf End_turn,Leaf End_turn,Leaf End_turn,Leaf End_turn,Leaf End_turn) (*## CETTE LIGNE VEHICULE UNE VISION SIMPLISTE ET REDUCTRICE DE LA FORET##*)
+					|_ -> failwith "FICHIER NON CONFORME %!"
+		(*(Leaf End_turn,Leaf End_turn,Leaf End_turn,Leaf End_turn,Leaf End_turn,Leaf End_turn) (*## CETTE LIGNE VEHICULE UNE VISION SIMPLISTE ET REDUCTRICE DE LA FORET##*)*)
 	in
 		let ic = open_in fichier in
 		try

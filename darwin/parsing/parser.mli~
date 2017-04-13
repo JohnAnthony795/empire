@@ -1,0 +1,23 @@
+open Types
+
+type token =
+  | INT of (int)
+  | COMP of (comparateur)
+  | UNITE of (unites)
+  | DIR of (direction)
+  | NBUAP
+  | NBVAP
+  | MV
+  | SCP
+  | ET
+  | LPAREN
+  | RPAREN
+  | HASH
+  | VIRG
+  | COLON
+  | QMARK
+  | EMARK
+  | EOL
+
+val foret :
+  (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> t_foret
