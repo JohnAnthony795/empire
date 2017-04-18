@@ -1,4 +1,4 @@
-fichiers importants  (source): lexer.mll (lex) parser.mly ( yacc) calc.ml     
+fichiers importants  (source): lexer.mll (lex) parser.mly ( yacc) calc.ml (conbination)     
 pour tout compiler lancer ça : 
 
         ocamllex lexer.mll       # generates lexer.ml

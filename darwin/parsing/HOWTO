@@ -1,4 +1,5 @@
 fichiers importants  (source): lexer.mll (lex) parser.mly ( yacc) calc.ml (conbination)     
+il faut ajouter les fichiers compilé de type.ml
 pour tout compiler lancer ça : 
 
         ocamllex lexer.mll       # generates lexer.ml

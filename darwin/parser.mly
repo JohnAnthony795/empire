@@ -1,8 +1,8 @@
  /*tenir à jour les predicaats !!!*/
 
 %{
-  open Types
-  open Printf
+  open Types 
+  open Printf (*for debug purposes*)
 %}
         %token <int> INT
         %token <Types.comparateur> COMP

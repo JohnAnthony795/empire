@@ -29,7 +29,7 @@ type t_predicat= (* rajouter des prédicats en masse*)
 	;;
 
 type t_arbre = 
-	Leaf of t_action 
+	 Leaf of t_action 
 	|Node of (t_arbre * t_predicat * t_arbre)
 	;;
 

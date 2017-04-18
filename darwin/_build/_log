@@ -1,27 +1,36 @@
 ### Starting build.
-# Target: main.ml.depends, tags: { extension:ml, file:main.ml, ocaml, ocamldep, quiet }
+# Target: main.ml.depends, tags: { extension:ml, file:main.ml, ocaml, ocamldep, quiet, traverse }
 /home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamldep.opt -modules main.ml > main.ml.depends
-# Target: types.mli.depends, tags: { extension:mli, file:types.mli, ocaml, ocamldep, quiet }
-/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamldep.opt -modules types.mli > types.mli.depends
-# Target: types.cmi, tags: { byte, compile, extension:mli, file:types.mli, interf, ocaml, quiet }
-/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlc.opt -c -o types.cmi types.mli
-# Target: main.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:main.cmo, file:main.ml, implem, ocaml, quiet }
+# Target: lexer.mll, tags: { extension:mll, file:lexer.mll, lexer, ocaml, ocamllex, quiet, traverse }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamllex.opt -q lexer.mll # cached
+# Target: lexer.ml.depends, tags: { extension:ml, file:lexer.ml, ocaml, ocamldep, quiet, traverse }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamldep.opt -modules lexer.ml > lexer.ml.depends # cached
+# Target: parser.mly, tags: { extension:mly, file:parser.mly, infer, ocaml, ocamlyacc, parser, quiet, traverse }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlyacc parser.mly # cached
+# Target: parser.mli.depends, tags: { extension:mli, file:parser.mli, ocaml, ocamldep, quiet, traverse }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamldep.opt -modules parser.mli > parser.mli.depends # cached
+# Target: types.mli.depends, tags: { extension:mli, file:types.mli, ocaml, ocamldep, quiet, traverse }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamldep.opt -modules types.mli > types.mli.depends # cached
+# Target: types.cmi, tags: { byte, compile, extension:mli, file:types.mli, interf, ocaml, quiet, traverse }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlc.opt -c -o types.cmi types.mli # cached
+# Target: parser.cmi, tags: { byte, compile, extension:mli, file:parser.mli, interf, ocaml, quiet, traverse }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlc.opt -c -o parser.cmi parser.mli # cached
+# Target: lexer.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:lexer.cmo, file:lexer.ml, implem, ocaml, quiet, traverse }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlc.opt -c -o lexer.cmo lexer.ml # cached
+# Target: main.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:main.cmo, file:main.ml, implem, ocaml, quiet, traverse }
 /home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlc.opt -c -o main.cmo main.ml
-# Target: types.ml.depends, tags: { extension:ml, file:types.ml, ocaml, ocamldep, quiet }
-/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamldep.opt -modules types.ml > types.ml.depends
-# Target: types.cmx, tags: { compile, extension:cmx, extension:ml, file:types.cmx, file:types.ml, implem, native, ocaml, quiet }
-/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlopt.opt -c -o types.cmx types.ml
-+ /home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlopt.opt -c -o types.cmx types.ml
-File "types.ml", line 98, characters 3-4:
-Warning 11: this match case is unused.
-File "types.ml", line 104, characters 3-4:
-Warning 11: this match case is unused.
-File "types.ml", line 129, characters 3-4:
-Warning 11: this match case is unused.
-File "types.ml", line 136, characters 3-4:
-Warning 11: this match case is unused.
-# Target: main.cmx, tags: { compile, extension:cmx, extension:ml, file:main.cmx, file:main.ml, implem, native, ocaml, quiet }
+# Target: parser.ml.depends, tags: { extension:ml, file:parser.ml, ocaml, ocamldep, quiet, traverse }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamldep.opt -modules parser.ml > parser.ml.depends # cached
+# Target: types.ml.depends, tags: { extension:ml, file:types.ml, ocaml, ocamldep, quiet, traverse }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamldep.opt -modules types.ml > types.ml.depends # cached
+# Target: types.cmx, tags: { compile, extension:cmx, extension:ml, file:types.cmx, file:types.ml, implem, native, ocaml, quiet, traverse }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlopt.opt -c -o types.cmx types.ml # cached
+# Target: parser.cmx, tags: { compile, extension:cmx, extension:ml, file:parser.cmx, file:parser.ml, implem, native, ocaml, quiet, traverse }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlopt.opt -c -o parser.cmx parser.ml # cached
+# Target: lexer.cmx, tags: { compile, extension:cmx, extension:ml, file:lexer.cmx, file:lexer.ml, implem, native, ocaml, quiet, traverse }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlopt.opt -c -o lexer.cmx lexer.ml # cached
+# Target: main.cmx, tags: { compile, extension:cmx, extension:ml, file:main.cmx, file:main.ml, implem, native, ocaml, quiet, traverse }
 /home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlopt.opt -c -o main.cmx main.ml
-# Target: main.native, tags: { dont_link_with, extension:native, file:main.native, link, native, ocaml, program, quiet }
-/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlopt.opt types.cmx main.cmx -o main.native
+# Target: main.native, tags: { dont_link_with, extension:native, file:main.native, link, native, ocaml, program, quiet, traverse }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlopt.opt types.cmx parser.cmx lexer.cmx main.cmx -o main.native
 # Compilation successful.

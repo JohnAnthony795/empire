@@ -23,45 +23,10 @@ let () =
 
 
 let read_arbre fichier =
-	let parseline line = (*lit la ligne retourne le t_foret ( peut etre regarder ocamllex qui fait de l'analyse syntaxique a part.)*)
-		let arbres_string = Str.split (Str.regexp "#") line in   (*tokens est une list de string representant chacun un arbre.*)
-			let rec parsetree st = (*convertit un arbre en string en un t_arbre*) 
-				(*definitions des parseurs de predicat et action*)
-				let parseaction act =
-					let dir_of_string s = match s with
-						 "UP" -> UP
-						|"DOWN" -> DOWN
-						|"RIGHT" -> RIGHT
-						|"LEFT" -> LEFT
-						|"UPLEFT" -> UPLEFT
-						|"DOWNRIGHT" -> DOWNRIGHT
-
-					in
-						if (Str.string_match (Str.regexp "Move id°\([0-9]*\) \((UP\|DOWN\|RIGHT\|LEFT\|UPLEFT\|DOWNRIGHT)\)$")(*ocaml hait les backslashs mais osef*) act 0) 
-							then Move (int_of_string (matched_group 1 act),dir_of_string (matched_group 2 act))  
-						else if (Str.string_match (Str.regexp "Set_city_prod id°\([0-9]*\) \([0-9]*\)$") 
-							then Set_city_prod (int_of_string (matched_group 1 act),int_of_string (matched_group 2 act)) 
-						else if (Str.string_match (Str.regexp "End_turn$") act 0) then End_turn
-						else failwith "FICHIER NON CONFORME %!"
-				in
-
-				let parsepredicat pred= 
-				in
-
-				let (idnode,idaction) = (Str.regexp "(.*)$"(*anything beetween parhenteses*),Str.regexp ".*$") (*definition des patern a matcher (remove idaction? voir mettre tout direct)*)
-				in 
-			  		if (Str.string_match idnode st 0) then  "(\(..\),\(..\),\(..\))$" (*marche pas non plus. en fait langage pas régulier , obligg de faire un parser? *)
-							let elements =(*marche ap. il faut grouper*) Str.split (Str.regexp ",") (match Str.split (Str.regexp "[()]") st with (*il faut cut les parhentheses!*) 
-																	x::[]-> x 
-																       | _ ->  failwith "FICHIER NON CONFORME %!" ) 								in match elements with
-								 td::pred::tg::[] -> Node (parsetree td, parsepredicat pred ,parsetree tg )
-								| _ -> failwith "FICHIER NON CONFORME %!"
-					else Leaf (parseaction st)
-			in
-				match arbres_string with
-					 st1::st2::st3::st4::st5::st6::[] -> ((parsetree st1),(parsetree st2),(parsetree st3),(parsetree st4),(parsetree st5),(parsetree st6))
-					|_ -> failwith "FICHIER NON CONFORME %!"
-		(*(Leaf End_turn,Leaf End_turn,Leaf End_turn,Leaf End_turn,Leaf End_turn,Leaf End_turn) (*## CETTE LIGNE VEHICULE UNE VISION SIMPLISTE ET REDUCTRICE DE LA FORET##*)*)
+	let parseline line = (*lit la ligne retourne le t_foret *)
+         	   let lexbuf = Lexing.from_string (line^"\n") in
+           		 Parser.foret Lexer.token lexbuf 
+		(*(Leaf End_turn,Leaf End_turn,Leaf End_turn,Leaf End_turn,Leaf End_turn,Leaf End_turn)*) (*## CETTE LIGNE VEHICULE UNE VISION SIMPLISTE ET REDUCTRICE DE LA FORET##*)
 	in
 		let ic = open_in fichier in
 		try
@@ -103,5 +68,5 @@ let write_arbre fichier forest =
 let () =
 	write_arbre file (Leaf End_turn,Leaf End_turn,Leaf End_turn,Leaf End_turn,Leaf End_turn,arbre0) ;
 	let (t1,_,_,_,_,t6) = (read_arbre file)  in printf "1er Arbre lu dans le fichier :\n"; print_tree t1 0 ;
-						    printf "dernier Arbre lu dans le fichier :\n"; print_tree t6 0
+						    printf "\ndernier Arbre lu dans le fichier :\n"; print_tree t6 0
 ;;

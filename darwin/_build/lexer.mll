@@ -14,11 +14,11 @@
 		|"DR" -> Downright
 
 	let unite_of_code s = match s with
-		 "A" -> ARMY
-		|"T" -> TRANSPORT
-		|"F" -> FIGHT
-		|"B" -> BATTLESHIP
-		|"P" -> PATROL
+		 'A' -> ARMY
+		|'T' -> TRANSPORT
+		|'F' -> FIGHT
+		|'B' -> BATTLESHIP
+		|'P' -> PATROL
 
 	let comp_of_code s = match s with
 		  "<" -> Inf 
