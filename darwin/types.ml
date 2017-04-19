@@ -66,7 +66,7 @@ let arbre0 = Node (Leaf End_turn,Nb_unite_allie_proche (ARMY,7,Inf),Node (Leaf E
 (*fonctions de print verbeux des types:*)
 
 let comparateur_to_string c = match c with
-		 Inf -> "<"
+		  Inf -> "<"
 		| Sup -> ">"
 		| Eq -> "="
 		| InfEq -> "<="

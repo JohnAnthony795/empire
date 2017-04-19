@@ -22,9 +22,18 @@
 # Target: parser.ml.depends, tags: { extension:ml, file:parser.ml, ocaml, ocamldep, quiet, traverse }
 /home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamldep.opt -modules parser.ml > parser.ml.depends # cached
 # Target: types.ml.depends, tags: { extension:ml, file:types.ml, ocaml, ocamldep, quiet, traverse }
-/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamldep.opt -modules types.ml > types.ml.depends # cached
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamldep.opt -modules types.ml > types.ml.depends
 # Target: types.cmx, tags: { compile, extension:cmx, extension:ml, file:types.cmx, file:types.ml, implem, native, ocaml, quiet, traverse }
-/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlopt.opt -c -o types.cmx types.ml # cached
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlopt.opt -c -o types.cmx types.ml
++ /home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlopt.opt -c -o types.cmx types.ml
+File "types.ml", line 98, characters 3-4:
+Warning 11: this match case is unused.
+File "types.ml", line 104, characters 3-4:
+Warning 11: this match case is unused.
+File "types.ml", line 129, characters 3-4:
+Warning 11: this match case is unused.
+File "types.ml", line 136, characters 3-4:
+Warning 11: this match case is unused.
 # Target: parser.cmx, tags: { compile, extension:cmx, extension:ml, file:parser.cmx, file:parser.ml, implem, native, ocaml, quiet, traverse }
 /home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlopt.opt -c -o parser.cmx parser.ml # cached
 # Target: lexer.cmx, tags: { compile, extension:cmx, extension:ml, file:lexer.cmx, file:lexer.ml, implem, native, ocaml, quiet, traverse }
@@ -32,5 +41,5 @@
 # Target: main.cmx, tags: { compile, extension:cmx, extension:ml, file:main.cmx, file:main.ml, implem, native, ocaml, quiet, traverse }
 /home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlopt.opt -c -o main.cmx main.ml
 # Target: main.native, tags: { dont_link_with, extension:native, file:main.native, link, native, ocaml, program, quiet, traverse }
-/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlopt.opt types.cmx parser.cmx lexer.cmx main.cmx -o main.native
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlopt.opt types.cmx parser.cmx lexer.cmx main.cmx -o main.native # cached
 # Compilation successful.
