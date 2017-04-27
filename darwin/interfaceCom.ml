@@ -40,13 +40,15 @@
    	- get_city_id_by_loc ; q ; r
 *)
 
+open Unix
 open DataManager
 
-let rec action_to_string action = 
-  match action with
+let rec action_to_string action =
+"end_turn"
+  (* match action with
   | head :: [] -> head
   | head :: tail -> head ^ " " ^ (action_to_string tail)
-  | _ -> failwith "Fail action_to_string"
+  | _ -> failwith "Fail action_to_string"*)
 ;;
 
 (*** SOCKETS ***)
@@ -55,8 +57,8 @@ let rec action_to_string action =
 (* On utilise des refs pour pouvoir modifier leur valeur *)
 (* On utilise le type option pour pouvoir les initialiser à None *)
 (* Pour accéder à un canal, il faut matcher "Some c" et "None" puis utiliser "!c" pour accéder au canal lui-même *)
-let input_channel = ref None;;
-let output_channel = ref None;;
+let input_channel = ref(None);;
+let output_channel = ref(None);;
 
 (* Fonctions auxiliaires d'ouverture et de fermeture de connexion *)
 (* sockaddr -> socket *)
@@ -69,6 +71,7 @@ let open_connection sockaddr =
   with exn -> Unix.close sock ; raise exn ;;
 
 let shutdown_connection inchan =
+  Printf.printf "Closing client socket\n\n";
   Unix.shutdown (Unix.descr_of_in_channel inchan) Unix.SHUTDOWN_SEND ;;
 
 
@@ -84,6 +87,7 @@ let init_socket server port =
   in try
     let sockaddr = Unix.ADDR_INET(server_addr,port) in
     let sock = open_connection sockaddr in	(* On crée le socket pour affecter les canaux in/out *)
+    Printf.printf "Socket created\n\n";
     input_channel := Some (Unix.in_channel_of_descr sock);
     output_channel := Some (Unix.out_channel_of_descr sock)
   with Failure("int_of_string") -> Printf.eprintf "bad port number";
@@ -141,8 +145,19 @@ let traiter_message message =
   | "ko-invasion" -> traiter_ko_invasion tlMsg
   | "city-units-limit" -> traiter_city_units_limit tlMsg
   | "created-units-limit" -> traiter_created_units_limit tlMsg
-  | hd -> Printf.printf "Erreur dans traiter_message : %s non reconnu" hd
-  | _ -> failwith "LeCamlEstMortViveLeCaml"
+  | hd -> Printf.printf "Erreur dans traiter_message : %s non reconnu" hd ;
+  failwith "LeCamlEstMortViveLeCaml"
+;;
+
+
+(*  SEND_TO_SERVER : string -> unit
+    	L'envoi concret du message par le socket *)
+let send_to_server message =
+  Printf.printf "Sending \"%s\" to the server\n" message;
+  match !output_channel with
+  | Some (oc) -> output_string oc (message ^ "\n");
+ 			 				 flush oc
+  | None -> failwith "Output_channel not initialized"
 ;;
 
 (*  SEND : t_action -> unit						Fonction "publique"
@@ -152,13 +167,6 @@ let send action =
   (* bloquant : traiter_message jusqu'au prochain get_action *)
 ;;
 
-(*  SEND_TO_SERVER : string -> unit
-    	L'envoi concret du message par le socket *)
-let send_to_server message =
-  let channel_out = Unix.out_channel_of_descr socket_client in
-  output_string channel_out (message ^ "\n") ;
-  flush channel_out
-;;
 
 
 

@@ -25,7 +25,13 @@ let file = "IA.ads";;
 let () =
   printf "**************\n";
   printf "*Test sockets*\n";
-  printf "**************\n\n";;
+  printf "**************\n\n";
+  
+  init_socket "127.0.0.1" 9301;
+  send End_turn;
+  while (true) do
+  ()
+  done;;
   
 
 let () =

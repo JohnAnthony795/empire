@@ -1,1 +1,2 @@
-ocamlbuild  main.native
+all :
+	ocamlbuild -use-ocamlfind main.native

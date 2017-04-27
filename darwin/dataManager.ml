@@ -14,7 +14,7 @@ taille à récupérer via get_width get_height
 -Tableau liste villes ennemies (city_id, coords)
 
 
-Fonctions à develloper:
+Fonctions à développer:
 
 publiques :
 - traiter_set_visible
@@ -80,15 +80,23 @@ let fill_terrain terrain q r =
 (* Unités alliées *)
 type unite_list = {q:int; r:int; pid : int ; unite_type : unites ; hp : int};;
 
-let liste_unites = [];;
+let liste_unites = ref([]);;
 
 let update_unite_alliee q r pid unite_type hp = 
   let pid_is_not pid element = element.pid <> pid in
-  {q=q; r=r ; pid=pid; unite_type=unite_type; hp=hp} :: (List.filter (pid_is_not pid) liste_unites) ;;
+  liste_unites := {q=q; r=r ; pid=pid; unite_type=unite_type; hp=hp} :: (List.filter (pid_is_not pid) !liste_unites) ;;
 
 (* Unités ennemies *)
 
 (* TODO : liste d'unites (pos, pid, type unité, hp? (pour battleship)) *)
+
+type unite_ennemies_list = {q:int; r:int; pid : int ; unite_type : unites ; hp : int};;
+
+let liste_ennemis = ref([]);;
+
+let update_unite_ennemie q r pid unite_type hp = 
+  let pid_is_not pid element = element.pid <> pid in
+  liste_ennemis := {q=q; r=r ; pid=pid; unite_type=unite_type; hp=hp} :: (List.filter (pid_is_not pid) !liste_ennemis) ;;
 
 (** Listes villes **)
 (*Liste villes alliées*)
@@ -134,6 +142,14 @@ let rec rm_ennemi rmcid =
 let tiles_distance (qa, ra) (qb, rb) = (abs (qa - qb) + abs (qa + ra - qb - rb) + abs (ra - rb)) / 2
 ;;
 
+let ptid_to_unites ptid = match ptid with
+| 0 -> ARMY
+| 1 -> FIGHT
+| 2 -> TRANSPORT
+| 3 -> PATROL
+| 4 -> BATTLESHIP
+| _ -> failwith "Erreur ptid_to_unites : entrée non gérée"
+
 (* TODO ajouter d'autres *)
 
 (***** TRAITEMENT *****)
@@ -144,7 +160,7 @@ let traiter_set_visible args =
   | [ q ; r ; terrain ; "none" ] -> fill_terrain terrain (ios q) (ios r)
   | [ q ; r ; terrain ; "city" ; cid ] -> fill_terrain "city" (ios q) (ios r) 
   | [ q ; r ; terrain ; "owned_city" ; cid ; jid ] -> if (ios jid) = our_jid then (fill_terrain "our_city" (ios q) (ios r) ; update_ville_allie (ios q) (ios r) (ios cid)) else (fill_terrain "their_city" (ios q) (ios r) ; add_ville_ennemi (ios q) (ios r) (ios cid))
-  | [ q ; r ; terrain ; "piece" ; jid ; pid ; ptid ; hits ] -> if (ios jid) = our_jid then (update_unite_alliee (ios q) (ios r) (ios pid) (ios ptid) (ios hp)) else (update_unite_ennemie (ios q) (ios r) (ios pid) (ios ptid) (ios hp))
+  | [ q ; r ; terrain ; "piece" ; jid ; pid ; ptid ; hp ] -> if (ios jid) = our_jid then (update_unite_alliee (ios q) (ios r) (ios pid) (ptid_to_unites (ios ptid)) (ios hp)) else (update_unite_ennemie (ios q) (ios r) (ios pid) (ptid_to_unites (ios ptid)) (ios hp))
   | _ -> failwith "erreur traiter_set_visible"
 ;;
 
@@ -181,8 +197,6 @@ let traiter_created_units_limit args = ();;
 
 
 *)
-
-
 
 
 
