@@ -40,6 +40,8 @@
    	- get_city_id_by_loc ; q ; r
 *)
 
+open DataManager
+
 let rec action_to_string action = 
   match action with
   | head :: [] -> head
@@ -47,68 +49,51 @@ let rec action_to_string action =
   | _ -> failwith "Fail action_to_string"
 ;;
 
+(*** SOCKETS ***)
+
+(* Canaux de communication en variables globales *)
+(* On utilise des refs pour pouvoir modifier leur valeur *)
+(* On utilise le type option pour pouvoir les initialiser à None *)
+(* Pour accéder à un canal, il faut matcher "Some c" et "None" puis utiliser "!c" pour accéder au canal lui-même *)
+let input_channel = ref None;;
+let output_channel = ref None;;
+
+(* Fonctions auxiliaires d'ouverture et de fermeture de connexion *)
+(* sockaddr -> socket *)
+let open_connection sockaddr =
+  let domain = Unix.domain_of_sockaddr sockaddr in
+  let sock = Unix.socket domain Unix.SOCK_STREAM 0 
+  in try Unix.connect sock sockaddr ;
+    sock
+  (*(Unix.in_channel_of_descr sock , Unix.out_channel_of_descr sock)*)
+  with exn -> Unix.close sock ; raise exn ;;
+
+let shutdown_connection inchan =
+  Unix.shutdown (Unix.descr_of_in_channel inchan) Unix.SHUTDOWN_SEND ;;
+
+
 (* Création d'un socket client et connexion au serveur *)
 let init_socket server port =
-  let server_addr = (gethostbyname server).h_addr_list.(0) in
-  let socket = Unix.socket PF_INET SOCK_STREAM 0 in
-  Unix.connect socket (ADDR_INET(server_addr, port)) ;
-  socket
+  (* On détermine l'addresse du serveur passé en argument, par 2 moyens à l'aide du try/with *)
+  let server_addr = try Unix.inet_addr_of_string server  (* si c'est une adresse IP en string *)
+    with Failure("inet_addr_of_string") ->
+    try (Unix.gethostbyname server).Unix.h_addr_list.(0) (* si c'est un nom de machine *)
+    with Not_found ->
+      Printf.eprintf "%s : Unknown server\n" server ;
+      exit 2
+  in try
+    let sockaddr = Unix.ADDR_INET(server_addr,port) in
+    let sock = open_connection sockaddr in	(* On crée le socket pour affecter les canaux in/out *)
+    input_channel := Some (Unix.in_channel_of_descr sock);
+    output_channel := Some (Unix.out_channel_of_descr sock)
+  with Failure("int_of_string") -> Printf.eprintf "bad port number";
+    exit 2
 ;;
 
-(* TODO: autoriser le passage de port en argument (cf. main() dans empire-client/sources/Main.ml) *)
-(* variable globale pour stocker le socket *)
-let socket_client = init_socket "localhost" 9301 ;;
+(** AUXILIAIRES **)
 
-(*  pid : piece_id
-    	ppid : parent_piece_id
-    	tp_pid: transport_piece_id
-    	cid : city_id
-    	jid : numéro d'un joueur (0 ou 1)
-    	ptid : piece_type_id (0-> ARMY, 1-> FIGHT, 2-> TRANSPORT, 3-> PATROL, 4-> BATTLESHIP)
-    	hits : piece.p_hits  (points de vie restants)
-*)
-let traiter_message message =
-  let listeMsg = split message in
-  let tlMsg = List.tl listeMsg in
-
-  match List.hd listeMsg with
-    | "set_visible" -> traiter_set_visible tlMsg
-    | "set_explored" -> traiter_set_explored tlMsg
-    | "get_action" -> ()
-    | "delete_piece" -> traiter_delete_piece tlMsg
-    | "create_piece" -> traiter_create_piece tlMsg
-    | "move" -> traiter_move tlMsg
-    | "lose_city" -> traiter_lose_city tlMsg
-    | "leave_terrain" -> traiter_leave_terrain tlMsg
-    | "enter_city" -> traiter_enter_city tlMsg
-    | "enter_piece" -> traiter_enter_piece tlMsg
-    | "leave_city" -> traiter_leave_city tlMsg
-    | "leave_piece" -> traiter_leave_piece tlMsg
-    | "ok-invasion" -> traiter_ok-invasion tlMsg
-    | "ko-invasion" -> traiter_ko-invasion tlMsg
-    | "city-units-limit" -> traiter_city-units-limit tlMsg
-    | "created-units-limit" -> traiter_created-units-limit tlMsg
-    | Hd :: _ -> Printf.printf "Erreur dans traiter_message : %s non reconnu" Hd
-  	| _ -> failwith "LeCamlEstMortViveLeCaml"
-;;
-
-(*  SEND : t_action -> unit						Fonction "publique"
-	Reçoit un type action de Tree/main, le convertit en string et l'envoie au serveur par le socket *)
-let send action =
-	send_to_server (action_to_string action)
-	(* bloquant : traiter_message jusqu'au prochain get_action *)
-;;
-
-(*  SEND_TO_SERVER : string -> unit
-	L'envoi concret du message par le socket *)
-let send_to_server message =
-  let channel_out = Unix.out_channel_of_descr socket_client in
-  output_string channel_out (message ^ "\n") ;
-  flush channel_out
-;;
-
-  (* Fonctions auxiliaires pour extraire le début ou la fin d'un String *)
-  let str_start str len = String.sub str 0 len ;;
+(* Fonctions auxiliaires pour extraire le début ou la fin d'un String *)
+let str_start str len = String.sub str 0 len ;;
 
 let str_end str offset = String.sub str offset (String.length str - offset) ;;
 
@@ -123,7 +108,58 @@ let split str =
     end else
     if String.length str = 0 then List.rev toks else
       List.rev (str :: toks) in
-  aux str 
+  aux str []
 ;;
+
+
+(*  pid : piece_id
+    	ppid : parent_piece_id
+    	tp_pid: transport_piece_id
+    	cid : city_id
+    	jid : numéro d'un joueur (0 ou 1)
+    	ptid : piece_type_id (0-> ARMY, 1-> FIGHT, 2-> TRANSPORT, 3-> PATROL, 4-> BATTLESHIP)
+    	hits : piece.p_hits  (points de vie restants)
+*)
+let traiter_message message =
+  let listeMsg = split message in
+  let tlMsg = List.tl listeMsg in
+
+  match List.hd listeMsg with
+  | "set_visible" -> traiter_set_visible tlMsg
+  | "set_explored" -> traiter_set_explored tlMsg
+  | "get_action" -> ()
+  | "delete_piece" -> traiter_delete_piece tlMsg
+  | "create_piece" -> traiter_create_piece tlMsg
+  | "move" -> traiter_move tlMsg
+  | "lose_city" -> traiter_lose_city tlMsg
+  | "leave_terrain" -> traiter_leave_terrain tlMsg
+  | "enter_city" -> traiter_enter_city tlMsg
+  | "enter_piece" -> traiter_enter_piece tlMsg
+  | "leave_city" -> traiter_leave_city tlMsg
+  | "leave_piece" -> traiter_leave_piece tlMsg
+  | "ok-invasion" -> traiter_ok_invasion tlMsg
+  | "ko-invasion" -> traiter_ko_invasion tlMsg
+  | "city-units-limit" -> traiter_city_units_limit tlMsg
+  | "created-units-limit" -> traiter_created_units_limit tlMsg
+  | hd -> Printf.printf "Erreur dans traiter_message : %s non reconnu" hd
+  | _ -> failwith "LeCamlEstMortViveLeCaml"
+;;
+
+(*  SEND : t_action -> unit						Fonction "publique"
+    	Reçoit un type action de Tree/main, le convertit en string et l'envoie au serveur par le socket *)
+let send action =
+  send_to_server (action_to_string action)
+  (* bloquant : traiter_message jusqu'au prochain get_action *)
+;;
+
+(*  SEND_TO_SERVER : string -> unit
+    	L'envoi concret du message par le socket *)
+let send_to_server message =
+  let channel_out = Unix.out_channel_of_descr socket_client in
+  output_string channel_out (message ^ "\n") ;
+  flush channel_out
+;;
+
+
 
 
