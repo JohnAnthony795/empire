@@ -40,16 +40,12 @@
    	- get_city_id_by_loc ; q ; r
 *)
 
+(** TODO : au début de la partie, le serveur envoie un (ou plusieurs) messages d'init, tels que "width %d"
+	Il faut les découvrir et traiter, peut être cf. empire-server/Main.ml **)
+
 open Unix
 open DataManager
-
-let rec action_to_string action =
-"end_turn"
-  (* match action with
-  | head :: [] -> head
-  | head :: tail -> head ^ " " ^ (action_to_string tail)
-  | _ -> failwith "Fail action_to_string"*)
-;;
+open Types
 
 (*** SOCKETS ***)
 
@@ -94,6 +90,11 @@ let init_socket server port =
     exit 2
 ;;
 
+(** REQUETES **)
+
+(* TODO *)
+let set_jid = DataManager.set_our_jid 1
+
 (** AUXILIAIRES **)
 
 (* Fonctions auxiliaires pour extraire le début ou la fin d'un String *)
@@ -113,8 +114,28 @@ let split str =
     if String.length str = 0 then List.rev toks else
       List.rev (str :: toks) in
   aux str []
-;;
 
+let dir_to_string direction = match direction with 
+  | Up -> "1"
+  | Down -> "4"
+  | Right -> "0"
+  | Left -> "3"
+  | Upleft -> "2"
+  | Downright -> "5" (*darius*)
+
+let unites_to_ptid u = match u with
+  | ARMY -> "0"
+  | FIGHT -> "1"
+  | TRANSPORT -> "2"
+  | PATROL -> "3"
+  | BATTLESHIP -> "4"
+
+let action_to_string action =
+  let soi = string_of_int in
+  match action with
+  | End_turn -> "end_turn"
+  | Set_city_prod (cid, ptid) -> "set_city_prod " ^ (soi cid) ^ " " ^ (unites_to_ptid ptid)
+  | Move (pid, did) -> "move " ^ (soi pid) ^ " " ^ (dir_to_string did)
 
 (*  pid : piece_id
     	ppid : parent_piece_id
@@ -124,6 +145,9 @@ let split str =
     	ptid : piece_type_id (0-> ARMY, 1-> FIGHT, 2-> TRANSPORT, 3-> PATROL, 4-> BATTLESHIP)
     	hits : piece.p_hits  (points de vie restants)
 *)
+
+(***** RECEPTION *****)
+	
 let traiter_message message =
   let listeMsg = split message in
   let tlMsg = List.tl listeMsg in
@@ -131,7 +155,7 @@ let traiter_message message =
   match List.hd listeMsg with
   | "set_visible" -> traiter_set_visible tlMsg
   | "set_explored" -> traiter_set_explored tlMsg
-  | "get_action" -> ()
+  | "get_action" -> Printf.printf "get_action recu \n" (* TODO A ENLEVER *)
   | "delete_piece" -> traiter_delete_piece tlMsg
   | "create_piece" -> traiter_create_piece tlMsg
   | "move" -> traiter_move tlMsg
@@ -145,10 +169,19 @@ let traiter_message message =
   | "ko-invasion" -> traiter_ko_invasion tlMsg
   | "city-units-limit" -> traiter_city_units_limit tlMsg
   | "created-units-limit" -> traiter_created_units_limit tlMsg
-  | hd -> Printf.printf "Erreur dans traiter_message : %s non reconnu" hd ;
+  | x -> Printf.printf "traiter_message: message serveur imprévu : \"%s\"\n" x ;
   failwith "LeCamlEstMortViveLeCaml"
-;;
 
+let receive_next () =
+  match !input_channel with
+    | Some (ic) -> input_line ic
+    | None -> "Input_channel not initialized"
+
+let rec receive () =
+	match receive_next () with
+	| "" -> failwith "receive: Empty message"
+	| "get_action" -> traiter_message "get_action"
+	| m -> traiter_message m; receive ()
 
 (*  SEND_TO_SERVER : string -> unit
     	L'envoi concret du message par le socket *)
@@ -156,7 +189,7 @@ let send_to_server message =
   Printf.printf "Sending \"%s\" to the server\n" message;
   match !output_channel with
   | Some (oc) -> output_string oc (message ^ "\n");
- 			 				 flush oc
+    flush oc
   | None -> failwith "Output_channel not initialized"
 ;;
 

@@ -1,0 +1,46 @@
+### Starting build.
+# Target: sources/Main.ml.depends, tags: { extension:ml, file:sources/Main.ml, ocaml, ocamldep, quiet, thread }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamldep.opt -modules sources/Main.ml > sources/Main.ml.depends # cached
+# Target: sources/Connection.ml.depends, tags: { extension:ml, file:sources/Connection.ml, ocaml, ocamldep, quiet, thread }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamldep.opt -modules sources/Connection.ml > sources/Connection.ml.depends # cached
+# Target: sources/Misc.ml.depends, tags: { extension:ml, file:sources/Misc.ml, ocaml, ocamldep, quiet, thread }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamldep.opt -modules sources/Misc.ml > sources/Misc.ml.depends # cached
+# Target: sources/Misc.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:sources/Misc.cmo, file:sources/Misc.ml, implem, ocaml, quiet, thread }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlc.opt -c -g -w Ae -warn-error A -I /home/commetud/GEI/OCaml/.opam/4.02.2/lib/curses -thread -I sources -o sources/Misc.cmo sources/Misc.ml # cached
+# Target: sources/Connection.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:sources/Connection.cmo, file:sources/Connection.ml, implem, ocaml, quiet, thread }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlc.opt -c -g -w Ae -warn-error A -I /home/commetud/GEI/OCaml/.opam/4.02.2/lib/curses -thread -I sources -o sources/Connection.cmo sources/Connection.ml # cached
+# Target: sources/Console.ml.depends, tags: { extension:ml, file:sources/Console.ml, ocaml, ocamldep, quiet, thread }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamldep.opt -modules sources/Console.ml > sources/Console.ml.depends # cached
+# Target: sources/Empire.ml.depends, tags: { extension:ml, file:sources/Empire.ml, ocaml, ocamldep, quiet, thread }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamldep.opt -modules sources/Empire.ml > sources/Empire.ml.depends # cached
+# Target: sources/Empire.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:sources/Empire.cmo, file:sources/Empire.ml, implem, ocaml, quiet, thread }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlc.opt -c -g -w Ae -warn-error A -I /home/commetud/GEI/OCaml/.opam/4.02.2/lib/curses -thread -I sources -o sources/Empire.cmo sources/Empire.ml # cached
+# Target: sources/Console.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:sources/Console.cmo, file:sources/Console.ml, implem, ocaml, quiet, thread }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlc.opt -c -g -w Ae -warn-error A -I /home/commetud/GEI/OCaml/.opam/4.02.2/lib/curses -thread -I sources -o sources/Console.cmo sources/Console.ml # cached
+# Target: sources/Stub.ml.depends, tags: { extension:ml, file:sources/Stub.ml, ocaml, ocamldep, quiet, thread }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamldep.opt -modules sources/Stub.ml > sources/Stub.ml.depends # cached
+# Target: sources/Stub.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:sources/Stub.cmo, file:sources/Stub.ml, implem, ocaml, quiet, thread }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlc.opt -c -g -w Ae -warn-error A -I /home/commetud/GEI/OCaml/.opam/4.02.2/lib/curses -thread -I sources -o sources/Stub.cmo sources/Stub.ml # cached
+# Target: sources/Tilemap.ml.depends, tags: { extension:ml, file:sources/Tilemap.ml, ocaml, ocamldep, quiet, thread }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamldep.opt -modules sources/Tilemap.ml > sources/Tilemap.ml.depends # cached
+# Target: sources/Tilemap.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:sources/Tilemap.cmo, file:sources/Tilemap.ml, implem, ocaml, quiet, thread }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlc.opt -c -g -w Ae -warn-error A -I /home/commetud/GEI/OCaml/.opam/4.02.2/lib/curses -thread -I sources -o sources/Tilemap.cmo sources/Tilemap.ml # cached
+# Target: sources/Main.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:sources/Main.cmo, file:sources/Main.ml, implem, ocaml, quiet, thread }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlc.opt -c -g -w Ae -warn-error A -I /home/commetud/GEI/OCaml/.opam/4.02.2/lib/curses -thread -I sources -o sources/Main.cmo sources/Main.ml # cached
+# Target: sources/Main.d.cmo, tags: { byte, compile, debug, extension:cmo, extension:ml, file:sources/Main.d.cmo, file:sources/Main.ml, implem, ocaml, quiet, thread }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlc.opt -c -g -w Ae -warn-error A -I /home/commetud/GEI/OCaml/.opam/4.02.2/lib/curses -g -thread -I sources -o sources/Main.d.cmo sources/Main.ml
+# Target: sources/Connection.d.cmo, tags: { byte, compile, debug, extension:cmo, extension:ml, file:sources/Connection.d.cmo, file:sources/Connection.ml, implem, ocaml, quiet, thread }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlc.opt -c -g -w Ae -warn-error A -I /home/commetud/GEI/OCaml/.opam/4.02.2/lib/curses -g -thread -I sources -o sources/Connection.d.cmo sources/Connection.ml
+# Target: sources/Console.d.cmo, tags: { byte, compile, debug, extension:cmo, extension:ml, file:sources/Console.d.cmo, file:sources/Console.ml, implem, ocaml, quiet, thread }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlc.opt -c -g -w Ae -warn-error A -I /home/commetud/GEI/OCaml/.opam/4.02.2/lib/curses -g -thread -I sources -o sources/Console.d.cmo sources/Console.ml
+# Target: sources/Empire.d.cmo, tags: { byte, compile, debug, extension:cmo, extension:ml, file:sources/Empire.d.cmo, file:sources/Empire.ml, implem, ocaml, quiet, thread }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlc.opt -c -g -w Ae -warn-error A -I /home/commetud/GEI/OCaml/.opam/4.02.2/lib/curses -g -thread -I sources -o sources/Empire.d.cmo sources/Empire.ml
+# Target: sources/Misc.d.cmo, tags: { byte, compile, debug, extension:cmo, extension:ml, file:sources/Misc.d.cmo, file:sources/Misc.ml, implem, ocaml, quiet, thread }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlc.opt -c -g -w Ae -warn-error A -I /home/commetud/GEI/OCaml/.opam/4.02.2/lib/curses -g -thread -I sources -o sources/Misc.d.cmo sources/Misc.ml
+# Target: sources/Stub.d.cmo, tags: { byte, compile, debug, extension:cmo, extension:ml, file:sources/Stub.d.cmo, file:sources/Stub.ml, implem, ocaml, quiet, thread }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlc.opt -c -g -w Ae -warn-error A -I /home/commetud/GEI/OCaml/.opam/4.02.2/lib/curses -g -thread -I sources -o sources/Stub.d.cmo sources/Stub.ml
+# Target: sources/Tilemap.d.cmo, tags: { byte, compile, debug, extension:cmo, extension:ml, file:sources/Tilemap.d.cmo, file:sources/Tilemap.ml, implem, ocaml, quiet, thread }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlc.opt -c -g -w Ae -warn-error A -I /home/commetud/GEI/OCaml/.opam/4.02.2/lib/curses -g -thread -I sources -o sources/Tilemap.d.cmo sources/Tilemap.ml
+# Target: sources/Main.d.byte, tags: { byte, debug, dont_link_with, extension:byte, file:sources/Main.d.byte, link, ocaml, program, quiet, thread }
+/home/commetud/GEI/OCaml/.opam/4.02.2/bin/ocamlc.opt -w Ae -warn-error A -I /home/commetud/GEI/OCaml/.opam/4.02.2/lib/curses str.cma unix.cma curses.cma -g -thread threads.cma sources/Misc.d.cmo sources/Connection.d.cmo sources/Empire.d.cmo sources/Console.d.cmo sources/Stub.d.cmo sources/Tilemap.d.cmo sources/Main.d.cmo -o sources/Main.d.byte
+# Compilation successful.
