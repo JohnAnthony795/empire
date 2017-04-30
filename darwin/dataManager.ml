@@ -182,11 +182,42 @@ let traiter_set_visible args =
   | _ -> failwith "erreur traiter_set_visible"
 ;;
 
-let traiter_set_explored args = () 
-let traiter_delete_piece args = ()
-let traiter_create_piece args = ()
-let traiter_move args = ()
-let traiter_lose_city args = ()
+(*Faut-il gérer visible et explored pour l'algo génétique? *)
+let traiter_set_explored args = ()
+
+(*Supprime la piece de pid = args dans liste_unites ou liste_ennemis *)
+let traiter_delete_piece args =
+  let ios = int_of_string in
+  match args with
+  | [pid] -> liste_unites := List.filter (fun (element:unite_list) -> element.pid <> (ios pid)) !liste_unites ;
+            liste_ennemis := List.filter (fun (element:unite_ennemies_list) -> element.pid <> (ios pid)) !liste_ennemis
+  | _ -> failwith "erreur traiter_delete_piece";;
+
+
+(*Ajoute une unite alliée*)
+let traiter_create_piece args = 
+  let ios = int_of_string in
+  match args with
+  | [pid ; ptid ; cid ; hp] -> let city = List.find (fun (element:allie) -> element.cid = (ios cid)) !liste_ville_alliee in 
+    update_unite_alliee city.q city.r (ios pid) (ptid_to_unites (ios ptid)) (ios hp)
+  | _ -> failwith "erreur traiter_create_piece";;
+
+(*Déplace une piece*)
+let traiter_move args = 
+  let ios = int_of_string in
+  match args with
+  | [pid ; q ; r] -> let piece = List.find (fun (element:unite_list) -> element.pid = (ios pid)) !liste_unites in 
+    update_unite_alliee (ios q) (ios r) (ios pid) piece.unite_type piece.hp
+  | _ -> failwith "erreur traiter_move";;
+
+(*Une ville alliee est prise par l'ennemi*)
+let traiter_lose_city args = 
+  let ios = int_of_string in
+  match args with
+  | [cid] -> liste_ville_alliee := List.filter (fun (element:allie) -> element.cid <> (ios cid)) !liste_ville_alliee
+  | _ -> failwith "erreur traiter_lose_city";;
+
+(*Identique à traiter_move?*)
 let traiter_leave_terrain args = ()
 let traiter_enter_city args = ()
 let traiter_enter_piece args = ()
