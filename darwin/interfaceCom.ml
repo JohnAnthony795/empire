@@ -93,7 +93,7 @@ let init_socket server port =
 (** REQUETES **)
 
 (* TODO *)
-let set_jid = DataManager.set_our_jid 1
+(*let set_jid = DataManager.set_our_jid 1*)
 
 (** AUXILIAIRES **)
 
@@ -153,6 +153,9 @@ let traiter_message message =
   let tlMsg = List.tl listeMsg in
 
   match List.hd listeMsg with
+  | "player_id" -> set_our_jid tlMsg
+  | "width" -> set_map_width tlMsg
+  | "height" -> set_map_height tlMsg
   | "set_visible" -> traiter_set_visible tlMsg
   | "set_explored" -> traiter_set_explored tlMsg
   | "get_action" -> Printf.printf "get_action recu \n" (* TODO A ENLEVER *)
@@ -170,7 +173,7 @@ let traiter_message message =
   | "city-units-limit" -> traiter_city_units_limit tlMsg
   | "created-units-limit" -> traiter_created_units_limit tlMsg
   | x -> Printf.printf "traiter_message: message serveur imprévu : \"%s\"\n" x ;
-  failwith "LeCamlEstMortViveLeCaml"
+  | _ -> failwith "LeCamlEstMortViveLeCaml"
 
 let receive_next () =
   match !input_channel with
@@ -186,7 +189,7 @@ let rec receive () =
 (*  SEND_TO_SERVER : string -> unit
     	L'envoi concret du message par le socket *)
 let send_to_server message =
-  Printf.printf "Sending \"%s\" to the server\n" message;
+  Printf.printf "Sending \"%s\" to the server\n %!" message;
   match !output_channel with
   | Some (oc) -> output_string oc (message ^ "\n");
     flush oc

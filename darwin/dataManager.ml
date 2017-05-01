@@ -47,10 +47,17 @@ let current_turn = 0 ;; (* TODO à récupérer par requête *)
 
 (***** SETTERS *****)
 
-let set_our_jid new_jid = our_jid := new_jid
+let set_our_jid = function
+  | [new_jid] -> our_jid := int_of_string new_jid
+  | _ -> failwith "erreur set_our_jid";;
 
-let set_map_width new_width = map_width := new_width
-let set_map_height new_height = map_height := new_height
+let set_map_width = function
+  | [new_width] -> map_width := int_of_string new_width
+  | _ -> failwith "erreur set_map_width";;
+
+let set_map_height = function
+  | [new_height] -> map_height := int_of_string new_height
+  | _ -> failwith "erreur set_map_height";;
 
 (***** CARTES *****)
 
@@ -177,7 +184,12 @@ let traiter_set_visible args =
   match args with
   | [ q ; r ; terrain ; "none" ] -> fill_terrain terrain (ios q) (ios r)
   | [ q ; r ; terrain ; "city" ; cid ] -> fill_terrain "city" (ios q) (ios r) 
-  | [ q ; r ; terrain ; "owned_city" ; cid ; jid ] -> if (ios jid) = !our_jid then (fill_terrain "our_city" (ios q) (ios r) ; update_ville_allie (ios q) (ios r) (ios cid)) else (fill_terrain "their_city" (ios q) (ios r) ; add_ville_ennemi (ios q) (ios r) (ios cid))
+  | [ q ; r ; terrain ; "owned_city" ; cid ; jid ] -> if (ios jid) = !our_jid then 
+                                                        (fill_terrain "our_city" (ios q) (ios r) ; 
+                                                        update_ville_allie (ios q) (ios r) (ios cid)) 
+                                                      else 
+                                                        (fill_terrain "their_city" (ios q) (ios r) ; 
+                                                        add_ville_ennemi (ios q) (ios r) (ios cid))
   | [ q ; r ; terrain ; "piece" ; jid ; pid ; ptid ; hp ] -> if (ios jid) = !our_jid then (update_unite_alliee (ios q) (ios r) (ios pid) (ptid_to_unites (ios ptid)) (ios hp)) else (update_unite_ennemie (ios q) (ios r) (ios pid) (ptid_to_unites (ios ptid)) (ios hp))
   | _ -> failwith "erreur traiter_set_visible"
 ;;

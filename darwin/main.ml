@@ -118,7 +118,8 @@ let main () =
   (* TODO true -> partie terminée ? *)
   while (true) do
     (* get next unité/ville à jouer *)
-    send (compute_Action (get_next_playable ()))
+    send (compute_Action (get_next_playable ()));
+    receive ()
   done
 in main ()
 
