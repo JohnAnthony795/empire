@@ -193,7 +193,6 @@ let traiter_delete_piece args =
             liste_ennemis := List.filter (fun (element:unite_ennemies_list) -> element.pid <> (ios pid)) !liste_ennemis
   | _ -> failwith "erreur traiter_delete_piece";;
 
-
 (*Ajoute une unite alliée*)
 let traiter_create_piece args = 
   let ios = int_of_string in
@@ -217,15 +216,44 @@ let traiter_lose_city args =
   | [cid] -> liste_ville_alliee := List.filter (fun (element:allie) -> element.cid <> (ios cid)) !liste_ville_alliee
   | _ -> failwith "erreur traiter_lose_city";;
 
-(*Identique à traiter_move?*)
+(*Inutiles?*)
 let traiter_leave_terrain args = ()
-let traiter_enter_city args = ()
-let traiter_enter_piece args = ()
 let traiter_leave_city args = ()
 let traiter_leave_piece args = ()
-let traiter_ok_invasion args = ()
+
+(*Une unite alliee entre dans une ville*)
+let traiter_enter_city args = 
+  let ios = int_of_string in
+  match args with
+  | [pid ; cid] ->  let city = List.find (fun (element:allie) -> element.cid = (ios cid)) !liste_ville_alliee in
+                    let piece = List.find (fun (element:unite_list) -> element.pid = (ios pid)) !liste_unites in
+                    update_unite_alliee city.q city.r (ios pid) piece.unite_type piece.hp
+  | _ -> failwith "erreur traiter_enter_city";;
+
+(*Une unite alliee entre dans un transport*)
+let traiter_enter_piece args = 
+  let ios = int_of_string in
+  match args with
+  | [pid ; tid] ->  let transport = List.find (fun (element:unite_list) -> element.pid = (ios tid)) !liste_unites in
+                    let piece = List.find (fun (element:unite_list) -> element.pid = (ios pid)) !liste_unites in
+                    update_unite_alliee transport.q transport.r (ios pid) piece.unite_type piece.hp
+  | _ -> failwith "erreur traiter_enter_piece";;
+
+(*On prend une ville ennemie*)
+let traiter_ok_invasion args = 
+  let ios = int_of_string in
+  match args with
+  | [cid ; q ; r] ->  update_ville_allie (ios q) (ios r) (ios cid);
+                      rm_ennemi (ios cid)
+  | _ -> failwith "erreur traiter_ok_invasion";;
+
+(*On rate une invasion, la piece est supprimé dans un autre message*)
 let traiter_ko_invasion args = ()
+
+(*Une ville est pleine*)
 let traiter_city_units_limit args = ()
+
+(*Le joueur a atteint son quota d'unites*)
 let traiter_created_units_limit args = ();;
 
 (* TODO : 
