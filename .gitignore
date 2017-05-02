@@ -1,0 +1,18 @@
+
+#FICHIERS A IGNORER
+
+empire-client/*.native
+empire-client/*.byte
+empire-client/_build
+
+empire-server/*.native
+empire-server/*.byte
+empire-server/_build
+
+empire-gtk-client/cliempire.native
+empire-gtk-client/_build
+
+darwin/*.native
+darwin/*.byte
+darwin/_build
+
