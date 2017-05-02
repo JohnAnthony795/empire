@@ -156,12 +156,12 @@ let tiles_distance (qa, ra) (qb, rb) = (abs (qa - qb) + abs (qa + ra - qb - rb) 
 ;;
 
 let ptid_to_unites ptid = match ptid with
-| 0 -> ARMY
-| 1 -> FIGHT
-| 2 -> TRANSPORT
-| 3 -> PATROL
-| 4 -> BATTLESHIP
-| _ -> failwith "Erreur ptid_to_unites : entrée non gérée"
+  | 0 -> ARMY
+  | 1 -> FIGHT
+  | 2 -> TRANSPORT
+  | 3 -> PATROL
+  | 4 -> BATTLESHIP
+  | _ -> failwith "Erreur ptid_to_unites : entrée non gérée"
 
 (* TODO ajouter d'autres *)
 
@@ -169,14 +169,16 @@ let ptid_to_unites ptid = match ptid with
 
 (* TODO *)
 let get_nb_unite_proche unites pid =
-	7
+  7
 
+(* TODO *)
 let get_nb_ville_proche pid =
-	4
-	
+  4
+
+(* TODO *)
 let get_next_playable () =
-	(List.hd !liste_ville_alliee).cid
-	
+  (List.hd !liste_ville_alliee).cid
+
 (***** TRAITEMENT *****)
 (*Traitement des informations*)
 let traiter_set_visible args =
@@ -185,11 +187,11 @@ let traiter_set_visible args =
   | [ q ; r ; terrain ; "none" ] -> fill_terrain terrain (ios q) (ios r)
   | [ q ; r ; terrain ; "city" ; cid ] -> fill_terrain "city" (ios q) (ios r) 
   | [ q ; r ; terrain ; "owned_city" ; cid ; jid ] -> if (ios jid) = !our_jid then 
-                                                        (fill_terrain "our_city" (ios q) (ios r) ; 
-                                                        update_ville_allie (ios q) (ios r) (ios cid)) 
-                                                      else 
-                                                        (fill_terrain "their_city" (ios q) (ios r) ; 
-                                                        add_ville_ennemi (ios q) (ios r) (ios cid))
+      (fill_terrain "our_city" (ios q) (ios r) ; 
+       update_ville_allie (ios q) (ios r) (ios cid)) 
+    else 
+      (fill_terrain "their_city" (ios q) (ios r) ; 
+       add_ville_ennemi (ios q) (ios r) (ios cid))
   | [ q ; r ; terrain ; "piece" ; jid ; pid ; ptid ; hp ] -> if (ios jid) = !our_jid then (update_unite_alliee (ios q) (ios r) (ios pid) (ptid_to_unites (ios ptid)) (ios hp)) else (update_unite_ennemie (ios q) (ios r) (ios pid) (ptid_to_unites (ios ptid)) (ios hp))
   | _ -> failwith "erreur traiter_set_visible"
 ;;
@@ -202,7 +204,7 @@ let traiter_delete_piece args =
   let ios = int_of_string in
   match args with
   | [pid] -> liste_unites := List.filter (fun (element:unite_list) -> element.pid <> (ios pid)) !liste_unites ;
-            liste_ennemis := List.filter (fun (element:unite_ennemies_list) -> element.pid <> (ios pid)) !liste_ennemis
+    liste_ennemis := List.filter (fun (element:unite_ennemies_list) -> element.pid <> (ios pid)) !liste_ennemis
   | _ -> failwith "erreur traiter_delete_piece";;
 
 (*Ajoute une unite alliée*)
@@ -238,8 +240,8 @@ let traiter_enter_city args =
   let ios = int_of_string in
   match args with
   | [pid ; cid] ->  let city = List.find (fun (element:allie) -> element.cid = (ios cid)) !liste_ville_alliee in
-                    let piece = List.find (fun (element:unite_list) -> element.pid = (ios pid)) !liste_unites in
-                    update_unite_alliee city.q city.r (ios pid) piece.unite_type piece.hp
+    let piece = List.find (fun (element:unite_list) -> element.pid = (ios pid)) !liste_unites in
+    update_unite_alliee city.q city.r (ios pid) piece.unite_type piece.hp
   | _ -> failwith "erreur traiter_enter_city";;
 
 (*Une unite alliee entre dans un transport*)
@@ -247,8 +249,8 @@ let traiter_enter_piece args =
   let ios = int_of_string in
   match args with
   | [pid ; tid] ->  let transport = List.find (fun (element:unite_list) -> element.pid = (ios tid)) !liste_unites in
-                    let piece = List.find (fun (element:unite_list) -> element.pid = (ios pid)) !liste_unites in
-                    update_unite_alliee transport.q transport.r (ios pid) piece.unite_type piece.hp
+    let piece = List.find (fun (element:unite_list) -> element.pid = (ios pid)) !liste_unites in
+    update_unite_alliee transport.q transport.r (ios pid) piece.unite_type piece.hp
   | _ -> failwith "erreur traiter_enter_piece";;
 
 (*On prend une ville ennemie*)
@@ -256,10 +258,10 @@ let traiter_ok_invasion args =
   let ios = int_of_string in
   match args with
   | [cid ; q ; r] ->  update_ville_allie (ios q) (ios r) (ios cid);
-                      rm_ennemi (ios cid)
+    rm_ennemi (ios cid)
   | _ -> failwith "erreur traiter_ok_invasion";;
 
-(*On rate une invasion, la piece est supprimé dans un autre message*)
+(*On rate une invasion, la piece est supprimée dans un autre message*)
 let traiter_ko_invasion args = ()
 
 (*Une ville est pleine*)

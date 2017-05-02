@@ -12,7 +12,7 @@ type container =
   | ContainerPiece of piece_id
   | ContainerCity of city_id
   | ContainerTerrain of int * int
-  ;;
+;;
 
 type piece_type =
   { a_id : piece_type_id
@@ -20,7 +20,7 @@ type piece_type =
   (* Symbol conseille pour l'affichage de la piece. Eviter les symboles
    * non alphabetiques car ils peuvent etre utilises comme delimiteurs
    * (cf. info_get_info_piece_types).
-   *)
+  *)
   ; a_symbol : char
   (* Cases sur lesquelles la piece peut se deplacer. *)
   ; a_terrain : terrain list
@@ -60,14 +60,14 @@ type city =
 type item =
   | City of city_id
   | Piece of piece_id
-  ;;
+;;
 
 type tile =
   | Unknown
   | Explored of terrain
   (* (Nombre d'item qui ont une visibilite sur le carreau, terrain, contenu) *)
   | Visible of int * terrain * (item option)
-  ;;
+;;
 
 type player =
   { player_id : player_id

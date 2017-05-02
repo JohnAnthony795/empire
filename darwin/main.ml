@@ -16,9 +16,9 @@ note : mettre la lecture/écriture de fichier dans un fichier à part?
 
 (* TODO: autoriser le passage de l'IP server + du port en argument de ligne de commande (cf. main() dans empire-client/sources/Main.ml) *)
 let () =
-	Printf.printf "Test %!"
-	
-	
+  Printf.printf "Test %!"
+
+
 open Types
 open Printf
 open InterfaceCom
@@ -107,7 +107,6 @@ let compute_Action id = (*prend une id t_ID de piece et return une action t_acti
   let decision_tree = Leaf End_turn (*TODO obtenir l'arbre qui concerne cette unité : get_type_by_id()? puis arbre n*)
   in
   action_from_tree decision_tree id
-;;
 
 (* TODO parametres *)
 let main () =

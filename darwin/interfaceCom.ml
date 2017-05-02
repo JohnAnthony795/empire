@@ -41,7 +41,7 @@
 *)
 
 (** TODO : au début de la partie, le serveur envoie un (ou plusieurs) messages d'init, tels que "width %d"
-	Il faut les découvrir et traiter, peut être cf. empire-server/Main.ml **)
+    	Il faut les découvrir et traiter, peut être cf. empire-server/Main.ml **)
 
 open Unix
 open DataManager
@@ -147,7 +147,7 @@ let action_to_string action =
 *)
 
 (***** RECEPTION *****)
-	
+
 let traiter_message message =
   let listeMsg = split message in
   let tlMsg = List.tl listeMsg in
@@ -156,6 +156,11 @@ let traiter_message message =
   | "player_id" -> set_our_jid tlMsg
   | "width" -> set_map_width tlMsg
   | "height" -> set_map_height tlMsg
+  | "piece_types" -> () (* TODO : Peupler une structure de données avec *)
+  | "random_seed" -> Printf.printf "Seed de la map : %s\n" (List.hd tlMsg)
+  | "draw" -> 
+  | "winner" -> 
+  | "error" -> Printf.printf "Received error : %s" (List.hd tlMsg)
   | "set_visible" -> traiter_set_visible tlMsg
   | "set_explored" -> traiter_set_explored tlMsg
   | "get_action" -> Printf.printf "get_action recu \n" (* TODO A ENLEVER *)
@@ -172,19 +177,19 @@ let traiter_message message =
   | "ko-invasion" -> traiter_ko_invasion tlMsg
   | "city-units-limit" -> traiter_city_units_limit tlMsg
   | "created-units-limit" -> traiter_created_units_limit tlMsg
-  | x -> Printf.printf "traiter_message: message serveur imprévu : \"%s\"\n" x ;
+  | x -> Printf.printf "traiter_message: message serveur imprévu : \"%s\", d'argument \"%s\"\n" x (List.hd tlMsg)
   | _ -> failwith "LeCamlEstMortViveLeCaml"
 
 let receive_next () =
   match !input_channel with
-    | Some (ic) -> input_line ic
-    | None -> "Input_channel not initialized"
+  | Some (ic) -> input_line ic
+  | None -> "Input_channel not initialized"
 
 let rec receive () =
-	match receive_next () with
-	| "" -> failwith "receive: Empty message"
-	| "get_action" -> traiter_message "get_action"
-	| m -> traiter_message m; receive ()
+  match receive_next () with
+  | "" -> failwith "receive: Empty message"
+  | "get_action" -> traiter_message "get_action"
+  | m -> traiter_message m; receive ()
 
 (*  SEND_TO_SERVER : string -> unit
     	L'envoi concret du message par le socket *)
