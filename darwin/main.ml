@@ -110,7 +110,7 @@ let compute_Action id = (*prend une id t_ID de piece et return une action t_acti
 
 (* TODO parametres *)
 let main () =
-  Printf.printf "START MAIN\n %!";
+  Printf.printf "START MAIN\n%!";
   (*init socket*)
   init_socket "127.0.0.1" 9301;
   receive ();
