@@ -1,5 +1,5 @@
-open ToolsArbres
 open Types;;
+open TypesGen;;
 
 (*let mutation (population:t_population) = ()*)
 
@@ -11,7 +11,8 @@ let rec depth (arbre:t_arbre) = match arbre with
 
 let random_depth arbre = Random.int (depth arbre)
 
-let rec muter_arbre (arbre:t_arbre) (chance:int) = 
+let muter_candidat candidat =
+let rec muter_arbre chance arbre = 
 	let roll_Mutation = ((Random.int chance) > (chance-2)) in
 	let random_unit = 
 	match (Random.int 5) with
@@ -51,21 +52,27 @@ let rec muter_arbre (arbre:t_arbre) (chance:int) =
 	in 
 	match arbre with 
 	| Node (a,b,c) 	-> 	if roll_Mutation then
-				 		Node ((muter_arbre a (chance-1),(muter_predicat b),(muter_arbre c (chance-1))))
+				 		Node ((muter_arbre (chance-1) a,(muter_predicat b),(muter_arbre (chance-1) c)))
 					else 
-						Node ((muter_arbre a (chance-1)),b,(muter_arbre c (chance-1)))
+						Node ((muter_arbre (chance-1) a),b,(muter_arbre (chance-1) c))
 	| Leaf action 	-> 	if roll_Mutation then
 					Leaf (muter_action action)
 					else
-					Leaf action;;
+					Leaf action
+in
+match candidat with
+| (foret,score) -> match foret with
+	| (a,b,c,d,e,f) -> (((muter_arbre 10 a),(muter_arbre 10 b),(muter_arbre 10 c),(muter_arbre 10 d),(muter_arbre 10 e),(muter_arbre 10 f)),score)
 
+let mute population  = 
+	List.map (muter_candidat) population;;
 
 let main () =
-  Printf.printf "Test tree\n %!";
- 
-  print_tree arbre0 0;
-  Printf.printf "Nouvel arbre :\n %!";
-  print_tree (muter_arbre arbre0 10) 0
+	Printf.printf "Test tree\n %!";
+	 
+	Printf.printf "Nouvel arbre :\n %!";
+	 
+	print_population (mute [((arbre0,arbre0,arbre0,arbre0,arbre0,arbre0),10)])
  
 in main ();;
 
