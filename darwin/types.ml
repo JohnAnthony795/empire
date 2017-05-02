@@ -53,7 +53,7 @@ type t_arbre =
   	|Patrol_tree of t_arbre
   	;;                     A VOIR*)
 
-type t_foret =  t_arbre * t_arbre * t_arbre * t_arbre * t_arbre * t_arbre ;; (* 5 uniés , ville , (stratégie ?) *)
+type t_foret =  t_arbre * t_arbre * t_arbre * t_arbre * t_arbre * t_arbre ;; (* 5 unités , ville , (stratégie ?) *)
 
 
 (* Fonction qui renvoie un arbre basique *)
