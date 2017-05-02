@@ -167,13 +167,15 @@ let ptid_to_unites ptid = match ptid with
 
 (***** GETTERS *****)
 
-(* TODO *)
-let get_nb_unite_proche unites pid =
-  7
+(* Ajouté distance en parametre*)
+let get_nb_unite_proche unites pid distance=
+  let unite = List.find (fun (element:unite_list) -> element.pid = pid) !liste_unites in
+  List.length (List.filter (fun (element:unite_list) -> ((element.pid <> pid) && (element.unite_type == unites) && ((tiles_distance (unite.q,unite.r) (element.q,element.r))<distance))) !liste_unites) ;;
 
-(* TODO *)
-let get_nb_ville_proche pid =
-  4
+let get_nb_ville_proche pid distance =
+  let unite = List.find (fun (element:unite_list) -> element.pid = pid) !liste_unites in
+  List.length (List.filter (fun (element:allie) -> (tiles_distance (unite.q,unite.r) (element.q,element.r))<distance) !liste_ville_alliee) ;;
+
 
 (* TODO *)
 let get_next_playable () =

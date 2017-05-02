@@ -158,8 +158,8 @@ let traiter_message message =
   | "height" -> set_map_height tlMsg
   | "piece_types" -> () (* TODO : Peupler une structure de données avec *)
   | "random_seed" -> Printf.printf "Seed de la map : %s\n" (List.hd tlMsg)
-  | "draw" -> 
-  | "winner" -> 
+  (*| "draw" -> 
+  | "winner" -> *)
   | "error" -> Printf.printf "Received error : %s" (List.hd tlMsg)
   | "set_visible" -> traiter_set_visible tlMsg
   | "set_explored" -> traiter_set_explored tlMsg

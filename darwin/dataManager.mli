@@ -1,7 +1,7 @@
 open Types
 
-val get_nb_unite_proche: unites -> piece_id -> int
-val get_nb_ville_proche: piece_id -> int
+val get_nb_unite_proche: unites -> piece_id -> int -> int
+val get_nb_ville_proche: piece_id -> int -> int
 val get_next_playable: unit -> int
 
 val set_our_jid: string list -> unit

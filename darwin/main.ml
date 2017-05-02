@@ -84,7 +84,7 @@ let write_arbre fichier forest =
 
 let compute_Action id = (*prend une id t_ID de piece et return une action t_action à jouer        (prendre aussi la foret?????? )*)
   let evaluate_pred pred piece_id = match pred with (* prend un predicat retourne un booleen  TENIR A JOUR voir directement mettre dans type*)
-    | Nb_unite_allie_proche (u, n, c ) -> let nbproche = (get_nb_unite_proche u piece_id) in (*il manque une quantification de "proche" en fait *) 
+    | Nb_unite_allie_proche (u, n, c ) -> let nbproche = (get_nb_unite_proche u piece_id n) in (*il manque une quantification de "proche" en fait *) 
       (match c with
        | Inf -> nbproche < n
        | Sup -> nbproche > n
@@ -92,7 +92,7 @@ let compute_Action id = (*prend une id t_ID de piece et return une action t_acti
        | InfEq -> nbproche <= n
        | SupEq -> nbproche >= n)
 
-    | Nb_ville_allie_proche (n, c) -> let nbproche = (get_nb_ville_proche piece_id) in (*il manque une quantification de "proche" en fait *) 
+    | Nb_ville_allie_proche (n, c) -> let nbproche = (get_nb_ville_proche piece_id n) in (*il manque une quantification de "proche" en fait *) 
       (match c with
        | Inf -> nbproche < n
        | Sup -> nbproche > n
@@ -106,7 +106,7 @@ let compute_Action id = (*prend une id t_ID de piece et return une action t_acti
   in
   let decision_tree = Leaf End_turn (*TODO obtenir l'arbre qui concerne cette unité : get_type_by_id()? puis arbre n*)
   in
-  action_from_tree decision_tree id
+  action_from_tree decision_tree id;;
 
 (* TODO parametres *)
 let main () =
