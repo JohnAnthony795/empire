@@ -178,7 +178,6 @@ let traiter_message message =
   | "city-units-limit" -> traiter_city_units_limit tlMsg
   | "created-units-limit" -> traiter_created_units_limit tlMsg
   | x -> Printf.printf "traiter_message: message serveur imprévu : \"%s\", d'argument \"%s\"\n" x (List.hd tlMsg)
-  | _ -> failwith "LeCamlEstMortViveLeCaml"
 
 let receive_next () =
   match !input_channel with
