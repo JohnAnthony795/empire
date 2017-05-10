@@ -16,7 +16,7 @@ In both case we have 2 trees as output
  | Node (Leaf l1,b,Leaf l2) -> Node (Leaf l1,b,Leaf l2) (* 2 feuilles donc on retourne ce node *)
  | Node (Leaf l,b,c) -> if Random.bool() then Node(Leaf l,b,c) else get_random_node c (*1/2 on retourne cette node sinon on poursuit*)
  | Node (a,b,Leaf l) -> if Random.bool() then Node(a,b,Leaf l) else get_random_node a (*1/2 on retourne cette node sinon on poursuit*)
- | Node (a,b,c) -> if Random.bool() then Node (a,b,c) else (if Random.bool() then get_random_arbre a else get_random_arbre c) (*1/2 on retourne cette node sinon 1/2 sur chaque branche*)
+ | Node (a,b,c) -> if Random.bool() then Node (a,b,c) else (if Random.bool() then get_random_node a else get_random_node c) (*1/2 on retourne cette node sinon 1/2 sur chaque branche*)
  | Leaf _ -> failwith ("rip");
  ;;
  
@@ -26,16 +26,16 @@ In both case we have 2 trees as output
        | Leaf _ -> tree
        | Node (a,b,c) -> Node (replace pred sub a, b,replace pred sub c)
  
-(* cross_predicates : t_arbre -> t_arbre -> t_arbre -> t_arbre *)
-let cross_predicates arbre1 arbre2 =
-let node1 = get_random_node arbre1 in
-let node2 = get_random_node arbre2 in
-
-
-;;
-
-(*cross_subtree : t_arbre -> t_arbre -> t_arbre -> t_arbre *)
+(*cross_subtree : t_arbre -> t_arbre -> t_arbre * t_arbre retourne deux arbres*)
 let cross_subtree arbre1 arbre2 =
 let node1 = get_random_node arbre1 in
 let node2 = get_random_node arbre2 in
+( replace (nodequal node1) node2 arbre1 , replace (nodequal node2) node1 arbre2)
+;;
+
+(*cross_subtree_uniq : t_arbre -> t_arbre -> t_arbre  retourne un arbre unique *)
+let cross_subtree arbre1 arbre2 =
+let node1 = get_random_node arbre1 in
+let node2 = get_random_node arbre2 in
+if Random.bool() then replace (nodequal node1) node2 arbre1 else replace (nodequal node2) node1 arbre2
 ;;
