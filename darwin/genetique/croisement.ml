@@ -62,8 +62,8 @@ let cross_subtree_uniq arbre1 arbre2 =
 
 (* cross_foret : t_foret -> t_foret *) (* /!\ a changer en dur si la foret grandit *)
 let cross_foret foret1 foret2 = 
-let foret1 = (a11,a12,a13,a14,a15,a16) in
-let foret2 = (a21,a22,a23,a24,a25,a26) in
+let (a11,a12,a13,a14,a15,a16) = foret1   in
+let (a21,a22,a23,a24,a25,a26) = foret2   in
 (cross_subtree_uniq a11 a21,cross_subtree_uniq a12 a22,cross_subtree_uniq a13 a23,cross_subtree_uniq a14 a24,cross_subtree_uniq a15 a25,cross_subtree_uniq a16 a26) (* /!\ a changer en dur si la foret grandit *)
 
 ;;
