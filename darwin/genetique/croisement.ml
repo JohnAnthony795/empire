@@ -1,4 +1,5 @@
 (* 2 possiblities : 
+<<<<<<< HEAD
 from 2 trees we select one random node on each, and then either
 - we exchange the predicates
 - we exchange the subtrees
@@ -35,25 +36,25 @@ In both case we have 2 trees as output
  ;;
  
  let rec replace pred sub tree =
+
   if pred tree then sub
   else match tree with
-       | Leaf _ -> tree
-       | Node (a,b,c) -> Node (replace pred sub a, b,replace pred sub c)
- 
+    | Leaf _ -> tree
+    | Node (a,b,c) -> Node (replace pred sub a, b,replace pred sub c)
+
 (*cross_subtree : t_arbre -> t_arbre -> t_arbre * t_arbre retourne deux arbres*)
 let cross_subtree arbre1 arbre2 =
-let node1 = get_random_node arbre1 in
-let node2 = get_random_node arbre2 in
-( replace (nodequal node1) node2 arbre1 , replace (nodequal node2) node1 arbre2)
+  let node1 = get_random_node arbre1 in
+  let node2 = get_random_node arbre2 in
+  ( replace (nodequal node1) node2 arbre1 , replace (nodequal node2) node1 arbre2)
 ;;
 
 (*cross_subtree_uniq : t_arbre -> t_arbre -> t_arbre  retourne un arbre unique *)
 let cross_subtree arbre1 arbre2 =
-let node1 = get_random_node arbre1 in
-let node2 = get_random_node arbre2 in
-if Random.bool() then replace (nodequal node1) node2 arbre1 else replace (nodequal node2) node1 arbre2
+  let node1 = get_random_node arbre1 in
+  let node2 = get_random_node arbre2 in
+  if Random.bool() then replace (nodequal node1) node2 arbre1 else replace (nodequal node2) node1 arbre2
 ;;
-
 
 
 

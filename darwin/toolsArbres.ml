@@ -1,4 +1,6 @@
 
+open Types
+
  (* fonction qui retourne la profondeur d'un arbre *)
  let rec depth = function
 | Leaf _ -> 0

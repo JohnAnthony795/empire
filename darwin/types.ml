@@ -29,7 +29,7 @@ type set_city_production =
   city_id * unites
 ;;  (*définition dans Server/Empire.ml*)
 
-type t_action =
+type t_action = (*pass*)
   | Move of move
   | Set_city_prod of set_city_production
   | End_turn
