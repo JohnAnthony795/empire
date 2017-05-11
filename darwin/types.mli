@@ -24,8 +24,12 @@ type t_action =
 type comparateur = Inf | Sup | Eq | InfEq | SupEq;;
 
 type t_predicat= (* rajouter des prédicats en masse*)
-    Nb_unite_allie_proche of (unites * int * comparateur)
-  |Nb_ville_allie_proche of (int * comparateur)
+    | Nb_unite_allie_proche of ( int *  unites * int * comparateur) (* distance proximité/ type unité /Nb unités/ plus ou moins de Nb unités proche *)
+  | Nb_ville_allie_proche of (int  * int * comparateur) (*distance proximité/Nb ville/plus ou moins de Nb ville allie proche*)
+  | Nb_ville_ennemie_proche of (int  * int * comparateur) (*distance proximité/Nb ville/plus ou moins de Nb ville ennemie proche*)
+  | Littoral_adjacent (* presence de littoral dans une case adjacente*)
+	| Transport (*présence de l'unité dans un transport*)
+	| Fog_proche of (int) (* distance proximité / plus ou moins loin *)
 ;;
 
 type t_arbre = 
