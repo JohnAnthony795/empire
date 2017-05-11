@@ -92,10 +92,10 @@ let select_n_proportional_bis pool n = (*version avec IMpossibilité de choisir 
 
 let select_n_parents pool n methode =  (*fonction générique de sélection, donner un int en entrée pour choisir la sélecion. Argument optionnel?*)
   match methode with
-     1 -> select_n_best pool n
-    |2 -> select_n_proportional_bis pool n
-    |3 -> select_n_proportional pool n
-    |x -> failwith ("ERREUR: il n'y a pas de méthode"^ itoa x)
+    1 -> select_n_best pool n
+    2 -> select_n_proportional_bis pool n
+    3 -> select_n_proportional pool n
+    x -> failwith ("ERREUR: il n'y a pas de méthode"^ itoa x)
 
 
 
@@ -110,4 +110,4 @@ let merge_best_and_child parents children =
 let merge_generations parents children methode =  (*fonction générique de merge, donner un int en entrée pour choisir la sélecion. Argument optionnel?*)
   match methode with
     1 -> merge_best_and_child parents children
-    |x -> failwith ("ERREUR: il n'y a pas de méthode"^ itoa x)
+    x -> failwith ("ERREUR: il n'y a pas de méthode"^ itoa x)
