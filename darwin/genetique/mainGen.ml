@@ -26,7 +26,7 @@ Remarques / suggestions :
 
 open ToolsArbres
 
-let individusASelectionner = 12 (*DOIT ETRE PAIR!!!!*)
+let individusASelectionner = 2 (*DOIT ETRE PAIR!!!!*)
 
 let iterations = 20 (* nombre de générations à simuler avant de s'arrêter; on pourrait la mettre en paramètre *)
 
