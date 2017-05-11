@@ -19,7 +19,7 @@ open Random (*ajouter*)
 
 (**Fonctions utilitaires:**)
 let () =
-  Random.self_init ;
+  Random.self_init () ; 
   Printf.printf "Test random : %d %d %!" (Random.int 100) (Random.int 100)
 
 
@@ -33,11 +33,11 @@ let bestOfList lInd = List.fold_left best (List.hd lInd) lInd
 
 (*Somme des scores de tout les individus ( bonne indication de fitness globale btw)*)
 let scores_sum pool = (*.+?*)
-  let sum_ind ind1 ind2 =
-    match (ind1,ind2) with
-      ((f1,s1),(f2,s2)) -> s1 + s2
+  let sum_ind total ind  =
+    match (ind) with
+      ((f1,s1)) -> s1 +. total
   in
-  List.fold_left sum_ind 0 pool
+  List.fold_left sum_ind 0.0 pool
 
 
 (**sélections pour mating pool**)
@@ -47,7 +47,7 @@ let select_n_best pool n =
     if n = 0 then acu
     else
       let b = (bestOfList pool) in
-      aux_select_n_best (b::acu) (filter (fun i -> i != b) pool) (n-1)  (*définir l'égalité d'individus? pointeur devrait être ok mais TODO tester!*)
+      aux_select_n_best (b::acu) (List.filter (fun i -> i <> b) pool) (n-1)  (*définir l'égalité d'individus? pointeur devrait être ok mais TODO tester!*)
   in
   aux_select_n_best [] pool n
 
@@ -55,16 +55,16 @@ let select_n_best pool n =
 let select_n_proportional pool n = (*version avec possibilité de choisir plusieurs fois le meme.*)
   let total = scores_sum pool in
   let rec aux_select_n_proportional acu pool n =
-    let win_nb = 1 + (Random.int total) in (*random.int is beetween 0 and total-1*)
+    let win_nb = (Random.float total) in (*entre 0 et total*)
     let rec find_winner pool number =
       match pool with
       |(f,s)::inds -> if s >= number then (f,s)
-        else find_winner inds (number-s)
+        else find_winner inds (number-.s)
       |_ -> failwith "ERREUR: select n proportional pas au point on dirait"
     in
     if n = 0 then acu
     else
-      let b = findwinner win_nb in
+      let b = find_winner pool win_nb in
       aux_select_n_proportional (b::acu) pool (n-1)
   in
   aux_select_n_proportional [] pool n
@@ -73,17 +73,17 @@ let select_n_proportional pool n = (*version avec possibilité de choisir plusie
 let select_n_proportional_bis pool n = (*version avec IMpossibilité de choisir plusieurs fois le meme.*)
   let total = scores_sum pool in
   let rec aux_select_n_proportional acu pool n =
-    let win_nb = 1 + (Random.int total) in (*random.int is beetween 0 and total-1*)
+    let win_nb = (Random.float total) in 
     let rec find_winner pool number =
       match pool with
       |(f,s)::inds -> if s >= number then (f,s)
-        else find_winner inds (number-s)
+        else find_winner inds (number-.s)
       |_ -> failwith "ERREUR: select n proportional pas au point on dirait"
     in
     if n = 0 then acu
     else
-      let b = findwinner win_nb in
-      aux_select_n_proportional (b::acu) (filter (fun i -> i != b) pool) (n-1) (*définir l'égalité d'individus? pointeur devrait être ok mais TODO tester!*)
+      let b = find_winner pool win_nb in
+      aux_select_n_proportional (b::acu) (List.filter (fun i -> i <> b) pool) (n-1) (*définir l'égalité d'individus? pointeur devrait être ok mais TODO tester!*)
   in
   aux_select_n_proportional [] pool n
 
@@ -92,7 +92,7 @@ let select_n_parents pool n methode =  (*fonction générique de sélection, don
   | 1 -> select_n_best pool n
   | 2 -> select_n_proportional_bis pool n
   | 3 -> select_n_proportional pool n
-  | x -> failwith ("ERREUR: il n'y a pas de méthode"^ itoa x)
+  | x -> failwith ("ERREUR: il n'y a pas de méthode"^ string_of_int x)
 
 
 
@@ -100,9 +100,10 @@ let select_n_parents pool n methode =  (*fonction générique de sélection, don
 
 (*All children and best parents to fill*)
 let merge_best_and_child parents children =
-  (append (select_n_best parents (taillePop - (length children))) children)
+  (List.append (select_n_best parents (TypesGen.taille_population - (List.length children))) children)
 
 let merge_generations parents children methode =  (*fonction générique de merge, donner un int en entrée pour choisir la sélecion. Argument optionnel?*)
   match methode with
-    1 -> merge_best_and_child parents children
-  |x -> failwith ("ERREUR: il n'y a pas de méthode"^ itoa x)
+  | 1 -> merge_best_and_child parents children
+  | x -> failwith ("ERREUR: il n'y a pas de méthode"^ string_of_int x)
+  

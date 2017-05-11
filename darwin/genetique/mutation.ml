@@ -3,7 +3,7 @@ open TypesGen
 
     (*let mutation (population:t_population) = ()*)
 
-    Random.self_init()
+let () = Random.self_init()
 
 let rec depth (arbre:t_arbre) = match arbre with
   | Leaf _ -> 0
@@ -21,6 +21,7 @@ let muter_candidat candidat =
       | 2 -> FIGHT
       | 3 -> BATTLESHIP
       | 4 -> PATROL
+      | _ -> failwith "muter_candidat : valeur non attendue"
     in
     let random_direction =
       match (Random.int 6) with
@@ -30,6 +31,7 @@ let muter_candidat candidat =
       | 3 -> Left
       | 4 -> Upleft
       | 5 -> Downright
+      | _ -> failwith "muter_candidat : valeur non attendue"
     in
     let random_operator =
       match (Random.int 5) with
@@ -38,16 +40,19 @@ let muter_candidat candidat =
       | 2 -> Eq
       | 3 -> InfEq
       | 4 -> SupEq
+      | _ -> failwith "muter_candidat : valeur non attendue"
     in
     let muter_action (action:t_action) = match (Random.int 3) with
       | 0 -> Move (1,random_direction)
       | 1 -> Set_city_prod (1,random_unit)
       | 2 -> End_turn
+      | _ -> failwith "muter_candidat : valeur non attendue"
     in
     let muter_predicat (predicat:t_predicat) = 
       match (Random.int 2) with
       | 0 -> Nb_unite_allie_proche (random_unit,(Random.int 10),random_operator)
       | 1 -> Nb_ville_allie_proche ((Random.int 10),random_operator)
+      | _ -> failwith "muter_candidat : valeur non attendue"
     in 
     match arbre with 
     | Node (a,b,c) 	-> 	if roll_Mutation then
@@ -71,7 +76,7 @@ let main () =
 
   Printf.printf "Nouvel arbre :\n %!";
 
-  print_population (mute [((arbre0,arbre0,arbre0,arbre0,arbre0,arbre0),10)])
+  print_population (mute [(arbre0,arbre0,arbre0,arbre0,arbre0,arbre0), 10.0] )
 
 in main ()
 

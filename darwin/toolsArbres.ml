@@ -14,13 +14,15 @@ open Types
        | Node (a,b,c) -> Node (replace pred sub a, b,replace pred sub c)
 ;;
 
+let read_population () = [(arbre0,arbre0,arbre0,arbre0,arbre0,arbre0), 10.0]
+
+let write_population popu = ()
 
 (** TODO **)
 (* 
 
 - read_population : unit -> t_population
 - write_population : t_population -> unit
-
 
 *)
 
