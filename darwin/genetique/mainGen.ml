@@ -32,6 +32,8 @@ let iterations = 20 (* nombre de générations à simuler avant de s'arrêter; o
 
 let write_nbreGen nbreGen = ()
 
+(** TOOLS **)
+
 let strSplit strToSplit delim =
   let str_start str len = String.sub str 0 len in
   let str_end str offset = String.sub str offset (String.length str - offset) in	
@@ -71,10 +73,17 @@ let getNbreGenInitial configFile =
 
 let nbreGenInitial = getNbreGenInitial "config.cfg" (* nombre de générations simulées depuis le début *)
 
+let shuffle entryList =
+    let nd = List.map (fun c -> (Random.bits (), c)) entryList in
+    let sond = List.sort compare nd in
+    List.map snd sond
+
+(** MAIN **)
 
 let main () =
+  print_endline ("Start mainGen : génération " ^ (string_of_int nbreGenInitial));
   let rec mainLoop popu nbreGen =
-    let popu1 = Evaluation.evaluer popu in (* Met à jour le score d'adaptabilité de chaque individu *)
+    let popu1 = Evaluation.evaluer popu Evaluation.AFF10 in (* Met à jour le score d'adaptabilité de chaque individu *)
     let popu2 = Selection.select_n_parents popu1 individusASelectionner 1 in (* popu2 garde les meilleurs individus ; c'est là que se passent les affrontements *)
     let popu3 = Croisement.main_cross popu2 in (* popu3 sont les nouveaux individus obtenus par recombinaison *)
     let popu4 = Mutation.mute popu3 in (* ces individus recombinés ont ensuite des chances de muter pour donner popu4 *)
@@ -92,4 +101,7 @@ let main () =
   mainLoop popu nbreGenInitial
 
 
-let () = main ()
+let () = 
+  print_endline ("Start mainGen : génération " ^ (string_of_int nbreGenInitial));
+	Random.self_init ();
+	main ()

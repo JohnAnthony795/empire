@@ -53,8 +53,14 @@ open Types
 (* On utilise des refs pour pouvoir modifier leur valeur *)
 (* On utilise le type option pour pouvoir les initialiser à None *)
 (* Pour accéder à un canal, il faut matcher "Some c" et "None" puis utiliser "!c" pour accéder au canal lui-même *)
-let input_channel = ref(None);;
-let output_channel = ref(None);;
+let input_channel = ref(None)
+let output_channel = ref(None)
+let socket = ref(None)
+
+let get_socket () =
+	match !socket with
+	| Some (sock) -> sock
+	| None -> failwith "interfaceCom : socket non initialisé"
 
 (* Fonctions auxiliaires d'ouverture et de fermeture de connexion *)
 (* sockaddr -> socket *)
@@ -64,11 +70,11 @@ let open_connection sockaddr =
   in try Unix.connect sock sockaddr ;
     sock
   (*(Unix.in_channel_of_descr sock , Unix.out_channel_of_descr sock)*)
-  with exn -> Unix.close sock ; raise exn ;;
+  with exn -> Unix.close sock ; raise exn
 
 let shutdown_connection inchan =
   Printf.printf "Closing client socket\n\n";
-  Unix.shutdown (Unix.descr_of_in_channel inchan) Unix.SHUTDOWN_SEND ;;
+  Unix.shutdown (Unix.descr_of_in_channel inchan) Unix.SHUTDOWN_SEND
 
 
 (* Création d'un socket client et connexion au serveur *)
@@ -82,25 +88,22 @@ let init_socket server port =
       exit 2
   in try
     let sockaddr = Unix.ADDR_INET(server_addr,port) in
-    let sock = open_connection sockaddr in	(* On crée le socket pour affecter les canaux in/out *)
+    socket := Some(open_connection sockaddr);	(* On crée le socket pour affecter les canaux in/out *)
     Printf.printf "Socket created\n\n";
-    input_channel := Some (Unix.in_channel_of_descr sock);
-    output_channel := Some (Unix.out_channel_of_descr sock)
+    input_channel := Some (Unix.in_channel_of_descr (get_socket ()));
+    output_channel := Some (Unix.out_channel_of_descr (get_socket ()))
   with Failure("int_of_string") -> Printf.eprintf "bad port number";
     exit 2
-;;
-
-(** REQUETES **)
-
-(* TODO *)
-(*let set_jid = DataManager.set_our_jid 1*)
+    
+let close_socket () =
+	Unix.close (get_socket ())
 
 (** AUXILIAIRES **)
 
 (* Fonctions auxiliaires pour extraire le début ou la fin d'un String *)
-let str_start str len = String.sub str 0 len ;;
+let str_start str len = String.sub str 0 len
 
-let str_end str offset = String.sub str offset (String.length str - offset) ;;
+let str_end str offset = String.sub str offset (String.length str - offset)
 
 (* Fonction auxiliaire pour séparer un message (str) en liste de strings
    Délimiteur : ' ' *)
@@ -158,8 +161,8 @@ let traiter_message message =
   | "height" -> set_map_height tlMsg
   | "piece_types" -> () (* TODO : Peupler une structure de données avec *)
   | "random_seed" -> Printf.printf "Seed de la map : %s\n" (List.hd tlMsg)
-  (*| "draw" -> 
-  | "winner" -> *)
+  (*| "draw" -> *)
+  | "winner" -> set_victoire tlMsg
   | "error" -> Printf.printf "Received error : %s" (List.hd tlMsg)
   | "set_visible" -> traiter_set_visible tlMsg
   | "set_explored" -> traiter_set_explored tlMsg
@@ -188,7 +191,7 @@ let rec receive () =
   match receive_next () with
   | "" -> failwith "receive: Empty message"
   | "get_action" -> traiter_message "get_action"
-  | m -> traiter_message m; receive ()
+  | m -> print_endline (string_of_int (Thread.id (Thread.self ())) ^ " : " ^ m); traiter_message m; receive ()
 
 (*  SEND_TO_SERVER : string -> unit
     	L'envoi concret du message par le socket *)
@@ -198,14 +201,13 @@ let send_to_server message =
   | Some (oc) -> output_string oc (message ^ "\n");
     flush oc
   | None -> failwith "Output_channel not initialized"
-;;
 
 (*  SEND : t_action -> unit						Fonction "publique"
     	Reçoit un type action de Tree/main, le convertit en string et l'envoie au serveur par le socket *)
 let send action =
   send_to_server (action_to_string action)
   (* bloquant : traiter_message jusqu'au prochain get_action *)
-;;
+
 
 
 

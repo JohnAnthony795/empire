@@ -3,10 +3,12 @@ open Types
 val get_nb_unite_proche: unites -> piece_id -> int -> int
 val get_nb_ville_proche: piece_id -> int -> int
 val get_next_playable: unit -> int
+val get_score : unit -> float
 
 val set_our_jid: string list -> unit
 val set_map_width: string list -> unit
 val set_map_height: string list -> unit
+val set_victoire : string list -> unit
 
 val traiter_set_visible: string list -> unit
 val traiter_set_explored: string list -> unit

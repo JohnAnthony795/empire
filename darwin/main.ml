@@ -15,8 +15,6 @@ note : mettre la lecture/écriture de fichier dans un fichier à part?
 
 
 (* TODO: autoriser le passage de l'IP server + du port en argument de ligne de commande (cf. main() dans empire-client/sources/Main.ml) *)
-let () =
-  Printf.printf "Test %!"
 
 
 open Types
@@ -56,7 +54,6 @@ let read_arbre fichier =
     close_in_noerr ic;           (* emergency closing *)
     raise e                      (* exit with error: files are closed but
                                     		                            		channels are not flushed *)
-;;
 
 
 let write_arbre fichier forest =
@@ -80,9 +77,22 @@ let write_arbre fichier forest =
   close_out oc             	 (* flush and close the channel *)
 ;;
 
+type uniteville = ARMY | TRANSPORT | FIGHT | BATTLESHIP | PATROL | CITY
+
+let get_arbre foret unit_type =
+	let (a1,a2,a3,a4,a5,a6) = foret in
+	match unit_type with
+  | ARMY -> a1
+  | FIGHT -> a2
+  | TRANSPORT -> a3
+  | PATROL -> a4
+  | BATTLESHIP -> a5
+  | CITY -> a6
+
+
 (*Parcours d'arbre ( prise de décision ) --------------------------------------------*)
 
-let compute_Action id = (*prend une id t_ID de piece et return une action t_action à jouer        (prendre aussi la foret?????? )*)
+let compute_Action id foret = (*prend une id t_ID de piece et return une action t_action à jouer        (prendre aussi la foret?????? )*)
   let evaluate_pred pred piece_id = match pred with (* prend un predicat retourne un booleen  TENIR A JOUR voir directement mettre dans type*)
     | Nb_unite_allie_proche (u, n, c ) -> let nbproche = (get_nb_unite_proche u piece_id n) in (*il manque une quantification de "proche" en fait *) 
       (match c with
@@ -104,23 +114,26 @@ let compute_Action id = (*prend une id t_ID de piece et return une action t_acti
     | Leaf a -> a
     | Node (t1,p,t2) -> if evaluate_pred p id then action_from_tree t1 id else action_from_tree t2 id
   in
-  let decision_tree = Leaf End_turn (*TODO obtenir l'arbre qui concerne cette unité : get_type_by_id()? puis arbre n*)
+  let decision_tree = get_arbre foret CITY (*TODO obtenir l'arbre qui concerne cette unité : get_type_by_id()? puis arbre n *)
   in
   action_from_tree decision_tree id;;
 
-(* TODO parametres *)
-let main () =
+
+let main foret =
   Printf.printf "START MAIN\n%!";
   (*init socket*)
   init_socket "127.0.0.1" 9301;
-  receive ();
+  
+  receive (); (* on reçoit les infos du début *)
   (* TODO true -> partie terminée ? *)
-  while (true) do
+  while (get_score () = -1.0) do
     (* get next unité/ville à jouer *)
-    send (compute_Action (get_next_playable ()));
+    send (compute_Action (get_next_playable ()) foret);
     receive ()
-  done
-in main ()
+  done;
+  get_score ()
+
+(* let () = print_endline (string_of_float (main (9301, (read_arbre "IA.ads")))); () *)
 
 (*
 let () =

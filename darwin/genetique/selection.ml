@@ -19,8 +19,7 @@ open Random (*ajouter*)
 
 (**Fonctions utilitaires:**)
 let () =
-  Random.self_init () ; 
-  Printf.printf "Test random : %d %d %!" (Random.int 100) (Random.int 100)
+  Random.self_init ()
 
 
 (*best beetween 2 individuals, according to score*)

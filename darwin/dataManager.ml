@@ -75,7 +75,6 @@ let fill_terrain terrain q r =
   | "city" -> map_terrain.(q).(r) <- Neutral
   | _ -> failwith "erreur fill_terrain"
 
-;;
 
 
 (** Non pertinent ? **)
@@ -128,7 +127,6 @@ let update_ville_allie q r cid =
 let rec rm_allie rmcid =
   let pred id alpha = alpha.cid <> id in
   liste_ville_alliee := List.filter (pred rmcid) !liste_ville_alliee
-;;  
 
 (*TODO : set production ville alliée *)
 
@@ -145,7 +143,6 @@ let add_ville_ennemi q r cid =
 let rec rm_ennemi rmcid =
   let pred id alpha = alpha.cid <> id in
   liste_ville_ennemie := List.filter (pred rmcid) !liste_ville_ennemie
-;;  
 
 (* Liste ville neutres *)
 
@@ -153,7 +150,6 @@ let rec rm_ennemi rmcid =
 
 (* permet de calculer la vraie distance  entre deux cases *)
 let tiles_distance (qa, ra) (qb, rb) = (abs (qa - qb) + abs (qa + ra - qb - rb) + abs (ra - rb)) / 2
-;;
 
 let ptid_to_unites ptid = match ptid with
   | 0 -> ARMY
@@ -176,6 +172,16 @@ let get_nb_ville_proche pid distance =
   let unite = List.find (fun (element:unite_list) -> element.pid = pid) !liste_unites in
   List.length (List.filter (fun (element:allie) -> (tiles_distance (unite.q,unite.r) (element.q,element.r))<distance) !liste_ville_alliee) ;;
 
+let a_gagne = ref(None)
+
+let set_victoire msg =
+	let victoire = (if (int_of_string (List.hd msg)) = !our_jid then true else false) in
+	a_gagne := Some(victoire)
+
+let get_score () =
+	match !a_gagne with
+	| Some (victoire) -> if victoire then 1.0 else 0.0
+	| None -> -1.0
 
 (* TODO *)
 let get_next_playable () =

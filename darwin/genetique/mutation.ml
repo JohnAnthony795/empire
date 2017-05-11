@@ -78,5 +78,4 @@ let main () =
 
   print_population (mute [(arbre0,arbre0,arbre0,arbre0,arbre0,arbre0), 10.0] )
 
-in main ()
 

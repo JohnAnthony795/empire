@@ -56,7 +56,8 @@ type t_foret =  t_arbre * t_arbre * t_arbre * t_arbre * t_arbre * t_arbre ;; (* 
 
 (* Fonction qui renvoie un arbre basique *)
 
-let arbre0 = Node (Leaf End_turn,Nb_unite_allie_proche (ARMY,7,Inf),Node (Leaf End_turn,Nb_unite_allie_proche (ARMY,7,Inf),Leaf End_turn));;
+let arbre0 = Leaf End_turn
+(* let arbre0 = Node (Leaf End_turn,Nb_unite_allie_proche (ARMY,7,Inf),Node (Leaf End_turn,Nb_unite_allie_proche (ARMY,7,Inf),Leaf End_turn)) *)
 
 (*print arbre   ### A PIMPER ###*)
 (*EN particulier compléter prédicats_tostring  + les sous-call*)
