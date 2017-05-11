@@ -1,4 +1,4 @@
 (* TODO *)
 
-open Types
+open Types , TypesGen
 

@@ -1,5 +1,4 @@
 (* 2 possiblities : 
-<<<<<<< HEAD
 from 2 trees we select one random node on each, and then either
 - we exchange the predicates
 - we exchange the subtrees
@@ -31,7 +30,7 @@ In both case we have 2 trees as output
  | Node (Leaf l1,b,Leaf l2) -> Node (Leaf l1,b,Leaf l2) (* 2 feuilles donc on retourne ce node *)
  | Node (Leaf l,b,c) -> if (ratio < eval) then Node(Leaf l,b,c) else get_random_node c (*1/2 on retourne cette node sinon on poursuit*)
  | Node (a,b,Leaf l) -> if(ratio < eval) then Node(a,b,Leaf l) else get_random_node a (*1/2 on retourne cette node sinon on poursuit*)
- | Node (a,b,c) -> if (ratio < eval) then Node (a,b,c) else (if (Random.bool) then get_random_node a else get_random_node c) (*1/2 on retourne cette node sinon 1/2 sur chaque branche*)
+ | Node (a,b,c) -> if (ratio < eval) then Node (a,b,c) else (if (bool) then get_random_node a else get_random_node c) (*1/2 on retourne cette node sinon 1/2 sur chaque branche*)
  | Leaf _ -> failwith ("rip");
  ;;
  
@@ -42,6 +41,9 @@ In both case we have 2 trees as output
     | Leaf _ -> tree
     | Node (a,b,c) -> Node (replace pred sub a, b,replace pred sub c)
 
+let nodequal node1 node2 =
+node1 = node2 ;
+
 (*cross_subtree : t_arbre -> t_arbre -> t_arbre * t_arbre retourne deux arbres*)
 let cross_subtree arbre1 arbre2 =
   let node1 = get_random_node arbre1 in
@@ -50,11 +52,29 @@ let cross_subtree arbre1 arbre2 =
 ;;
 
 (*cross_subtree_uniq : t_arbre -> t_arbre -> t_arbre  retourne un arbre unique *)
-let cross_subtree arbre1 arbre2 =
+let cross_subtree_uniq arbre1 arbre2 =
   let node1 = get_random_node arbre1 in
   let node2 = get_random_node arbre2 in
-  if Random.bool() then replace (nodequal node1) node2 arbre1 else replace (nodequal node2) node1 arbre2
+  if (bool) then replace (nodequal node1) node2 arbre1 else replace (nodequal node2) node1 arbre2
 ;;
+
+
+(* cross_foret : t_foret -> t_foret *) (* /!\ a changer en dur si la foret grandit *)
+let cross_foret foret1 foret2 = 
+let foret1 = (a11,a12,a13,a14,a15,a16) in
+let foret2 = (a21,a22,a23,a24,a25,a26) in
+(cross_subtree_uniq a11 a21;cross_subtree_uniq a12 a22;cross_subtree_uniq a13 a23;cross_subtree_uniq a14 a24;cross_subtree_uniq a15 a25;cross_subtree_uniq a16 a261) (* /!\ a changer en dur si la foret grandit *)
+
+;;
+(* main_cross : t_population -> t_population retourne la population croisée *)
+let rec main_cross pop =
+match pop with
+ |(foret1,score1)::(foret2,score2)::Tl-> (cross_foret foret1 foret2 , -1) :: main_cross Tl  
+|[] -> []
+| _ -> failwith("weird list to cross")
+;;
+
+
 
 
 
