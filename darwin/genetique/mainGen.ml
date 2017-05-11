@@ -26,6 +26,8 @@ Remarques / suggestions :
 
 open ToolsArbres
 
+let individusASelectionner = 12
+
 let iterations = 20 (* nombre de générations à simuler avant de s'arrêter; on pourrait la mettre en paramètre *)
 
 let strSplit strToSplit delim =
@@ -67,13 +69,14 @@ let getNbreGenInitial configFile =
 
 let nbreGenInitial = getNbreGenInitial "config.cfg" (* nombre de générations simulées depuis le début *)
 
+
 let main () =
   let rec mainLoop popu nbreGen =
     let popu1 = Evaluation.evaluer popu in (* Met à jour le score d'adaptabilité de chaque individu *)
-    let popu2 = Selection.get_meilleurs popu1 in (* popu2 garde les meilleurs individus ; c'est là que se passent les affrontements *)
+    let popu2 = Selection.select_n_parents popu1 individusASelectionner 1 in (* popu2 garde les meilleurs individus ; c'est là que se passent les affrontements *)
     let popu3 = Croisement.recombine popu2 in (* popu3 sont les nouveaux individus obtenus par recombinaison *)
     let popu4 = Mutation.mute popu3 in (* ces individus recombinés ont ensuite des chances de muter pour donner popu4 *)
-    let popu5 = Selection.get_prochaine_generation popu1 popu4 in (* on garde parmi la population initiale (popu1) et les nouveaux mutants recombinés (popu4) certains individus pour la prochaine génération *)
+    let popu5 = Selection.merge_generations popu1 popu4 1 in (* on garde parmi la population initiale (popu1) et les nouveaux mutants recombinés (popu4) certains individus pour la prochaine génération *)
     if nbreGen < (nbreGenInitial + iterations) then
       mainLoop popu5 (nbreGen +1)
     else begin

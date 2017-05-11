@@ -13,9 +13,6 @@ Trier la pop pour extraction facile?
 *)
 
 
-
-
-
 (*open Types*)
 open TypesGen
 open Random (*ajouter*)
@@ -40,19 +37,19 @@ let scores_sum pool = (*.+?*)
     match (ind1,ind2) with
       ((f1,s1),(f2,s2)) -> s1 + s2
   in
-    List.fold_left sum_ind 0 pool
+  List.fold_left sum_ind 0 pool
 
 
 (**sélections pour mating pool**)
 (* Sélection basique : les n plus forts *)(*le tri serait peut etre bien....v2?*)
 let select_n_best pool n =
-	let rec aux_select_n_best acu pool n =
-		if n = 0 then acu
-		else
-		let b = (bestOfList pool) in
-			 aux_select_n_best (b::acu) (filter (fun i -> i != b) pool) (n-1)  (*définir l'égalité d'individus? pointeur devrait être ok mais TODO tester!*)
-	in
-aux_select_n_best [] pool n
+  let rec aux_select_n_best acu pool n =
+    if n = 0 then acu
+    else
+      let b = (bestOfList pool) in
+      aux_select_n_best (b::acu) (filter (fun i -> i != b) pool) (n-1)  (*définir l'égalité d'individus? pointeur devrait être ok mais TODO tester!*)
+  in
+  aux_select_n_best [] pool n
 
 (*sélection proportionelle au score /!\ très sensible aux scores nuls.*)
 let select_n_proportional pool n = (*version avec possibilité de choisir plusieurs fois le meme.*)
@@ -61,16 +58,16 @@ let select_n_proportional pool n = (*version avec possibilité de choisir plusie
     let win_nb = 1 + (Random.int total) in (*random.int is beetween 0 and total-1*)
     let rec find_winner pool number =
       match pool with
-        |(f,s)::inds -> if s >= number then (f,s)
-                        else find_winner inds (number-s)
-        |_ -> failwith "ERREUR: select n proportional pas au point on dirait"
+      |(f,s)::inds -> if s >= number then (f,s)
+        else find_winner inds (number-s)
+      |_ -> failwith "ERREUR: select n proportional pas au point on dirait"
     in
-      if n = 0 then acu
-  		else
-        let b = findwinner win_nb in
-  			   aux_select_n_proportional (b::acu) pool (n-1)
+    if n = 0 then acu
+    else
+      let b = findwinner win_nb in
+      aux_select_n_proportional (b::acu) pool (n-1)
   in
-    aux_select_n_proportional [] pool n
+  aux_select_n_proportional [] pool n
 
 (*sélection proportionelle au score /!\ très sensible aux scores nuls.*)
 let select_n_proportional_bis pool n = (*version avec IMpossibilité de choisir plusieurs fois le meme.*)
@@ -79,25 +76,23 @@ let select_n_proportional_bis pool n = (*version avec IMpossibilité de choisir 
     let win_nb = 1 + (Random.int total) in (*random.int is beetween 0 and total-1*)
     let rec find_winner pool number =
       match pool with
-        |(f,s)::inds -> if s >= number then (f,s)
-                        else find_winner inds (number-s)
-        |_ -> failwith "ERREUR: select n proportional pas au point on dirait"
+      |(f,s)::inds -> if s >= number then (f,s)
+        else find_winner inds (number-s)
+      |_ -> failwith "ERREUR: select n proportional pas au point on dirait"
     in
-      if n = 0 then acu
-  		else
-        let b = findwinner win_nb in
-  			   aux_select_n_proportional (b::acu) (filter (fun i -> i != b) pool) (n-1) (*définir l'égalité d'individus? pointeur devrait être ok mais TODO tester!*)
+    if n = 0 then acu
+    else
+      let b = findwinner win_nb in
+      aux_select_n_proportional (b::acu) (filter (fun i -> i != b) pool) (n-1) (*définir l'égalité d'individus? pointeur devrait être ok mais TODO tester!*)
   in
-    aux_select_n_proportional [] pool n
+  aux_select_n_proportional [] pool n
 
 let select_n_parents pool n methode =  (*fonction générique de sélection, donner un int en entrée pour choisir la sélecion. Argument optionnel?*)
   match methode with
-     1 -> select_n_best pool n
-    |2 -> select_n_proportional_bis pool n
-    |3 -> select_n_proportional pool n
-    |x -> failwith ("ERREUR: il n'y a pas de méthode"^ itoa x)
-
-
+  | 1 -> select_n_best pool n
+  | 2 -> select_n_proportional_bis pool n
+  | 3 -> select_n_proportional pool n
+  | x -> failwith ("ERREUR: il n'y a pas de méthode"^ itoa x)
 
 
 
@@ -105,9 +100,9 @@ let select_n_parents pool n methode =  (*fonction générique de sélection, don
 
 (*All children and best parents to fill*)
 let merge_best_and_child parents children =
-	(append (select_n_best parents (taillePop - (length children))) children)
+  (append (select_n_best parents (taillePop - (length children))) children)
 
 let merge_generations parents children methode =  (*fonction générique de merge, donner un int en entrée pour choisir la sélecion. Argument optionnel?*)
   match methode with
     1 -> merge_best_and_child parents children
-    |x -> failwith ("ERREUR: il n'y a pas de méthode"^ itoa x)
+  |x -> failwith ("ERREUR: il n'y a pas de méthode"^ itoa x)
