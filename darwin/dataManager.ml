@@ -185,23 +185,25 @@ let get_nb_ville_proche_ennemi pid distance =
 
 (* littoral dans une des 6 cases adjacentes *)
 let littoral_adj pid =
+let unite = get_unite pid in
 (*TODO*)
-true
+false
 ;;
 
 (* piece dans un transport*)
 let transport pid = 
-(*TODO*)
-false
+let unite = get_unite pid in
+List.length (List.filter (fun (element:unite_list) -> ((element.pid <> pid) && (element.unite_type == TRANSPORT) && (unite.q == element.q) && (unite.r==element.r))) !liste_unites) > 0
 ;;
 
 
 let fog_proche pid distance =
-(*TODO*) 
+ (* TODO *)
+let unite = get_unite pid in
 false
 ;;
  
- (* TODO *)
+
 let get_next_playable () =
   (List.hd !liste_ville_alliee).cid
 
