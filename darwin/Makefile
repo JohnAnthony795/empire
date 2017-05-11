@@ -4,7 +4,7 @@ mainDarwin :
 	ocamlbuild -use-ocamlfind main.native
 	
 mainGen :
-	ocamlbuild genetique/mainGen.native
+	ocamlbuild -I types.mli genetique/mainGen.native
 	
 clean :
 	rm -rf _build/ genetique/_build/

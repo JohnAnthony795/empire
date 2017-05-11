@@ -1,6 +1,6 @@
 type direction = Up | Down | Right | Left | Upleft | Downright ;; (* 0 | 1 | 2 | 3 | 4 | 5;;*) (* 2|1|
-                                                                                                  						   3| |0
-                                                                                                  					            |4|5 *)
+                                                                    						      3| |0
+                                                                                                   |4|5 *)
 type piece_id= int;;
 
 type city_id= int;;
