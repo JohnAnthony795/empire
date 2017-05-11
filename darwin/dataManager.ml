@@ -166,18 +166,42 @@ let ptid_to_unites ptid = match ptid with
 (* TODO ajouter d'autres *)
 
 (***** GETTERS *****)
-
+(* permet de récupérer une unite à partir d'un pid *)
+let get_unite pid =
+List.find (fun (element:unite_list) -> element.pid = pid) !liste_unites
+;;
 (* Ajouté distance en parametre*)
 let get_nb_unite_proche unites pid distance=
   let unite = List.find (fun (element:unite_list) -> element.pid = pid) !liste_unites in
   List.length (List.filter (fun (element:unite_list) -> ((element.pid <> pid) && (element.unite_type == unites) && ((tiles_distance (unite.q,unite.r) (element.q,element.r))<distance))) !liste_unites) ;;
 
-let get_nb_ville_proche pid distance =
+let get_nb_ville_proche_allie pid distance =
   let unite = List.find (fun (element:unite_list) -> element.pid = pid) !liste_unites in
   List.length (List.filter (fun (element:allie) -> (tiles_distance (unite.q,unite.r) (element.q,element.r))<distance) !liste_ville_alliee) ;;
+  
+let get_nb_ville_proche_ennemi pid distance =
+  let unite = List.find (fun (element:unite_list) -> element.pid = pid) !liste_unites in
+  List.length (List.filter (fun (element:ennemi) -> (tiles_distance (unite.q,unite.r) (element.q,element.r))<distance) !liste_ville_ennemie) ;;
+
+(* littoral dans une des 6 cases adjacentes *)
+let littoral_adj pid =
+(*TODO*)
+true
+;;
+
+(* piece dans un transport*)
+let transport pid = 
+(*TODO*)
+false
+;;
 
 
-(* TODO *)
+let fog_proche pid distance =
+(*TODO*) 
+false
+;;
+ 
+ (* TODO *)
 let get_next_playable () =
   (List.hd !liste_ville_alliee).cid
 
