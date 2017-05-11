@@ -10,10 +10,15 @@ In both case we have 2 trees as output
  let eval = 0.25
  ;;
  
- let ratio = Random.float 1.0
+ let ratio = 
+ Random.self_init();
+ Random.float 1.0
  ;;
  
- 
+  let bool = 
+   Random.self_init();
+   (Random.bool)
+ ;;
  
  let rec depth = function
 | Leaf _ -> 0
@@ -25,7 +30,7 @@ In both case we have 2 trees as output
  | Node (Leaf l1,b,Leaf l2) -> Node (Leaf l1,b,Leaf l2) (* 2 feuilles donc on retourne ce node *)
  | Node (Leaf l,b,c) -> if (ratio < eval) then Node(Leaf l,b,c) else get_random_node c (*1/2 on retourne cette node sinon on poursuit*)
  | Node (a,b,Leaf l) -> if(ratio < eval) then Node(a,b,Leaf l) else get_random_node a (*1/2 on retourne cette node sinon on poursuit*)
- | Node (a,b,c) -> if (ratio < eval) then Node (a,b,c) else (if (ratio < eval) then get_random_node a else get_random_node c) (*1/2 on retourne cette node sinon 1/2 sur chaque branche*)
+ | Node (a,b,c) -> if (ratio < eval) then Node (a,b,c) else (if (Random.bool) then get_random_node a else get_random_node c) (*1/2 on retourne cette node sinon 1/2 sur chaque branche*)
  | Leaf _ -> failwith ("rip");
  ;;
  
@@ -48,3 +53,7 @@ let node1 = get_random_node arbre1 in
 let node2 = get_random_node arbre2 in
 if Random.bool() then replace (nodequal node1) node2 arbre1 else replace (nodequal node2) node1 arbre2
 ;;
+
+
+
+
