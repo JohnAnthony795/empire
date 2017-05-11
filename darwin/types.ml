@@ -39,9 +39,13 @@ type t_action = (*pass*)
 type comparateur = Inf | Sup | Eq | InfEq | SupEq;;
 
 type t_predicat= (* rajouter des prédicats en masse*)
-  | Nb_unite_allie_proche of (unites * int * comparateur)
-  |Nb_ville_allie_proche of (int * comparateur)
-
+  | Nb_unite_allie_proche of ( int *  unites * int * comparateur) (* distance proximité/ type unité /Nb unités/ plus ou moins de Nb unités proche *)
+  | Nb_ville_allie_proche of (int  * int * comparateur) (*distance proximité/Nb ville/plus ou moins de Nb ville allie proche*)
+  | Nb_ville_ennemie_proche of (int  * int * comparateur) (*distance proximité/Nb ville/plus ou moins de Nb ville ennemie proche*)
+  | Littoral_adjacent (* presence de littoral dans une case adjacente*)
+	| Transport (*présence de l'unité dans un transport*)
+	| Fog_proche of (int) (* distance proximité / plus ou moins loin *)
+	
 type t_arbre =
   | Leaf of t_action
   |Node of (t_arbre * t_predicat * t_arbre)
@@ -89,10 +93,15 @@ let direction_to_string d = match d with
   | Downright -> "DOWNRIGHT" (*darius*)
 
 (*fonctions publiques de print/string*)
-let pred_to_string p = match p with   (*tenir à jour avec les prédicats ;)*)
-  | Nb_unite_allie_proche (u,n,c) -> "Nb de "^ (unite_to_string u) ^ " allies proche " ^ (comparateur_to_string c) ^ " " ^ (string_of_int n) ^ "?"
-  | Nb_ville_allie_proche (n,c) -> "Nb de villes allies proche " ^ (comparateur_to_string c) ^ " " ^ (string_of_int n) ^ "?"
-
+let pred_to_string p = match p with   (*tenir à jour avec les prédicats *)
+  | Nb_unite_allie_proche (d,u,n,c) -> "Nb de "^ (unite_to_string u) ^ " allies proches d'une distance de" ^ (string_of_int d) ^ " " ^ (comparateur_to_string c) ^ " " ^ (string_of_int n) ^ "?"
+  | Nb_ville_allie_proche (d,n,c) -> "Nb de villes allies proches d'une distance de " ^  (string_of_int d) ^ " " ^ (comparateur_to_string c) ^ " " ^ (string_of_int n) ^ "?"
+	| Nb_ville_ennemie_proche (d,n,c) -> "Nb de villes ennemies proches d'une distance de "  ^ (string_of_int d) ^ " " ^ (comparateur_to_string c) ^ " " ^ (string_of_int n) ^ "?"
+	| Littoral_adjacent -> "Presence de littoral dans une case adjacente ?"
+	| Transport -> "Présence de l'unité dans un transport ?"
+	| Fog_proche d -> "Présence du brouillard de guerre proche d'une distance de" ^ (string_of_int d) ^"?"
+	
+	
 let action_to_string a = match a with
   | Move (id,dir) -> "Move id°" ^ (string_of_int id) ^ " " ^ (direction_to_string dir)
   | Set_city_prod (id,p_type) -> "Set_city_prod id°" ^ (string_of_int id) ^ " " ^ (unite_to_string p_type) (*clarifier le piece type id avec un piece type id to string??*)
@@ -115,8 +124,13 @@ let direction_to_code d = match d with
   | Downright -> "DR" 
 
 let pred_to_code p = match p with   (*tenir à jour avec les prédicats ;)  STANDARD : mettre un '?' au debut *)
-  | Nb_unite_allie_proche (u,n,c) -> "?NBUAP:" ^ (unite_to_code u) ^ ":" ^ (string_of_int n) ^ ":" ^ (comparateur_to_string c) 
-  | Nb_ville_allie_proche (n,c) -> "?NBVAP:" ^ (string_of_int n) ^ ":" ^ (comparateur_to_string c) 
+  | Nb_unite_allie_proche (d,u,n,c) -> "?NBUAP:" ^ (string_of_int d) ^ ":" ^ (unite_to_code u) ^ ":" ^ (string_of_int n) ^ ":" ^ (comparateur_to_string c) 
+  | Nb_ville_allie_proche (d,n,c) -> "?NBVAP:" ^ (string_of_int d) ^ ":" ^ (string_of_int n) ^ ":" ^ (comparateur_to_string c) 
+  | Nb_ville_ennemie_proche (d,n,c) -> "?NBVEP:" ^ (string_of_int d) ^ ":" ^ (string_of_int n) ^ ":" ^ (comparateur_to_string c) 
+  | Littoral_adjacent -> "?LIADJ" 
+  | Transport -> "?TR"
+  | Fog_proche (d) -> "?FOG:" ^ (string_of_int d)
+  
 
 let action_to_code a = match a with (* tenir a jour aussi  STANDARD : mettre un '!' au debut *)
   | Move (id,dir) -> "!MV:" ^ (string_of_int id) ^ ":" ^ (direction_to_code dir)

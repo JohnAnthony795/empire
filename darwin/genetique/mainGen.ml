@@ -91,13 +91,13 @@ let main () =
     if nbreGen < (nbreGenInitial + iterations) then
       mainLoop popu5 (nbreGen +1)
     else begin
-      ToolsArbres.write_population popu5; (* on sauvegarde notre population actuelle dans des fichiers *)
+      ToolsArbres.write_population "current_gen.pop" popu5; (* on sauvegarde notre population actuelle dans des fichiers *)
       write_nbreGen nbreGen ; (* on sauvegarde notre nombre de générations simulées dans un fichier *)
       ()
     end
   in
 
-  let popu = ToolsArbres.read_population () in (* initialisation de la population, lue depuis le disque *)
+  let popu = ToolsArbres.read_population "current_gen.pop" in (* initialisation de la population, lue depuis le disque *)
   mainLoop popu nbreGenInitial
 
 

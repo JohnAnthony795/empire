@@ -1,7 +1,12 @@
 open Types
 
 val get_nb_unite_proche: unites -> piece_id -> int -> int
-val get_nb_ville_proche: piece_id -> int -> int
+val get_nb_ville_proche_allie: piece_id -> int -> int
+val get_nb_ville_proche_ennemi : piece_id -> int -> int 
+val littoral_adj : piece_id -> bool
+val transport : piece_id -> bool
+val fog_proche : piece_id -> int -> bool
+
 val get_next_playable: unit -> int
 val get_score : unit -> float
 
