@@ -1,7 +1,7 @@
 open Types
 open TypesGen
 
-    (*let mutation (population:t_population) = ()*)
+(*let mutation (population:t_population) = ()*)
 
 let () = Random.self_init()
 
@@ -50,8 +50,8 @@ let muter_candidat candidat =
     in
     let muter_predicat (predicat:t_predicat) = 
       match (Random.int 2) with
-      | 0 -> Nb_unite_allie_proche (random_unit,(Random.int 10),random_operator)
-      | 1 -> Nb_ville_allie_proche ((Random.int 10),random_operator)
+      | 0 -> Nb_unite_allie_proche (Random.int 10,random_unit,(Random.int 10),random_operator)
+      | 1 -> Nb_ville_allie_proche (Random.int 10,(Random.int 10),random_operator)
       | _ -> failwith "muter_candidat : valeur non attendue"
     in 
     match arbre with 

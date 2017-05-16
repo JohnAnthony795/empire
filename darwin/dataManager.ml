@@ -164,8 +164,8 @@ let ptid_to_unites ptid = match ptid with
 (***** GETTERS *****)
 (* permet de récupérer une unite à partir d'un pid *)
 let get_unite pid =
-List.find (fun (element:unite_list) -> element.pid = pid) !liste_unites
-;;
+  List.find (fun (element:unite_list) -> element.pid = pid) !liste_unites
+
 (* Ajouté distance en parametre*)
 let get_nb_unite_proche unites pid distance=
   let unite = List.find (fun (element:unite_list) -> element.pid = pid) !liste_unites in
@@ -174,44 +174,49 @@ let get_nb_unite_proche unites pid distance=
 let get_nb_ville_proche_allie pid distance =
   let unite = List.find (fun (element:unite_list) -> element.pid = pid) !liste_unites in
   List.length (List.filter (fun (element:allie) -> (tiles_distance (unite.q,unite.r) (element.q,element.r))<distance) !liste_ville_alliee) ;;
-  
+
 let get_nb_ville_proche_ennemi pid distance =
   let unite = List.find (fun (element:unite_list) -> element.pid = pid) !liste_unites in
   List.length (List.filter (fun (element:ennemi) -> (tiles_distance (unite.q,unite.r) (element.q,element.r))<distance) !liste_ville_ennemie) ;;
 
 (* littoral dans une des 6 cases adjacentes *)
 let littoral_adj pid =
-let unite = get_unite pid in
-(*TODO*)
-false
-;;
+  let unite = get_unite pid in
+  (*TODO*)
+  false
 
 let a_gagne = ref(None)
 
 let set_victoire msg =
-	let victoire = (if (int_of_string (List.hd msg)) = !our_jid then true else false) in
-	a_gagne := Some(victoire)
+  let msgHd = match msg with 
+    | hd :: tail -> hd
+    | [] -> failwith "dataManager.set_victoire"
+  in
+  let victoire = (if (int_of_string msgHd) = !our_jid then true else false) in
+  a_gagne := Some(victoire)
 
 let get_score () =
-	match !a_gagne with
-	| Some (victoire) -> if victoire then 1.0 else 0.0
-	| None -> -1.0
+  match !a_gagne with
+  | Some (victoire) -> if victoire then 1.0 else 0.0
+  | None -> -1.0
 
 
 (* piece dans un transport*)
 let transport pid = 
-let unite = get_unite pid in
-List.length (List.filter (fun (element:unite_list) -> ((element.pid <> pid) && (element.unite_type == TRANSPORT) && (unite.q == element.q) && (unite.r==element.r))) !liste_unites) > 0
+  let unite = get_unite pid in
+  List.length (List.filter (fun (element:unite_list) -> ((element.pid <> pid) && (element.unite_type == TRANSPORT) && (unite.q == element.q) && (unite.r==element.r))) !liste_unites) > 0
 
 
 let fog_proche pid distance =
- (* TODO *)
-let unite = get_unite pid in
-false
+  (* TODO *)
+  let unite = get_unite pid in
+  false
 
-
+(* TODO *)
 let get_next_playable () =
-  (List.hd !liste_ville_alliee).cid
+  match !liste_ville_alliee with
+  | hd :: tail -> hd.cid
+  | [] -> failwith "dataManager: get_next_playable error"
 
 (***** TRAITEMENT *****)
 (*Traitement des informations*)
@@ -228,7 +233,6 @@ let traiter_set_visible args =
        add_ville_ennemi (ios q) (ios r) (ios cid))
   | [ q ; r ; terrain ; "piece" ; jid ; pid ; ptid ; hp ] -> if (ios jid) = !our_jid then (update_unite_alliee (ios q) (ios r) (ios pid) (ptid_to_unites (ios ptid)) (ios hp)) else (update_unite_ennemie (ios q) (ios r) (ios pid) (ptid_to_unites (ios ptid)) (ios hp))
   | _ -> failwith "erreur traiter_set_visible"
-;;
 
 (*Faut-il gérer visible et explored pour l'algo génétique? *)
 let traiter_set_explored args = ()

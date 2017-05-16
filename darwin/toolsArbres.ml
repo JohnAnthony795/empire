@@ -66,8 +66,8 @@ let read_arbre fichier =
   with e ->                      (* some unexpected exception occurs *)
     close_in_noerr ic;           (* emergency closing *)
     raise e                      (* exit with error: files are closed but
-                                    		                            		channels are not flushed *)
-;;
+                             		channels are not flushed *)
+
 
 let write_arbre fichier forest =
   (* Write message to file *)
@@ -106,16 +106,16 @@ let read_population fichier =   (*returns a population written in file fichier.*
 
 
 let write_population fichier pop =  (*writes population pop to file fichier*)
-                                   let rec pop_tocode  p = 
-                                     match p with 
-                                     |[] -> ""
-                                     |(foret,score)::cs -> string_of_float score ^ "|" ^ forest_tocode foret ^ "\n" ^ pop_tocode cs 
+  let rec pop_tocode  p = 
+    match p with 
+    |[] -> ""
+    |(foret,score)::cs -> string_of_float score ^ "|" ^ forest_tocode foret ^ "\n" ^ pop_tocode cs 
 
-                                   in
-                                   (* Write message to file *)
-                                   let oc = open_out fichier in
-                                   fprintf oc "%s\n" (pop_tocode pop);
-                                   close_out oc             	 (* flush and close the channel *)
+  in
+  (* Write message to file *)
+  let oc = open_out fichier in
+  fprintf oc "%s\n" (pop_tocode pop);
+  close_out oc             	 (* flush and close the channel *)
 
 
 

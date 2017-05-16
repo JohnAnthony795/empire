@@ -9,21 +9,21 @@ open Printf (*for debug purposes*)
                                         %token <Types.unites> UNITE
                                                               %token <Types.direction> DIR
 
-                                                                                       %token NBUAP NBVAP
-                                                                                       %token MV SCP ET
+%token NBUAP NBVAP
+%token MV SCP ET
 
-                                                                                       %token LPAREN RPAREN HASH VIRG COLON QMARK EMARK
-                                                                                       %token EOL
+%token LPAREN RPAREN HASH VIRG COLON QMARK EMARK
+%token EOL
 
-                                                                                       %left         /* lowest precedence */
-                                                                                       %nonassoc        /* highest precedence */
-                                                                                       %start foret             /* the entry point */
+%left         /* lowest precedence */
+%nonassoc        /* highest precedence */
+%start foret             /* the entry point */
 
-                                                                                       %type <Types.t_foret> foret
-                                                                                                             %type <Types.t_arbre> arbre
+%type <Types.t_foret> foret
+%type <Types.t_arbre> arbre
 
-                                                                                                                                   %type <Types.t_action> action
-                                                                                                                                                          %type <Types.t_action> codeaction
+%type <Types.t_action> action
+%type <Types.t_action> codeaction
                                                                                                                                                                                  %type <Types.t_predicat> predicat
                                                                                                                                                                                                           %type <Types.t_predicat> codepred
                                                                                                                                                                                                                                    %%
@@ -46,6 +46,6 @@ open Printf (*for debug purposes*)
   predicat:
     QMARK codepred                             { $2 } 
       codepred:
-    NBUAP COLON UNITE COLON INT COLON COMP     { Nb_unite_allie_proche ($3,$5,$7) }
-| NBVAP COLON INT COLON COMP                 { Nb_ville_allie_proche ($3,$5) }
+    NBUAP COLON INT COLON UNITE COLON INT COLON COMP     { Nb_unite_allie_proche ($3,$5,$7,$9) }
+| NBVAP COLON INT COLON INT COLON COMP                 { Nb_ville_allie_proche ($3,$5,$7) }
   ;

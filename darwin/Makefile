@@ -8,7 +8,7 @@ mainGen :
 	
 clean :
 	rm -rf _build/ genetique/_build/
-	rm *.native genetique/*.native
+	rm -f *.native genetique/*.native
 	
 	
 
