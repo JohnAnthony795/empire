@@ -108,6 +108,5 @@ let main () =
 
 
 let () = 
-  print_endline ("Start mainGen : génération " ^ (string_of_int nbreGenInitial));
   Random.self_init ();
   main ()

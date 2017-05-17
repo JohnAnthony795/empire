@@ -53,42 +53,36 @@ open Types
 (* On utilise des refs pour pouvoir modifier leur valeur *)
 (* On utilise le type option pour pouvoir les initialiser à None *)
 (* Pour accéder à un canal, il faut matcher "Some c" et "None" puis utiliser "!c" pour accéder au canal lui-même *)
-let input_channel = ref(None)
-let output_channel = ref(None)
 let socket = ref(None)
 
 let get_socket () =
-  match !socket with
-  | Some (sock) -> sock
-  | None -> failwith "interfaceCom : socket non initialisé"
+    match !socket with
+    | Some (sock) -> sock
+    | None -> failwith "interfaceCom : socket non initialisé"
+
+let get_ic () = Unix.in_channel_of_descr (get_socket ())
+    
+let get_oc () = Unix.out_channel_of_descr (get_socket ())
 
 let threadID () = "Thread " ^ string_of_int (Thread.id (Thread.self ()))
 
 let printSock () =
-  match !input_channel with
-  | Some (ic) -> let mysockaddr = getsockname (get_socket ()) in
-    let myhostname = (Unix.getnameinfo mysockaddr []).ni_hostname in
-    let myport = (Unix.getnameinfo mysockaddr []).ni_service in
-    print_endline ((threadID ()) ^ ": hostname=" ^ myhostname ^ ", port=" ^ myport)
-  | None -> failwith "Input_channel not initialized"
-
+  let mysockaddr = getsockname (get_socket ()) in
+  let myhostname = (Unix.getnameinfo mysockaddr []).ni_hostname in
+  let myport = (Unix.getnameinfo mysockaddr []).ni_service in
+  print_endline ((threadID ()) ^ ": hostname=" ^ myhostname ^ ", port=" ^ myport)
 
 (* Fonctions auxiliaires d'ouverture et de fermeture de connexion *)
 (* sockaddr -> socket *)
 let open_connection sockaddr =
   let domain = Unix.domain_of_sockaddr sockaddr in
   let sock = Unix.socket domain Unix.SOCK_STREAM 0 in
-  Unix.sleep 2;
-  let port = 43000 + Thread.id (Thread.self ()) in
-  let sockaddrtobind = ADDR_INET (Unix.inet_addr_loopback, port) in
-  Unix.bind sock sockaddrtobind;
-  print_endline ((threadID ()) ^ ": Socket bound to port " ^ (Unix.getnameinfo (getsockname sock) []).ni_service ^ "\n");
   try Unix.connect sock sockaddr ;
     sock
   with exn -> Unix.close sock ; raise exn
 
 let shutdown_connection () =
-  Printf.printf "Closing client socket\n\n";
+  print_endline "Closing client socket\n";
   Unix.shutdown (get_socket ()) Unix.SHUTDOWN_SEND
 
 
@@ -104,10 +98,7 @@ let init_socket server port =
   in try
     let sockaddr = Unix.ADDR_INET(server_addr,port) in
     socket := Some(open_connection sockaddr);	(* On crée le socket pour affecter les canaux in/out *)
-    input_channel := Some (Unix.in_channel_of_descr (get_socket ()));
-    output_channel := Some (Unix.out_channel_of_descr (get_socket ()));
-    print_endline ((threadID ()) ^ ": Socket created\n");
-    printSock ();
+    printSock ();    
     ()
   with Failure("int_of_string") -> Printf.eprintf "bad port number";
     exit 2
@@ -176,10 +167,11 @@ let traiter_message message =
   in
   let tlMsgHd = match tlMsg with
     | hd :: _ -> hd
-    | [] -> failwith "interfaceCom.traiter_message: 2"
+    | [] -> ""
   in
 
   match listeMsgHd with
+  | m -> print_endline (string_of_int (Thread.id (Thread.self ())) ^ " : recu message = \"" ^ m ^ "\"")
   | "player_id" -> set_our_jid tlMsg
   | "width" -> set_map_width tlMsg
   | "height" -> set_map_height tlMsg
@@ -206,6 +198,7 @@ let traiter_message message =
   | "created-units-limit" -> traiter_created_units_limit tlMsg
   | x -> Printf.printf "traiter_message: message serveur imprévu : \"%s\", d'argument \"%s\"\n" x tlMsgHd
 
+
 (* 	Définition de notre propre fonction input_line (qui normalement lit depuis un channel, ici depuis le socket
    	En effet, utiliser input_line bloque TOUS les threads utilisés !! *)
 let my_input_line in_chan =
@@ -216,27 +209,20 @@ let my_input_line in_chan =
   done ;
   !msg
 
-
-let receive_next () =
-  match !input_channel with
-  | Some (ic) -> input_line ic
-  | None -> failwith "Input_channel not initialized"
-
 let rec receive () =
-  printSock () ;
-  match receive_next () with
+  print_endline ("Waiting for reception on thread " ^ string_of_int (Thread.id (Thread.self ())));
+  match input_line (get_ic ()) with
   | "" -> failwith "receive: Empty message"
   | "get_action" -> print_endline ((threadID ()) ^ " : get_action"); traiter_message "get_action"
-  | m -> print_endline ((threadID ()) ^ " : " ^ m); traiter_message m; receive ()
+  | m -> print_endline ((threadID ()) ^ " : réception " ^ m); traiter_message m; receive ()
 
 (*  SEND_TO_SERVER : string -> unit
     	L'envoi concret du message par le socket *)
 let send_to_server message =
   Printf.printf "Sending \"%s\" to the server\n %!" message;
-  match !output_channel with
-  | Some (oc) -> output_string oc (message ^ "\n");
-    flush oc
-  | None -> failwith "Output_channel not initialized"
+  let oc = get_oc () in  
+  output_string oc (message ^ "\n");
+  flush oc
 
 (*  SEND : t_action -> unit						Fonction "publique"
     	Reçoit un type action de Tree/main, le convertit en string et l'envoie au serveur par le socket *)
