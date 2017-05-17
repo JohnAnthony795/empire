@@ -28,7 +28,12 @@ let best ind1 ind2 =
     ((f1,s1),(f2,s2)) -> if s1 >= s2 then ind1 else ind2
 
 (*best individual within a list*)
-let bestOfList lInd = List.fold_left best (List.hd lInd) lInd
+let bestOfList lInd = 
+  let lIndHd = match lInd with
+    | hd :: _ -> hd
+    | [] -> failwith "selection.bestOfList"
+  in
+  List.fold_left best lIndHd lInd
 
 (*Somme des scores de tout les individus ( bonne indication de fitness globale btw)*)
 let scores_sum pool = (*.+?*)
@@ -105,4 +110,4 @@ let merge_generations parents children methode =  (*fonction générique de merg
   match methode with
   | 1 -> merge_best_and_child parents children
   | x -> failwith ("ERREUR: il n'y a pas de méthode"^ string_of_int x)
-  
+

@@ -28,7 +28,7 @@ open ToolsArbres
 open Types
 open TypesGen
 
-let individusASelectionner = 2 (*DOIT ETRE PAIR!!!!*)
+let individusASelectionner = 2 (* DOIT ETRE PAIR!!!! *)
 
 let iterations = 20 (* nombre de générations à simuler avant de s'arrêter; on pourrait la mettre en paramètre *)
 
@@ -66,7 +66,11 @@ let getNbreGenInitial configFile =
       match lines with
       | [] -> ""
       | line :: remainingLines -> match strSplit line '=' with 
-        | id :: tl -> if (id = strToFind) then (List.hd tl) else recfindValueOf strToFind remainingLines
+        | id :: tl -> let tlHd = match tl with
+            | hd :: _ -> hd
+            | [] -> failwith "mainGen.getNbreGenInitial"
+          in
+          if (id = strToFind) then tlHd else recfindValueOf strToFind remainingLines
         | _ -> recfindValueOf strToFind remainingLines
     in
     let valueFound = recfindValueOf strToFind lines in
@@ -76,9 +80,9 @@ let getNbreGenInitial configFile =
 let nbreGenInitial = getNbreGenInitial "config.cfg" (* nombre de générations simulées depuis le début *)
 
 let shuffle entryList =
-    let nd = List.map (fun c -> (Random.bits (), c)) entryList in
-    let sond = List.sort compare nd in
-    List.map snd sond
+  let nd = List.map (fun c -> (Random.bits (), c)) entryList in
+  let sond = List.sort compare nd in
+  List.map snd sond
 
 (** MAIN **)
  
@@ -109,11 +113,12 @@ let main () =
     end
   in
 
-  let popu = ToolsArbres.read_population "current_gen.pop" in (* initialisation de la population, lue depuis le disque *)
+  (** let popu = ToolsArbres.read_population "current_gen.pop" in (* initialisation de la population, lue depuis le disque *) **)
+  let popu = popu0 in
   mainLoop popu nbreGenInitial
 
 
 let () = 
   print_endline ("Start mainGen : génération " ^ (string_of_int nbreGenInitial));
-	Random.self_init ();
-	main ()
+  Random.self_init ();
+  main ()

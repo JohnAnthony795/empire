@@ -13,13 +13,12 @@ type move = piece_id * direction ;;  (* si pas déjà défini*)
 
 type set_city_production = 
   city_id * unites
-;;  (*définition dans Server/Empire.ml*)
+ (*définition dans Server/Empire.ml*)
 
 type t_action = 
   | Move of move 
   | Set_city_prod of set_city_production 
   | End_turn 
-;;
 
 type comparateur = Inf | Sup | Eq | InfEq | SupEq;;
 
@@ -30,16 +29,10 @@ type t_predicat= (* rajouter des prédicats en masse*)
   | Littoral_adjacent (* presence de littoral dans une case adjacente*)
 	| Transport (*présence de l'unité dans un transport*)
 	| Fog_proche of (int) (* distance proximité / plus ou moins loin *)
-;;
 
 type t_arbre = 
     Leaf of t_action 
   |Node of (t_arbre * t_predicat * t_arbre)
-;;
-
-(* Fonction qui renvoie un arbre basique *)
-
-val arbre0 : t_arbre
 
 type t_foret =  t_arbre * t_arbre * t_arbre * t_arbre * t_arbre * t_arbre ;; (* 5 unités , ville , ( ajouter stratégie globale???) *)
 

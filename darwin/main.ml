@@ -24,9 +24,9 @@ open DataManager
 type uniteville = ARMY | FIGHT | TRANSPORT | PATROL | BATTLESHIP | CITY
 
 let get_arbre foret ptid =
-	let (a1,a2,a3,a4,a5,a6) = foret in
-	match ptid with
-	| ARMY -> a1
+  let (a1,a2,a3,a4,a5,a6) = foret in
+  match ptid with
+  | ARMY -> a1
   | FIGHT -> a2
   | TRANSPORT -> a3
   | PATROL -> a4
@@ -52,18 +52,18 @@ let compute_Action id foret = (*prend une id t_ID de piece et return une action 
        | Eq -> nbproche = n
        | InfEq -> nbproche <= n
        | SupEq -> nbproche >= n)
-  	| Nb_ville_ennemie_proche (d,n,c) -> let nbproche = (get_nb_ville_proche_ennemi piece_id d) in (*il manque une quantification de "proche" en fait *) 
+    | Nb_ville_ennemie_proche (d,n,c) -> let nbproche = (get_nb_ville_proche_ennemi piece_id d) in (*il manque une quantification de "proche" en fait *) 
       (match c with
        | Inf -> nbproche < n
        | Sup -> nbproche > n
        | Eq -> nbproche = n
        | InfEq -> nbproche <= n
        | SupEq -> nbproche >= n)
-  | Littoral_adjacent -> littoral_adj piece_id (* presence de littoral dans une case adjacente*)
-	| Transport -> transport piece_id (*présence de l'unité dans un transport*)
-	| Fog_proche (d) -> fog_proche piece_id d (* distance proximité *)
-  
-  
+    | Littoral_adjacent -> littoral_adj piece_id (* presence de littoral dans une case adjacente*)
+    | Transport -> transport piece_id (*présence de l'unité dans un transport*)
+    | Fog_proche (d) -> fog_proche piece_id d (* distance proximité *)
+
+
   in
   let rec action_from_tree t id = match t with
     | Leaf a -> a
@@ -83,7 +83,7 @@ let main id =
   in
   (*init socket*)
   init_socket "127.0.0.1" 9301;
-  
+
   receive (); (* on reçoit les infos du début *)
   (* TODO true -> partie terminée ? *)
   while (get_score () = -1.0) do

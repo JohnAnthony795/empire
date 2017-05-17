@@ -1,4 +1,5 @@
 
+(* TODO: utiliser ces methodes *)
 type methode_evaluation = AFF10 | AFF20 | CAPTAIN
 
 let shuffle entryList =
@@ -8,7 +9,10 @@ let shuffle entryList =
 
 let evaluer popu methode =
   let pop_ref = Selection.select_n_best popu 1 in (* pour cette génération, le meilleur candidat sera notre candidat de référence *)
-  let (foret_ref, _) = (List.hd pop_ref) in (* on extrait la forêt *)
+  let (foret_ref, _) = match pop_ref with 
+    | hd :: tail -> hd
+    | [] -> failwith "evaluation.evaluer : empty list"
+  in (* on extrait la forêt *)
 
   let eval_candidat candidat =
   	let (foret, _) = candidat in

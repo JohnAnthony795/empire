@@ -1,22 +1,27 @@
 # empire
 Projet d'IA pour le RTS TBS-Empire
 
-Avancée réseau :
+## TUTO : Comment ajouter un nouveau prédicat sans attaraper une maladie mortelle ?
 
-Après étude approfondie des interfaces réseau existantes, il paraît logique d'utiliser l'interface tee.py qui fournit une création de sockets pour l'observer et le joueur, et attend la connection de ces derniers. 
-
-####tee.py spec :
-"This program waits for a connection on <observer-port> (for the observer) and"
-"on <player-port> (for the player). Then, it connectes to the server and"
-"passes messages of the server to both the player and the observer. All messages"
-"but end_turn messages, from the player, are sent to the server and messages from"
-"the observer are ignored. The end_turn message is sent to the server only if"
-"received by both the observer and the player."
-
-Ainsi, il ne reste qu'a créer (en Caml) la partie client, pour cela j'ai commencé à étudier ceci : https://caml.inria.fr/pub/docs/oreilly-book/html/book-ora187.html
-une sorte de design-pattern pour les connexions(voir en particulier la partie client)
-
-Autre solution questionnée :
-une interface réseau en pyhton (plus simple ?) qui récupère les outils caml du data manager ? je pense que c est une surcouche non nécessaire
-
-JB.
+### Dans darwin/Types.ml : 
+- ajouter le prédicat dans le type t_predicat avec son type (commenter da façon explicite)
+ - ajouter le printer du predicat dans pred_to_string
+ - ajouter le code du prédicat dans pred_to_code de la forme : "?CODE:" ^ arg1_to_string ^ ":" ^ arg2_to_string
+ 
+ 
+ 
+### Dans darwin/main.ml :
+- ajouter dans le pattern-matching de compute_Action le nouveau predicat, le faire renvoyer le bool en question 
+ 
+### Dans darwin/dataManager.ml : - 
+ajouter dans les getters le/les fonctions qui permettent d'évaluer le prédicat (si possible directement renvoyer un bool pour éviter de coder trop dans le main)
+ 
+### Dans darwin/parser.mly : 
+- ajouter en %token le code du prédicat
+ - ajouter la grammaire du prédicat tout en bas de cette manière : CODEPREDICAT COLON TYPEARG1 COLON TYPEARG2 {predicat($3,$5)} 
+ - si nécessaire, ajouter un nouveau type d'arguments en haut du parser
+ 
+### Dans darwin/lexer.mll :
+ - ajouter le code du prédicat dans la partie dédiée (en bas)
+ 
+ 

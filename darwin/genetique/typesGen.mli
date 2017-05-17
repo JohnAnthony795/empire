@@ -14,3 +14,8 @@ val taille_population : int
 
 val profondeur_max_arbre : int
 
+(* structures minimales pour les tests *)
+val arbre0 : t_arbre
+val foret0 : t_foret
+val popu0 : t_population
+
