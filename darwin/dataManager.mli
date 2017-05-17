@@ -8,6 +8,7 @@ val transport : piece_id -> bool
 val fog_proche : piece_id -> int -> bool
 
 val get_next_playable: unit -> int
+val get_next_movable: unit -> (int*unites)
 val get_score : unit -> float
 
 val set_our_jid: string list -> unit
@@ -15,6 +16,9 @@ val set_map_width: string list -> unit
 val set_map_height: string list -> unit
 val set_victoire : string list -> unit
 val set_draw : unit -> unit
+
+val init_data : unit -> unit
+
 val traiter_set_visible: string list -> unit
 val traiter_set_explored: string list -> unit
 val traiter_delete_piece: string list -> unit

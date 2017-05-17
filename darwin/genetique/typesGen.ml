@@ -38,6 +38,6 @@ let foret0 = (arbre0, arbre0, arbre0, arbre0, arbre0, arbre0)
 
 let candidat0 = (foret0, 12.0)
 
-let popu0 = [candidat0; candidat0]
+let popu0 = [candidat0;candidat0; candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0; candidat0;]
 
 

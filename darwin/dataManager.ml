@@ -90,19 +90,29 @@ let fill_terrain terrain q r =
 (** Listes unités **)
 
 (* Unités alliées *)
-type unite_list = {q:int; r:int; pid : int ; unite_type : Types.unites ; hp : int};;
+type unite_list = {q:int; r:int; pid : int ; unite_type : Types.unites ; hp : int ; mov : int};;
 
 let liste_unites = ref([]);;
 
-let update_unite_alliee q r pid unite_type hp = 
+let update_unite_alliee q r pid unite_type hp mov = 
   let pid_is_not pid element = element.pid <> pid in
-  liste_unites := {q=q; r=r ; pid=pid; unite_type=unite_type; hp=hp} :: (List.filter (pid_is_not pid) !liste_unites) ;;
+  liste_unites := {q=q; r=r ; pid=pid; unite_type=unite_type; hp=hp ; mov=mov} :: (List.filter (pid_is_not pid) !liste_unites) ;;
 
 (* Unités ennemies *)
 
 (* TODO : liste d'unites (pos, pid, type unité, hp? (pour battleship)) *)
 
 type unite_ennemies_list = {q:int; r:int; pid : int ; unite_type : Types.unites ; hp : int};;
+
+let ptid_to_move ptid =
+  match ptid with
+  | 0 -> 1
+  | 1 -> 8
+  | 2 -> 2
+  | 3 -> 4
+  | 4 -> 2 
+  | _ -> failwith "Erreur ptid_to_move : entrée non gérée"
+
 
 let liste_ennemis = ref([]);;
 
@@ -168,15 +178,15 @@ let get_unite pid =
 
 (* Ajouté distance en parametre*)
 let get_nb_unite_proche unites pid distance=
-  let unite = List.find (fun (element:unite_list) -> element.pid = pid) !liste_unites in
-  List.length (List.filter (fun (element:unite_list) -> ((element.pid <> pid) && (element.unite_type == unites) && ((tiles_distance (unite.q,unite.r) (element.q,element.r))<distance))) !liste_unites) ;;
+  let unite = get_unite pid in
+  List.length (List.filter (fun (element:unite_list) -> ((element.pid <> pid) && (element.unite_type =unites) && ((tiles_distance (unite.q,unite.r) (element.q,element.r))<distance))) !liste_unites) ;;
 
 let get_nb_ville_proche_allie pid distance =
-  let unite = List.find (fun (element:unite_list) -> element.pid = pid) !liste_unites in
+  let unite = get_unite pid in
   List.length (List.filter (fun (element:allie) -> (tiles_distance (unite.q,unite.r) (element.q,element.r))<distance) !liste_ville_alliee) ;;
 
 let get_nb_ville_proche_ennemi pid distance =
-  let unite = List.find (fun (element:unite_list) -> element.pid = pid) !liste_unites in
+  let unite = get_unite pid in
   List.length (List.filter (fun (element:ennemi) -> (tiles_distance (unite.q,unite.r) (element.q,element.r))<distance) !liste_ville_ennemie) ;;
 
 (* littoral dans une des 6 cases adjacentes *)
@@ -203,7 +213,6 @@ let get_score () =
   | Some (victoire) -> float_of_int victoire
   | None -> -1.0
 
-
 (* piece dans un transport*)
 let transport pid = 
   let unite = get_unite pid in
@@ -221,6 +230,28 @@ let get_next_playable () =
   | hd :: tail -> hd.cid
   | [] -> failwith "dataManager: get_next_playable error"
 
+let get_next_movable () = 
+  let liste_movable = List.filter (fun (element:unite_list) -> element.mov > 0) !liste_unites in
+  match liste_movable with
+  | hd :: tail -> (hd.pid,hd.unite_type)
+  | [] -> (-1,ARMY)
+
+let reset_move_all () =
+  let reset_move (unite:unite_list) = {q=unite.q;r=unite.r;pid=unite.pid;unite_type=unite.unite_type;hp=unite.hp;mov=(ptid_to_move unite.mov)} in
+  List.map reset_move !liste_unites
+
+let init_data () =
+  a_gagne := None;
+  map_width := 0;
+  map_height := 0;
+  our_jid := 0;
+  liste_unites := [];
+  liste_ennemis := [];
+  liste_ville_alliee := [];
+  liste_ville_ennemie := [];
+  ()
+
+
 (***** TRAITEMENT *****)
 (*Traitement des informations*)
 let traiter_set_visible args =
@@ -234,7 +265,7 @@ let traiter_set_visible args =
     else 
       (fill_terrain "their_city" (ios q) (ios r) ; 
        add_ville_ennemi (ios q) (ios r) (ios cid))
-  | [ q ; r ; terrain ; "piece" ; jid ; pid ; ptid ; hp ] -> if (ios jid) = !our_jid then (update_unite_alliee (ios q) (ios r) (ios pid) (ptid_to_unites (ios ptid)) (ios hp)) else (update_unite_ennemie (ios q) (ios r) (ios pid) (ptid_to_unites (ios ptid)) (ios hp))
+  | [ q ; r ; terrain ; "piece" ; jid ; pid ; ptid ; hp ] -> if (ios jid) = !our_jid then (update_unite_alliee (ios q) (ios r) (ios pid) (ptid_to_unites (ios ptid)) (ios hp) (ptid_to_move (ios ptid))) else (update_unite_ennemie (ios q) (ios r) (ios pid) (ptid_to_unites (ios ptid)) (ios hp))
   | _ -> failwith "erreur traiter_set_visible"
 
 (*Faut-il gérer visible et explored pour l'algo génétique? *)
@@ -253,7 +284,7 @@ let traiter_create_piece args =
   let ios = int_of_string in
   match args with
   | [pid ; ptid ; cid ; hp] -> let city = List.find (fun (element:allie) -> element.cid = (ios cid)) !liste_ville_alliee in 
-    update_unite_alliee city.q city.r (ios pid) (ptid_to_unites (ios ptid)) (ios hp)
+    update_unite_alliee city.q city.r (ios pid) (ptid_to_unites (ios ptid)) (ios hp) (ptid_to_move (ios ptid))
   | _ -> failwith "erreur traiter_create_piece";;
 
 (*Déplace une piece*)
@@ -261,7 +292,7 @@ let traiter_move args =
   let ios = int_of_string in
   match args with
   | [pid ; q ; r] -> let piece = List.find (fun (element:unite_list) -> element.pid = (ios pid)) !liste_unites in 
-    update_unite_alliee (ios q) (ios r) (ios pid) piece.unite_type piece.hp
+    update_unite_alliee (ios q) (ios r) (ios pid) piece.unite_type piece.hp (piece.mov-1)
   | _ -> failwith "erreur traiter_move";;
 
 (*Une ville alliee est prise par l'ennemi*)
@@ -282,7 +313,7 @@ let traiter_enter_city args =
   match args with
   | [pid ; cid] ->  let city = List.find (fun (element:allie) -> element.cid = (ios cid)) !liste_ville_alliee in
     let piece = List.find (fun (element:unite_list) -> element.pid = (ios pid)) !liste_unites in
-    update_unite_alliee city.q city.r (ios pid) piece.unite_type piece.hp
+    update_unite_alliee city.q city.r (ios pid) piece.unite_type piece.hp piece.mov
   | _ -> failwith "erreur traiter_enter_city";;
 
 (*Une unite alliee entre dans un transport*)
@@ -291,7 +322,7 @@ let traiter_enter_piece args =
   match args with
   | [pid ; tid] ->  let transport = List.find (fun (element:unite_list) -> element.pid = (ios tid)) !liste_unites in
     let piece = List.find (fun (element:unite_list) -> element.pid = (ios pid)) !liste_unites in
-    update_unite_alliee transport.q transport.r (ios pid) piece.unite_type piece.hp
+    update_unite_alliee transport.q transport.r (ios pid) piece.unite_type piece.hp piece.mov
   | _ -> failwith "erreur traiter_enter_piece";;
 
 (*On prend une ville ennemie*)

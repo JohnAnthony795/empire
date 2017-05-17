@@ -21,9 +21,13 @@ open Printf
 open InterfaceCom
 open DataManager
 
-type uniteville = ARMY | FIGHT | TRANSPORT | PATROL | BATTLESHIP | CITY
+type uniteville = ARMY | FIGHT | TRANSPORT | PATROL | BATTLESHIP | CITY ;;
 
-let get_arbre foret ptid =
+let unite_to_uniteville (unite:unites) =
+  match unite with 
+  |ARMY -> ARMY | TRANSPORT -> TRANSPORT | FIGHT -> FIGHT | BATTLESHIP -> BATTLESHIP | PATROL -> PATROL | _ -> CITY
+
+let get_arbre foret (ptid:uniteville) =
   let (a1,a2,a3,a4,a5,a6) = foret in
   match ptid with
   | ARMY -> a1
@@ -32,10 +36,9 @@ let get_arbre foret ptid =
   | PATROL -> a4
   | BATTLESHIP -> a5
   | CITY -> a6
-
 (*Parcours d'arbre ( prise de décision ) --------------------------------------------*)
 
-let compute_Action id foret = (*prend une id t_ID de piece et return une action t_action à jouer        (prendre aussi la foret?????? )*)
+let compute_Action id unite_type foret = (*prend une id t_ID de piece et return une action t_action à jouer        (prendre aussi la foret?????? )*)
   let evaluate_pred pred piece_id = match pred with (* prend un predicat retourne un booleen  TENIR A JOUR voir directement mettre dans type*)
     | Nb_unite_allie_proche ( d, u, n, c ) -> let nbproche = (get_nb_unite_proche u piece_id d) in (*il manque une quantification de "proche" en fait *) 
       (match c with
@@ -69,7 +72,7 @@ let compute_Action id foret = (*prend une id t_ID de piece et return une action 
     | Leaf a -> a
     | Node (t1,p,t2) -> if evaluate_pred p id then action_from_tree t1 id else action_from_tree t2 id
   in
-  let decision_tree = get_arbre foret CITY (*TODO obtenir l'arbre qui concerne cette unité : get_type_by_id()? puis arbre n *)
+  let decision_tree = get_arbre foret unite_type (*TODO obtenir l'arbre qui concerne cette unité : get_type_by_id()? puis arbre n *)
   in
   action_from_tree decision_tree id;;
 
@@ -78,6 +81,7 @@ let compute_Action id foret = (*prend une id t_ID de piece et return une action 
   id = 1 -> on est un candidat *)
 let main id =
    Printf.printf "START MAIN\n%!";
+   init_data ();
   let foret = if id = 0 then ToolsArbres.read_arbre "foret_ref.frt"
     else ToolsArbres.read_arbre "foret_cand.frt"
   in
@@ -88,7 +92,15 @@ let main id =
   (* TODO true -> partie terminée ? *)
   while (get_score () = -1.0) do
     (* get next unité/ville à jouer *)
-    send (compute_Action (get_next_playable ()) foret);
+    send (compute_Action (get_next_playable ()) CITY foret);
+    while(match get_next_movable () with
+          | (-1,ARMY) -> false
+          | _ -> true) do
+      let next_unite = get_next_movable () in
+      send (compute_Action (fst next_unite) (unite_to_uniteville (snd next_unite)) foret);
+    done;
+    (*Fin du tour*)
+    (*send(End_turn);*)
     receive ()
   done;
   print_endline "Fin de partie";

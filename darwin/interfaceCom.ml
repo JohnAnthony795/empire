@@ -206,3 +206,4 @@ let send_to_server message =
 let send action =
   send_to_server (action_to_string action)
   (* bloquant : traiter_message jusqu'au prochain get_action *)
+

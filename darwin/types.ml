@@ -57,6 +57,7 @@ type t_arbre =
 
 type t_foret =  t_arbre * t_arbre * t_arbre * t_arbre * t_arbre * t_arbre ;; (* 5 unités , ville , (stratégie ?) *)
 
+
 (*print arbre   ### A PIMPER ###*)
 (*EN particulier compléter prédicats_tostring  + les sous-call*)
 (*Note: Point positif, les arbres sont bien verbeux. Par contre cela pose t'il des problèmes des parsing dans les fichiers?
