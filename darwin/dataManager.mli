@@ -14,7 +14,7 @@ val set_our_jid: string list -> unit
 val set_map_width: string list -> unit
 val set_map_height: string list -> unit
 val set_victoire : string list -> unit
-
+val set_draw : unit -> unit
 val traiter_set_visible: string list -> unit
 val traiter_set_explored: string list -> unit
 val traiter_delete_piece: string list -> unit

@@ -91,6 +91,7 @@ let main id =
     send (compute_Action (get_next_playable ()) foret);
     receive ()
   done;
+  print_endline "Fin de partie";
   get_score () 
 
 let () = if ((Array.length Sys.argv) > 1) then let _ = main (int_of_string Sys.argv.(1)) in ()

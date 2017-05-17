@@ -97,7 +97,7 @@ else
 
 let main () =
   (*ToolsArbres.write_population "current_gen.pop" (first_popu 1);*)
-  print_endline ("Start mainGen : génération " ^ (string_of_int nbreGenInitial));
+  (*print_endline ("Start mainGen : génération " ^ (string_of_int nbreGenInitial));*)
   let rec mainLoop popu nbreGen =
     let popu1 = Evaluation.evaluer popu Evaluation.AFF10 in (* Met à jour le score d'adaptabilité de chaque individu *)
     let popu2 = Selection.select_n_parents popu1 individusASelectionner 1 in (* popu2 garde les meilleurs individus ; c'est là que se passent les affrontements *)

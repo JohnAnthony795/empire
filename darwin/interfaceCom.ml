@@ -158,7 +158,7 @@ let traiter_message message =
   | "height" -> set_map_height tlMsg
   | "piece_types" -> () (* TODO : Peupler une structure de données avec *)
   | "random_seed" -> Printf.printf "Seed de la map : %s\n" (List.hd tlMsg)
-  (*| "draw" -> *)
+  | "draw" -> set_draw ()
   | "winner" -> set_victoire tlMsg
   | "error" -> Printf.printf "Received error : %s" (List.hd tlMsg)
   | "set_visible" -> traiter_set_visible tlMsg
@@ -188,6 +188,8 @@ let rec receive () =
   match receive_next () with
   | "" -> failwith "receive: Empty message"
   | "get_action" -> traiter_message "get_action"
+  | "draw" -> traiter_message "draw"
+  | "winner" -> traiter_message "winner"
   | m -> print_endline (string_of_int (Thread.id (Thread.self ())) ^ " : " ^ m); traiter_message m; receive ()
 
 (*  SEND_TO_SERVER : string -> unit

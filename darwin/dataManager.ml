@@ -192,12 +192,15 @@ let set_victoire msg =
     | hd :: tail -> hd
     | [] -> failwith "dataManager.set_victoire"
   in
-  let victoire = (if (int_of_string msgHd) = !our_jid then true else false) in
+  let victoire = (if (int_of_string msgHd) = !our_jid then 1 else 0) in
   a_gagne := Some(victoire)
+
+let set_draw () = 
+  a_gagne := Some(2)
 
 let get_score () =
   match !a_gagne with
-  | Some (victoire) -> if victoire then 1.0 else 0.0
+  | Some (victoire) -> float_of_int victoire
   | None -> -1.0
 
 
