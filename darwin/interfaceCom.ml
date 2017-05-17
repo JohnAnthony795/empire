@@ -1,47 +1,44 @@
 (* Objectif: -assurer la communication entre le serveur ( prend des strings)
-   					et  le decision tree ( sort des actions)
-
-   		     -Lire les data envoyées par le serveur et les envoyer au DataManager *)
+            et  le decision tree ( sort des actions)
+           -Lire les data envoyées par le serveur et les envoyer au DataManager *)
 
 
 (* Fonctions publiques à faire :
-   	- send : t_action -> unit 	//reçoit un type action de Tree/main, le convertit en string et l'envoie au serveur par le socket
-   	- init_socket : unit -> unit 
-
-   	Fonctions privées :
-   	- send_to_server : string -> unit	//l'envoi concret du message par le socket
-   	- action_to_string : t_action -> string
-   	- traiter_message : string -> unit //parser qui appelle les fonctions appropriées (du package DATA) ou qui se termine s'il recoit get_action (pour rendre la main au main)
-
+    - send : t_action -> unit   //reçoit un type action de Tree/main, le convertit en string et l'envoie au serveur par le socket
+    - init_socket : unit -> unit 
+    Fonctions privées :
+    - send_to_server : string -> unit //l'envoi concret du message par le socket
+    - action_to_string : t_action -> string
+    - traiter_message : string -> unit //parser qui appelle les fonctions appropriées (du package DATA) ou qui se termine s'il recoit get_action (pour rendre la main au main)
 *) 
 
 (* Actions possibles :
-   	- end_game
-   	- end_turn
-   	- dump_map
-   	- fog_off (cheat qui sera désactivé)
-   	- moves ; pid ; q ; r
-   	- move ; pid ; dir_id
-   	- set_city_production ; cid ; pid
-   	- get_width
-   	- get_height
-   	- get_piece_types_names
-   	- can_move ; pid ; did
-   	- can_enter ; pid ; did
-   	- can_attack ; pid ; did
-   	- get_piece_id_by_loc ; q ; r
-   	- get_transported_names_by_loc ; q ; r
-   	- get_info_city ; cid
-   	- get_info_piece ; pid
-   	- get_city_production ; cid
-   	- get_list_cities
-   	- get_list_pieces
-   	- get_list_movables
-   	- get_city_id_by_loc ; q ; r
+    - end_game
+    - end_turn
+    - dump_map
+    - fog_off (cheat qui sera désactivé)
+    - moves ; pid ; q ; r
+    - move ; pid ; dir_id
+    - set_city_production ; cid ; pid
+    - get_width
+    - get_height
+    - get_piece_types_names
+    - can_move ; pid ; did
+    - can_enter ; pid ; did
+    - can_attack ; pid ; did
+    - get_piece_id_by_loc ; q ; r
+    - get_transported_names_by_loc ; q ; r
+    - get_info_city ; cid
+    - get_info_piece ; pid
+    - get_city_production ; cid
+    - get_list_cities
+    - get_list_pieces
+    - get_list_movables
+    - get_city_id_by_loc ; q ; r
 *)
 
 (** TODO : au début de la partie, le serveur envoie un (ou plusieurs) messages d'init, tels que "width %d"
-    	Il faut les découvrir et traiter, peut être cf. empire-server/Main.ml **)
+      Il faut les découvrir et traiter, peut être cf. empire-server/Main.ml **)
 
 open Unix
 open DataManager
@@ -62,34 +59,19 @@ let get_socket () =
   | Some (sock) -> sock
   | None -> failwith "interfaceCom : socket non initialisé"
 
-let threadID () = "Thread " ^ string_of_int (Thread.id (Thread.self ()))
-
-let printSock () =
-  match !input_channel with
-  | Some (ic) -> let mysockaddr = getsockname (get_socket ()) in
-    let myhostname = (Unix.getnameinfo mysockaddr []).ni_hostname in
-    let myport = (Unix.getnameinfo mysockaddr []).ni_service in
-    print_endline ((threadID ()) ^ ": hostname=" ^ myhostname ^ ", port=" ^ myport)
-  | None -> failwith "Input_channel not initialized"
-
-
 (* Fonctions auxiliaires d'ouverture et de fermeture de connexion *)
 (* sockaddr -> socket *)
 let open_connection sockaddr =
   let domain = Unix.domain_of_sockaddr sockaddr in
-  let sock = Unix.socket domain Unix.SOCK_STREAM 0 in
-  Unix.sleep 2;
-  let port = 43000 + Thread.id (Thread.self ()) in
-  let sockaddrtobind = ADDR_INET (Unix.inet_addr_loopback, port) in
-  Unix.bind sock sockaddrtobind;
-  print_endline ((threadID ()) ^ ": Socket bound to port " ^ (Unix.getnameinfo (getsockname sock) []).ni_service ^ "\n");
-  try Unix.connect sock sockaddr ;
+  let sock = Unix.socket domain Unix.SOCK_STREAM 0 
+  in try Unix.connect sock sockaddr ;
     sock
+  (*(Unix.in_channel_of_descr sock , Unix.out_channel_of_descr sock)*)
   with exn -> Unix.close sock ; raise exn
 
-let shutdown_connection () =
+let shutdown_connection inchan =
   Printf.printf "Closing client socket\n\n";
-  Unix.shutdown (get_socket ()) Unix.SHUTDOWN_SEND
+  Unix.shutdown (Unix.descr_of_in_channel inchan) Unix.SHUTDOWN_SEND
 
 
 (* Création d'un socket client et connexion au serveur *)
@@ -103,15 +85,13 @@ let init_socket server port =
       exit 2
   in try
     let sockaddr = Unix.ADDR_INET(server_addr,port) in
-    socket := Some(open_connection sockaddr);	(* On crée le socket pour affecter les canaux in/out *)
+    socket := Some(open_connection sockaddr); (* On crée le socket pour affecter les canaux in/out *)
+    Printf.printf "Socket created\n\n";
     input_channel := Some (Unix.in_channel_of_descr (get_socket ()));
-    output_channel := Some (Unix.out_channel_of_descr (get_socket ()));
-    print_endline ((threadID ()) ^ ": Socket created\n");
-    printSock ();
-    ()
+    output_channel := Some (Unix.out_channel_of_descr (get_socket ()))
   with Failure("int_of_string") -> Printf.eprintf "bad port number";
     exit 2
-
+    
 let close_socket () =
   Unix.close (get_socket ())
 
@@ -158,39 +138,32 @@ let action_to_string action =
   | Move (pid, did) -> "move " ^ (soi pid) ^ " " ^ (dir_to_string did)
 
 (*  pid : piece_id
-    	ppid : parent_piece_id
-    	tp_pid: transport_piece_id
-    	cid : city_id
-    	jid : numéro d'un joueur (0 ou 1)
-    	ptid : piece_type_id (0-> ARMY, 1-> FIGHT, 2-> TRANSPORT, 3-> PATROL, 4-> BATTLESHIP)
-    	hits : piece.p_hits  (points de vie restants)
+      ppid : parent_piece_id
+      tp_pid: transport_piece_id
+      cid : city_id
+      jid : numéro d'un joueur (0 ou 1)
+      ptid : piece_type_id (0-> ARMY, 1-> FIGHT, 2-> TRANSPORT, 3-> PATROL, 4-> BATTLESHIP)
+      hits : piece.p_hits  (points de vie restants)
 *)
 
 (***** RECEPTION *****)
 
 let traiter_message message =
   let listeMsg = split message in
-  let (listeMsgHd, tlMsg) = match listeMsg with
-    | hd :: tail -> (hd, tail)
-    | [] -> failwith "interfaceCom.traiter_message: 1"
-  in
-  let tlMsgHd = match tlMsg with
-    | hd :: _ -> hd
-    | [] -> failwith "interfaceCom.traiter_message: 2"
-  in
+  let tlMsg = List.tl listeMsg in
 
-  match listeMsgHd with
+  match List.hd listeMsg with
   | "player_id" -> set_our_jid tlMsg
   | "width" -> set_map_width tlMsg
   | "height" -> set_map_height tlMsg
   | "piece_types" -> () (* TODO : Peupler une structure de données avec *)
-  | "random_seed" -> ()
+  | "random_seed" -> Printf.printf "Seed de la map : %s\n" (List.hd tlMsg)
   (*| "draw" -> *)
   | "winner" -> set_victoire tlMsg
-  | "error" -> Printf.printf "Received error : %s" tlMsgHd
+  | "error" -> Printf.printf "Received error : %s" (List.hd tlMsg)
   | "set_visible" -> traiter_set_visible tlMsg
   | "set_explored" -> traiter_set_explored tlMsg
-  | "get_action" -> print_endline (string_of_int (Thread.id (Thread.self ())) ^" : get_action recu" )(* TODO A ENLEVER *)
+  | "get_action" -> Printf.printf "get_action recu \n" (* TODO A ENLEVER *)
   | "delete_piece" -> traiter_delete_piece tlMsg
   | "create_piece" -> traiter_create_piece tlMsg
   | "move" -> traiter_move tlMsg
@@ -204,48 +177,30 @@ let traiter_message message =
   | "ko-invasion" -> traiter_ko_invasion tlMsg
   | "city-units-limit" -> traiter_city_units_limit tlMsg
   | "created-units-limit" -> traiter_created_units_limit tlMsg
-  | x -> Printf.printf "traiter_message: message serveur imprévu : \"%s\", d'argument \"%s\"\n" x tlMsgHd
-
-(* 	Définition de notre propre fonction input_line (qui normalement lit depuis un channel, ici depuis le socket
-   	En effet, utiliser input_line bloque TOUS les threads utilisés !! *)
-let my_input_line in_chan =
-  let fd = get_socket () in 
-  let s = " " and msg = ref "" in
-  while (ThreadUnix.read fd s 0 1 > 0) && s.[0] <> '\n' do
-    msg := !msg ^ s
-  done ;
-  !msg
-
+  | x -> Printf.printf "traiter_message: message serveur imprévu : \"%s\", d'argument \"%s\"\n" x (List.hd tlMsg)
 
 let receive_next () =
   match !input_channel with
-  | Some (ic) -> input_line ic              
+  | Some (ic) -> input_line ic
   | None -> "Input_channel not initialized"
 
 let rec receive () =
-  (*print_endline (string_of_int (Thread.id (Thread.self ())) ^ "receive");*)
   match receive_next () with
   | "" -> failwith "receive: Empty message"
-  | "get_action" -> print_endline ((threadID ()) ^ " : get_action"); traiter_message "get_action"
-  | m -> print_endline ((threadID ()) ^ " : " ^ m); traiter_message m; receive ()
+  | "get_action" -> traiter_message "get_action"
+  | m -> print_endline (string_of_int (Thread.id (Thread.self ())) ^ " : " ^ m); traiter_message m; receive ()
 
 (*  SEND_TO_SERVER : string -> unit
-    	L'envoi concret du message par le socket *)
+      L'envoi concret du message par le socket *)
 let send_to_server message =
-  print_endline (string_of_int (Thread.id (Thread.self ()))^" : Sending "^message^" to the server");
+  Printf.printf "Sending \"%s\" to the server\n %!" message;
   match !output_channel with
   | Some (oc) -> output_string oc (message ^ "\n");
-    flush oc;
+    flush oc
   | None -> failwith "Output_channel not initialized"
 
-(*  SEND : t_action -> unit						Fonction "publique"
-    	Reçoit un type action de Tree/main, le convertit en string et l'envoie au serveur par le socket *)
+(*  SEND : t_action -> unit           Fonction "publique"
+      Reçoit un type action de Tree/main, le convertit en string et l'envoie au serveur par le socket *)
 let send action =
   send_to_server (action_to_string action)
-(* bloquant : traiter_message jusqu'au prochain get_action *)
-
-
-
-
-
-
+  (* bloquant : traiter_message jusqu'au prochain get_action *)
