@@ -23,7 +23,6 @@ type t_candidat = t_foret * score
 
 type t_population = t_candidat list
 
-
 (**Constantes**)
 
 let taille_population = 100

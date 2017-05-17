@@ -166,7 +166,7 @@ let traiter_message message =
   | "error" -> Printf.printf "Received error : %s" (List.hd tlMsg)
   | "set_visible" -> traiter_set_visible tlMsg
   | "set_explored" -> traiter_set_explored tlMsg
-  | "get_action" -> Printf.printf "get_action recu \n" (* TODO A ENLEVER *)
+  | "get_action" -> print_endline (string_of_int (Thread.id (Thread.self ())) ^" : get_action recu" )(* TODO A ENLEVER *)
   | "delete_piece" -> traiter_delete_piece tlMsg
   | "create_piece" -> traiter_create_piece tlMsg
   | "move" -> traiter_move tlMsg
@@ -184,10 +184,11 @@ let traiter_message message =
 
 let receive_next () =
   match !input_channel with
-  | Some (ic) -> input_line ic
+  | Some (ic) -> input_line ic              
   | None -> "Input_channel not initialized"
 
 let rec receive () =
+  (*print_endline (string_of_int (Thread.id (Thread.self ())) ^ "receive");*)
   match receive_next () with
   | "" -> failwith "receive: Empty message"
   | "get_action" -> traiter_message "get_action"
@@ -196,10 +197,10 @@ let rec receive () =
 (*  SEND_TO_SERVER : string -> unit
     	L'envoi concret du message par le socket *)
 let send_to_server message =
-  Printf.printf "Sending \"%s\" to the server\n %!" message;
+  print_endline (string_of_int (Thread.id (Thread.self ()))^" : Sending "^message^" to the server");
   match !output_channel with
   | Some (oc) -> output_string oc (message ^ "\n");
-    flush oc
+    flush oc;
   | None -> failwith "Output_channel not initialized"
 
 (*  SEND : t_action -> unit						Fonction "publique"

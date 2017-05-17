@@ -74,8 +74,13 @@ let compute_Action id foret = (*prend une id t_ID de piece et return une action 
   action_from_tree decision_tree id;;
 
 
-let main foret =
-  Printf.printf "START MAIN\n%!";
+(* id = 0 -> on est la ref
+  id = 1 -> on est un candidat *)
+let main id =
+   Printf.printf "START MAIN\n%!";
+  let foret = if id = 0 then ToolsArbres.read_arbre "foret_ref.frt"
+    else ToolsArbres.read_arbre "foret_cand.frt"
+  in
   (*init socket*)
   init_socket "127.0.0.1" 9301;
   
@@ -86,7 +91,9 @@ let main foret =
     send (compute_Action (get_next_playable ()) foret);
     receive ()
   done;
-  get_score ()
+  get_score () 
+
+let () = if ((Array.length Sys.argv) > 1) then let _ = main (int_of_string Sys.argv.(1)) in ()
 
 (* let () = print_endline (string_of_float (main (9301, (read_arbre "IA.ads")))); () *)
 

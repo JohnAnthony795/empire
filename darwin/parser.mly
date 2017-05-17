@@ -46,6 +46,6 @@ open Printf (*for debug purposes*)
   predicat:
     QMARK codepred                             { $2 } 
       codepred:
-    NBUAP COLON UNITE COLON INT COLON COMP     { Nb_unite_allie_proche ($3,$5,$7) }
-| NBVAP COLON INT COLON COMP                 { Nb_ville_allie_proche ($3,$5) }
+    NBUAP COLON INT COLON UNITE COLON INT COLON COMP     { Nb_unite_allie_proche ($3,$5,$7,$9) }
+| NBVAP COLON INT COLON INT COLON COMP                 { Nb_ville_allie_proche ($3,$5,$7) }
   ;

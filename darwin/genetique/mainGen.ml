@@ -25,6 +25,8 @@ Remarques / suggestions :
 (* TODO: stocker nbreGen dans le fichier config après coup, exporter meilleurs arbres de chaque génération ? *)
 
 open ToolsArbres
+open Types
+open TypesGen
 
 let individusASelectionner = 2 (*DOIT ETRE PAIR!!!!*)
 
@@ -79,8 +81,18 @@ let shuffle entryList =
     List.map snd sond
 
 (** MAIN **)
+ 
+let foretTest = (arbre0,arbre0,arbre0,arbre0,arbre0,arbre0)  
+let popuTest = (foretTest,10.0)
+
+let rec first_popu acu =
+if (acu <> taille_population) then
+  popuTest::(first_popu (acu+1))
+else
+  [popuTest];;
 
 let main () =
+  (*ToolsArbres.write_population "current_gen.pop" (first_popu 1);*)
   print_endline ("Start mainGen : génération " ^ (string_of_int nbreGenInitial));
   let rec mainLoop popu nbreGen =
     let popu1 = Evaluation.evaluer popu Evaluation.AFF10 in (* Met à jour le score d'adaptabilité de chaque individu *)
