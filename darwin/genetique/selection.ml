@@ -39,7 +39,7 @@ let best ind1 ind2 =
 (*best individual within a list*)
 let bestOfList lInd = 
   let lIndHd = match lInd with
-    | hd :: _ ->  hd
+    | hd :: _ -> hd
     | [] -> failwith "selection.bestOfList: liste vide"
   in
   List.fold_left best lIndHd lInd
@@ -57,7 +57,7 @@ let scores_sum pool = (*.+?*)
 (* Sélection basique : les n plus forts *)(*le tri serait peut etre bien....v2?*)
 let select_n_best pool n =
   let rec aux_select_n_best acu pool n =
-    if n = 0 then acu
+    if n = 0 then acu (* si l'on teste avec n=1, ca fonctionne mais on ne selectionne qu'un element, avec n=0 on appelle bestofList sur une liste vide ce qui cause le bug*)
     else
       let b = (bestOfList pool) in
       aux_select_n_best (b::acu) (remove pool b) (n-1)  

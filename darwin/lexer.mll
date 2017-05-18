@@ -49,6 +49,11 @@ rule token = parse
 (*predicats*)
 | "NBUAP"          { NBUAP }
 | "NBVAP"          { NBVAP }
+| "NBVEP"          { NBVEP }
+| "LIADJ"          { LIADJ }
+| "TR"             { TR }
+| "FOG"            { FOG }
+| "UEP"            { UEP }
 
 (*actions*)
 | "MV" 	     { MV }

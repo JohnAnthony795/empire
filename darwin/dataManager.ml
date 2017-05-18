@@ -152,6 +152,7 @@ let rm_ville_allie rmcid =
   let cid_is_not id alpha = alpha.cid <> id in
   liste_ville_alliee := List.filter (cid_is_not rmcid) !liste_ville_alliee
 
+
 (*TODO : set production ville alliée *)
 (* set_city_production filtre la liste pour enlever la ville concernée puis la rajoute en modifiée *)
 let set_city_production cid unite_type =
@@ -184,6 +185,9 @@ let rec rm_ennemi rmcid =
 (* permet de récupérer une unite à partir d'un pid *)
 let get_unite pid =
   List.find (fun (element:unite_list) -> element.pid = pid) !liste_unites
+
+let get_ville_allie cid =
+  List.find (fun (element:allie) -> element.cid = cid) !liste_ville_alliee
 
 (* Ajouté distance en parametre*)
 let get_nb_unite_proche unites pid distance=
@@ -232,6 +236,12 @@ let fog_proche pid distance =
   (* TODO *)
   let unite = get_unite pid in
   false
+
+let unite_en_production cid =
+  let ville = get_ville_allie cid in 
+    match ville.prod with 
+    | None -> false
+    | _ -> true
 
 (* TODO *)
 let get_next_playable () =
