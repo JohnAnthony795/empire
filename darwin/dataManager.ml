@@ -133,6 +133,7 @@ let update_ville_allie q r cid =
   if List.exists (cid_is cid) !liste_ville_alliee then ()
   else liste_ville_alliee := {q =q ; r =r ; cid = cid ; prod = None ; tours_restants = -1} :: !liste_ville_alliee ;;
 
+
 (* a utiliser avec listealliee = rm_alliee *)
 let rec rm_allie rmcid =
   let pred id alpha = alpha.cid <> id in
@@ -175,6 +176,9 @@ let ptid_to_unites ptid = match ptid with
 (* permet de récupérer une unite à partir d'un pid *)
 let get_unite pid =
   List.find (fun (element:unite_list) -> element.pid = pid) !liste_unites
+
+let get_ville_allie cid =
+  List.find (fun (element:allie) -> element.cid = cid) !liste_ville_alliee
 
 (* Ajouté distance en parametre*)
 let get_nb_unite_proche unites pid distance=
@@ -223,6 +227,12 @@ let fog_proche pid distance =
   (* TODO *)
   let unite = get_unite pid in
   false
+
+let unite_en_production cid =
+  let ville = get_ville_allie cid in 
+    match ville.prod with 
+    | None -> false
+    | _ -> true
 
 (* TODO *)
 let get_next_playable () =

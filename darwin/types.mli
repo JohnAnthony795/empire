@@ -29,6 +29,7 @@ type t_predicat= (* rajouter des prédicats en masse*)
   | Littoral_adjacent (* presence de littoral dans une case adjacente*)
 	| Transport (*présence de l'unité dans un transport*)
 	| Fog_proche of (int) (* distance proximité / plus ou moins loin *)
+  | Unite_en_production
 
 type t_arbre = 
     Leaf of t_action 

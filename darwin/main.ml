@@ -65,6 +65,7 @@ let compute_Action id unite_type foret = (*prend une id t_ID de piece et return 
     | Littoral_adjacent -> littoral_adj piece_id (* presence de littoral dans une case adjacente*)
     | Transport -> transport piece_id (*présence de l'unité dans un transport*)
     | Fog_proche (d) -> fog_proche piece_id d (* distance proximité *)
+    | Unite_en_production -> unite_en_production piece_id
 
 
   in

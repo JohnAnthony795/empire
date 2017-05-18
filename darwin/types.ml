@@ -45,6 +45,7 @@ type t_predicat= (* rajouter des prédicats en masse*)
   | Littoral_adjacent (* presence de littoral dans une case adjacente*)
   | Transport (*présence de l'unité dans un transport*)
   | Fog_proche of (int) (* distance proximité / plus ou moins loin *)
+  | Unite_en_production (* Test si la ville est en train de produire une unite *)
 
 type t_arbre =
   | Leaf of t_action
@@ -95,7 +96,7 @@ let pred_to_string p = match p with   (*tenir à jour avec les prédicats *)
   | Littoral_adjacent -> "Presence de littoral dans une case adjacente ?"
   | Transport -> "Présence de l'unité dans un transport ?"
   | Fog_proche d -> "Présence du brouillard de guerre proche d'une distance de" ^ (string_of_int d) ^"?"
-
+  | Unite_en_production -> "Unite en cours de production par la ville?"
 
 let action_to_string a = match a with
   | Move (id,dir) -> "Move id°" ^ (string_of_int id) ^ " " ^ (direction_to_string dir)
@@ -125,7 +126,7 @@ let pred_to_code p = match p with   (*tenir à jour avec les prédicats ;)  STAN
   | Littoral_adjacent -> "?LIADJ" 
   | Transport -> "?TR"
   | Fog_proche (d) -> "?FOG:" ^ (string_of_int d)
-
+  | Unite_en_production -> "?UEP"
 
 let action_to_code a = match a with (* tenir a jour aussi  STANDARD : mettre un '!' au debut *)
   | Move (id,dir) -> "!MV:" ^ (string_of_int id) ^ ":" ^ (direction_to_code dir)

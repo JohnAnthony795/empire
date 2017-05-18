@@ -1,4 +1,6 @@
 
+open ToolsArbres
+
 (* TODO: utiliser ces methodes *)
 type methode_evaluation = AFF10 | AFF20 | CAPTAIN
 
@@ -16,6 +18,7 @@ let evaluer popu methode =
 
   let eval_candidat candidat =
   	let (foret, _) = candidat in
+    let _ = ToolsArbres.write_arbre "foret_cand.frt" foret in
     let _ = Unix.system "../empire-server/Main.native &" in
     let _ = Unix.sleep 3 in
     let _ = Unix.system "./main.native 0 &" in

@@ -34,7 +34,9 @@ let profondeur_max_arbre = 20
 let arbre0 = Leaf End_turn
 (* let arbre0 = Node (Leaf End_turn,Nb_unite_allie_proche (ARMY,7,Inf),Node (Leaf End_turn,Nb_unite_allie_proche (ARMY,7,Inf),Leaf End_turn)) *)
 
-let foret0 = (arbre0, arbre0, arbre0, arbre0, arbre0, arbre0)
+let arbreVille = Node (Leaf End_turn, Unite_en_production, Leaf (Set_city_prod (1,ARMY)))
+
+let foret0 = (arbre0, arbre0, arbre0, arbre0, arbre0, arbreVille)
 
 let candidat0 = (foret0, 12.0)
 
