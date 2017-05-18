@@ -45,14 +45,9 @@ let muter_candidat candidat =
     in
     let muter_action (action:t_action) (unite_type:uniteville) = 
     match unite_type with
-    | CITY -> (match (Random.int 2) with
-      | 0 -> Set_city_prod (1,random_unit)
-      | 1 -> End_turn
-      | _ -> failwith "muter_candidat : valeur non attendue")
-    | _ -> (match (Random.int 2) with
-      | 0 -> Move (1,random_direction)
-      | 1 -> End_turn
-      | _ -> failwith "muter_candidat : valeur non attendue")
+    | CITY -> Set_city_prod (1,random_unit)
+    | _ -> Move (1,random_direction)
+
     in
     let muter_predicat (predicat:t_predicat) (unite_type:uniteville) = 
     match unite_type with 

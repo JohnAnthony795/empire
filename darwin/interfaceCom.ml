@@ -134,7 +134,7 @@ let action_to_string action =
   let soi = string_of_int in
   match action with
   | End_turn -> "end_turn"
-  | Set_city_prod (cid, ptid) -> "set_city_prod " ^ (soi cid) ^ " " ^ (unites_to_ptid ptid)
+  | Set_city_prod (cid, ptid) -> "set_city_production " ^ (soi cid) ^ " " ^ (unites_to_ptid ptid)
   | Move (pid, did) -> "move " ^ (soi pid) ^ " " ^ (dir_to_string did)
 
 (*  pid : piece_id

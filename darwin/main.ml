@@ -23,9 +23,9 @@ open DataManager
 
 type uniteville = ARMY | FIGHT | TRANSPORT | PATROL | BATTLESHIP | CITY ;;
 
-let unite_to_uniteville (unite:unites) =
+let unite_to_uniteville (unite:unites) :uniteville =
   match unite with 
-  |ARMY -> ARMY | TRANSPORT -> TRANSPORT | FIGHT -> FIGHT | BATTLESHIP -> BATTLESHIP | PATROL -> PATROL | _ -> CITY
+  |ARMY -> ARMY | TRANSPORT -> TRANSPORT | FIGHT -> FIGHT | BATTLESHIP -> BATTLESHIP | PATROL -> PATROL
 
 let get_arbre foret (ptid:uniteville) =
   let (a1,a2,a3,a4,a5,a6) = foret in
@@ -69,7 +69,10 @@ let compute_Action id unite_type foret = (*prend une id t_ID de piece et return 
 
   in
   let rec action_from_tree t id = match t with
-    | Leaf a -> a
+    | Leaf a -> (match a with 
+              | Move (pid,dir) -> Move (id,dir)
+              | Set_city_prod (cid,unite) -> Set_city_prod (id,unite)
+              | End_turn -> End_turn)
     | Node (t1,p,t2) -> if evaluate_pred p id then action_from_tree t1 id else action_from_tree t2 id
   in
   let decision_tree = get_arbre foret unite_type (*TODO obtenir l'arbre qui concerne cette unité : get_type_by_id()? puis arbre n *)
@@ -100,7 +103,7 @@ let main id =
       send (compute_Action (fst next_unite) (unite_to_uniteville (snd next_unite)) foret);
     done;
     (*Fin du tour*)
-    (*send(End_turn);*)
+    send(End_turn);
     receive ()
   done;
   print_endline "Fin de partie";
