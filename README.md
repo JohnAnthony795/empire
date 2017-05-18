@@ -1,7 +1,7 @@
 # empire
 Projet d'IA pour le RTS TBS-Empire
 
-## TUTO : Comment ajouter un nouveau prédicat sans attaraper une maladie mortelle ?
+## TUTO : Comment ajouter un nouveau prédicat sans attraper une maladie mortelle ?
 
 ### Dans darwin/Types.ml : 
 - ajouter le prédicat dans le type t_predicat avec son type (commenter da façon explicite)
