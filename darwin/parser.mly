@@ -10,7 +10,7 @@ open Printf (*for debug purposes*)
                                                               %token <Types.direction> DIR
 
 %token NBUAP NBVAP NBVEP LIADJ TR FOG UEP
-%token MV SCP ET
+%token MV SCP ET DN
 
 %token LPAREN RPAREN HASH VIRG COLON QMARK EMARK
 %token EOL
@@ -42,6 +42,7 @@ open Printf (*for debug purposes*)
     MV COLON INT COLON DIR     { Move ($3,$5) }
 | SCP COLON INT COLON UNITE    { Set_city_prod ($3,$5) }
 | ET                         { End_turn }
+| DN COLON INT                { Do_nothing ($3)}
   ;
   predicat:
     QMARK codepred                             { $2 } 

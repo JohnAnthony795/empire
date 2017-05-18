@@ -73,6 +73,14 @@ let ptid_to_unites ptid = match ptid with
   | 4 -> BATTLESHIP
   | _ -> failwith "Erreur ptid_to_unites : entrée non gérée"
 
+let unite_to_ptid (unite:unites) = match unite with
+  | ARMY -> 0
+  | FIGHT -> 1
+  | TRANSPORT -> 2
+  | PATROL -> 3
+  | BATTLESHIP -> 4
+  | _ -> failwith "Erreur unite_to_ptid : entrée non gérée"
+
 (* TODO : récupérer infos dynamiquement *)
 (* renvoie la portee de deplacement d'un type d'unité *)
 let ptid_to_move ptid =
@@ -82,7 +90,7 @@ let ptid_to_move ptid =
   | 2 -> 2
   | 3 -> 4
   | 4 -> 2 
-  | _ -> failwith "Erreur ptid_to_move : entrée non gérée"
+  | a -> failwith ("Erreur ptid_to_move : entrée non gérée "^(string_of_int a))
 
 (* TODO : récupérer infos dynamiquement *)
 let unite_to_productionTime unite_type = match unite_type with
@@ -137,7 +145,7 @@ let update_unite_ennemie q r pid unite_type hp =
 (** Listes villes **)
 (*Liste villes alliées*)
 
-type (*ville*) allie = {q : int ;r : int ;cid : int ; prod : unites option; tours_restants : int}
+type (*ville*) allie = {q : int ;r : int ;cid : int ; prod : unites option; tours_restants : int; mov : int}
 
 let liste_ville_alliee = ref ([]) ;;
 
@@ -145,7 +153,7 @@ let liste_ville_alliee = ref ([]) ;;
 let add_ville_allie q r cid = 
   let cid_is cid element = element.cid = cid in
   if List.exists (cid_is cid) !liste_ville_alliee then ()
-  else liste_ville_alliee := {q =q ; r =r ; cid = cid ; prod = None ; tours_restants = -1} :: !liste_ville_alliee
+  else liste_ville_alliee := {q =q ; r =r ; cid = cid ; prod = None ; tours_restants = -1; mov = 1} :: !liste_ville_alliee
 
 (* USAGE: rm_ville_allie cid; *)
 let rm_ville_allie rmcid =
@@ -162,7 +170,7 @@ let set_city_production cid unite_type =
   let autresVilles = List.filter (cid_is_not cid) !liste_ville_alliee in (* toutes les villes sauf celle à udpate *)
   let tours = unite_to_productionTime unite_type in (* nombre de tours de production *)
 
-  liste_ville_alliee := {q= ville.q ; r= ville.r ; cid = cid ; prod = Some(unite_type) ; tours_restants = tours} :: autresVilles
+  liste_ville_alliee := {q= ville.q ; r= ville.r ; cid = cid ; prod = Some(unite_type) ; tours_restants = tours ; mov = 0} :: autresVilles
 
 
 (* Liste villes ennemies *)
@@ -245,19 +253,38 @@ let unite_en_production cid =
 
 (* TODO *)
 let get_next_playable () =
-  match !liste_ville_alliee with
+  let liste_ville_playable = List.filter (fun (element:allie) -> element.mov > 0) !liste_ville_alliee in
+  match liste_ville_playable with
   | hd :: tail -> hd.cid
-  | [] -> failwith "dataManager: get_next_playable error"
+  | [] -> -1
 
 let get_next_movable () = 
   let liste_movable = List.filter (fun (element:unite_list) -> element.mov > 0) !liste_unites in
+  (*let _ = Printf.printf "lenght : %d\n%!" (List.length liste_movable); 
+  List.map (fun (element:unite_list) -> Printf.printf "pid=%d,mov=%d | %!" element.pid element.mov ) liste_movable in*)
   match liste_movable with
   | hd :: tail -> (hd.pid,hd.unite_type)
   | [] -> (-1,ARMY)
 
 let reset_move_all () =
-  let reset_move (unite:unite_list) = {q=unite.q;r=unite.r;pid=unite.pid;unite_type=unite.unite_type;hp=unite.hp;mov=(ptid_to_move unite.mov)} in
-  liste_unites := List.map reset_move !liste_unites
+  let reset_move (unite:unite_list) = {q=unite.q;r=unite.r;pid=unite.pid;unite_type=unite.unite_type;hp=unite.hp;mov=(ptid_to_move (unite_to_ptid unite.unite_type))} in
+  let reset_move_ville (ville:allie) = {q=ville.q;r=ville.r;cid=ville.cid;prod=ville.prod;tours_restants=ville.tours_restants;mov=1} in
+    print_endline "reset_move_all";
+    liste_unites := List.map reset_move !liste_unites;
+    liste_ville_alliee := List.map reset_move_ville !liste_ville_alliee
+
+let set_move_to_zero cid =
+  let cid_is cid (element:allie) = element.cid = cid in
+  let cid_is_not cid (element:allie) = element.cid <> cid in
+  let ville = List.find (cid_is cid) !liste_ville_alliee in (* ville à update *)
+  let autresVilles = List.filter (cid_is_not cid) !liste_ville_alliee in (* toutes les villes sauf celle à udpate *)
+
+  liste_ville_alliee := {q= ville.q ; r= ville.r ; cid = cid ; prod = ville.prod ; tours_restants = ville.tours_restants ; mov = 0} :: autresVilles
+
+let set_move_to_zero_unite pid =
+  let ios = int_of_string in
+  let piece = List.find (fun (element:unite_list) -> element.pid = pid) !liste_unites in 
+    update_unite_alliee piece.q piece.r pid piece.unite_type piece.hp 0
 
 let init_data () =
   a_gagne := None;
@@ -284,7 +311,9 @@ let traiter_set_visible args =
     else 
       (fill_terrain "their_city" (ios q) (ios r) ; 
        add_ville_ennemi (ios q) (ios r) (ios cid))
-  | [ q ; r ; terrain ; "piece" ; jid ; pid ; ptid ; hp ] -> if (ios jid) = !our_jid then (update_unite_alliee (ios q) (ios r) (ios pid) (ptid_to_unites (ios ptid)) (ios hp) (ptid_to_move (ios ptid))) else (update_unite_ennemie (ios q) (ios r) (ios pid) (ptid_to_unites (ios ptid)) (ios hp))
+  | [ q ; r ; terrain ; "piece" ; jid ; pid ; ptid ; hp ] -> if (ios jid) = !our_jid then 
+  let piece = List.find (fun (element:unite_list) -> element.pid = (ios pid)) !liste_unites in
+  (update_unite_alliee (ios q) (ios r) (ios pid) (ptid_to_unites (ios ptid)) (ios hp) (piece.mov)) else (update_unite_ennemie (ios q) (ios r) (ios pid) (ptid_to_unites (ios ptid)) (ios hp))
   | _ -> failwith "erreur traiter_set_visible"
 
 (*Faut-il gérer visible et explored pour l'algo génétique? *)
@@ -311,7 +340,10 @@ let traiter_move args =
   let ios = int_of_string in
   match args with
   | [pid ; q ; r] -> let piece = List.find (fun (element:unite_list) -> element.pid = (ios pid)) !liste_unites in 
-    update_unite_alliee (ios q) (ios r) (ios pid) piece.unite_type piece.hp (piece.mov-1)
+    (*Printf.printf "traiter move %d\n%!" (piece.mov-1); *)
+    update_unite_alliee (ios q) (ios r) (ios pid) piece.unite_type piece.hp (piece.mov-1)(*;
+    let _ = List.map (fun (element:unite_list) -> Printf.printf "pid=%d,mov=%d | %!" element.pid element.mov ) !liste_unites in ()*)
+
   | _ -> failwith "erreur traiter_move";;
 
 (*Une ville alliee est prise par l'ennemi*)
@@ -320,6 +352,9 @@ let traiter_lose_city args =
   match args with
   | [cid] -> liste_ville_alliee := List.filter (fun (element:allie) -> element.cid <> (ios cid)) !liste_ville_alliee
   | _ -> failwith "erreur traiter_lose_city";;
+
+let traiter_invalid_terrain () =
+  set_move_to_zero_unite (fst (get_next_movable ()))
 
 (*Inutiles?*)
 let traiter_leave_terrain args = ()

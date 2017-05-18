@@ -18,6 +18,8 @@ val set_map_height: string list -> unit
 val set_victoire : string list -> unit
 val set_draw : unit -> unit
 val reset_move_all : unit -> unit 
+val set_move_to_zero : int -> unit
+val set_move_to_zero_unite : int -> unit
 val init_data : unit -> unit
 val set_city_production : Types.city_id -> Types.unites -> unit
 
@@ -36,5 +38,5 @@ val traiter_ok_invasion: string list -> unit
 val traiter_ko_invasion: string list -> unit
 val traiter_city_units_limit: string list -> unit
 val traiter_created_units_limit: string list -> unit
-
+val traiter_invalid_terrain : unit -> unit
 

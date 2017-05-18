@@ -73,7 +73,8 @@ let compute_Action id unite_type foret = (*prend une id t_ID de piece et return 
     | Leaf a -> (match a with 
         | Move (pid,dir) -> Move (id,dir)
         | Set_city_prod (cid,unite) -> Set_city_prod (id,unite)
-        | End_turn -> End_turn)
+        | End_turn -> End_turn
+        | Do_nothing (cid) -> Do_nothing (id)) 
     | Node (t1,p,t2) -> if evaluate_pred p id then action_from_tree t1 id else action_from_tree t2 id
   in
   let decision_tree = get_arbre foret unite_type (*TODO obtenir l'arbre qui concerne cette unité : get_type_by_id()? puis arbre n *)
@@ -88,6 +89,8 @@ let main id =
   let foret = if id = 0 then ToolsArbres.read_arbre "foret_ref.frt"
     else ToolsArbres.read_arbre "foret_cand.frt"
   in
+  (*print_endline (ToolsArbres.forest_tocode foret);
+  Unix.sleep 10;*)
   (*init socket*)
   init_socket "127.0.0.1" 9301;
 
@@ -95,20 +98,26 @@ let main id =
   (* TODO true -> partie terminée ? *)
   while (get_score () = -1.0) do
     (* get next unité/ville à jouer *)
-    handle_action (compute_Action (get_next_playable ()) CITY foret);
-    receive ();
+    Printf.printf  "nouveau tour : %d et next playable %d \n%!" id (get_next_playable ());
+    while(match get_next_playable () with
+        | -1 -> false
+        | _ -> true) do
+      handle_action (compute_Action (get_next_playable ()) CITY foret);
+    done;
     while(match get_next_movable () with
         | (-1,ARMY) -> false
-        | _ -> true) do
+        | _ -> if (get_score () = -1.0) then true else false) do
+
       let next_unite = get_next_movable () in
+      Printf.printf "Test %d\n%!" (fst next_unite);
       handle_action (compute_Action (fst next_unite) (unite_to_uniteville (snd next_unite)) foret);
-      receive ()
     done;
     (*Fin du tour*)
     handle_action (End_turn);
+    Printf.printf "Fin du tour %d\n%!" id;
     reset_move_all ();
-    receive ()
   done;
+  Printf.printf  "fin de partie : %d \n%!" id;
   get_score () 
 
 let () = if ((Array.length Sys.argv) > 1) then let _ = main (int_of_string Sys.argv.(1)) in ()

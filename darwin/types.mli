@@ -19,6 +19,7 @@ type t_action =
   | Move of move 
   | Set_city_prod of set_city_production 
   | End_turn 
+  | Do_nothing of (int)
 
 type comparateur = Inf | Sup | Eq | InfEq | SupEq;;
 

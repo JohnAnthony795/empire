@@ -59,6 +59,7 @@ rule token = parse
 | "MV" 	     { MV }
 | "SCP"            { SCP }
 | "ET"             { ET }
+| "DN"      { DN}
 
 | eof              { raise Eof }
 |_                 { token lexbuf }

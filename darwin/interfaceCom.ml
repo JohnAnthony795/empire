@@ -149,8 +149,8 @@ let traiter_message message =
   | "piece_types" -> () (* TODO : Peupler une structure de données avec *)
   | "random_seed" -> () (* Printf.printf "Seed de la map : %s\n" (List.hd tlMsg) *)
   | "draw" -> set_draw ()
-  | "winner" -> set_victoire tlMsg
-  | "error" -> Printf.printf "Received error : %s" (List.hd tlMsg)
+  | "winner" -> set_victoire tlMsg 
+  | "error" ->  Printf.printf "Received error : %s\n%!" (List.hd tlMsg); traiter_invalid_terrain ()
   | "set_visible" -> traiter_set_visible tlMsg
   | "set_explored" -> traiter_set_explored tlMsg
   | "get_action" -> () (* Printf.printf "get_action recu \n"*) 
@@ -167,7 +167,7 @@ let traiter_message message =
   | "ko-invasion" -> traiter_ko_invasion tlMsg
   | "city-units-limit" -> traiter_city_units_limit tlMsg
   | "created-units-limit" -> traiter_created_units_limit tlMsg
-  | x -> Printf.printf "traiter_message: message serveur imprévu : \"%s\", d'argument \"%s\"\n" x (List.hd tlMsg)
+  | x -> Printf.printf "traiter_message: message serveur imprévu : \"%s\", d'argument \"%s\"\n%!" x (List.hd tlMsg)
 
 let receive_next () =
   match !input_channel with
@@ -191,11 +191,12 @@ let action_to_string action =
   | End_turn -> "end_turn"
   | Set_city_prod (cid, ptid) -> "set_city_production " ^ (soi cid) ^ " " ^ (unites_to_ptid ptid)
   | Move (pid, did) -> "move " ^ (soi pid) ^ " " ^ (dir_to_string did)
+  | Do_nothing (cid) -> "pas vraiment une action"
 
 (*  SEND_TO_SERVER : string -> unit
       L'envoi concret du message par le socket *)
 let send_to_server message =
-  (* Printf.printf "Sending \"%s\" to the server\n %!" message; *)
+   Printf.printf "Sending \"%s\" to the server\n %!" message; 
   match !output_channel with
   | Some (oc) -> output_string oc (message ^ "\n");
     flush oc
@@ -204,12 +205,13 @@ let send_to_server message =
 (* TODO : toutes les choses à faire avant d'envoyer une action au serveur (exemple : update dataManager) *)
 let handle_action action =
   let fonctionToDo = match action with
-    | Move (pid, did) -> () (*TODO *)
-    | Set_city_prod (cid, ptid) -> DataManager.set_city_production cid ptid
-    | End_turn -> () (*TODO *)
+    | Move (pid, did) -> send_to_server (action_to_string action);receive () (*TODO *)
+    | Set_city_prod (cid, ptid) -> DataManager.set_city_production cid ptid;send_to_server (action_to_string action); receive ()
+    | End_turn -> send_to_server (action_to_string action); receive ()
+    | Do_nothing (cid) -> DataManager.set_move_to_zero cid; Printf.printf "La ville %d ne fait rien.\n%!" cid
   in
-  fonctionToDo ; (* on effectue la fonction souhaitée *)
-  send_to_server (action_to_string action) (* puis on envoie le message au serveur *)
+  fonctionToDo  (* on effectue la fonction souhaitée *)
+   (* puis on envoie le message au serveur *)
 
 
 

@@ -33,6 +33,7 @@ type t_action = (*pass*)
   | Move of move
   | Set_city_prod of set_city_production
   | End_turn
+  | Do_nothing of (int)
 
 (* TODO : rajouter l'action pass pour qu'une unité ne joue pas immédiatement *)
 
@@ -102,6 +103,7 @@ let action_to_string a = match a with
   | Move (id,dir) -> "Move id°" ^ (string_of_int id) ^ " " ^ (direction_to_string dir)
   | Set_city_prod (id,p_type) -> "Set_city_prod id°" ^ (string_of_int id) ^ " " ^ (unite_to_string p_type) (*clarifier le piece type id avec un piece type id to string??*)
   | End_turn -> "End_turn"
+  | Do_nothing (id) -> "Do_nothing id°" ^ (string_of_int id) 
 
 (*variantes de print moins verbeuses*)
 let unite_to_code u = match u with
@@ -132,6 +134,7 @@ let action_to_code a = match a with (* tenir a jour aussi  STANDARD : mettre un 
   | Move (id,dir) -> "!MV:" ^ (string_of_int id) ^ ":" ^ (direction_to_code dir)
   | Set_city_prod (id,p_type) -> "!SCP:" ^ (string_of_int id) ^ ":" ^ (unite_to_code p_type) (*clarifier le piece type id avec un piece type id to string??*)
   | End_turn -> "!ET"
+  | Do_nothing (id) -> "!DN:" ^ (string_of_int id) 
 
 (*fonctions principales*)
 let print_action a d = printf "%s\n" ((String.make d '~') ^ (String.make d '~') ^ (action_to_string a));; (*moche mais on peut mettre que un carac*)

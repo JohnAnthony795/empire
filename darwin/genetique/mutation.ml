@@ -47,7 +47,7 @@ let muter_candidat candidat =
     match unite_type with
     | CITY -> (match (Random.int 2) with 
               | 0 -> Set_city_prod (1,random_unit)
-              | 1 -> End_turn
+              | 1 -> Do_nothing (1)
               | _ -> failwith "muter_action : valeur non attendue")
     | _ -> Move (1,random_direction)
 
