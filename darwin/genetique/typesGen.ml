@@ -1,6 +1,17 @@
 open Types
 
 let print_population pop =
+	let rec print_aux p n =
+	match p with
+		|[]-> Printf.printf ".\n%!"
+		|c::cs -> let (f,s) = c in 
+			Printf.printf "%s" ("Candidat n#" ^ (string_of_int n) ^" : "
+					^ (string_of_float s) ^" points\n%!") ;
+			print_aux cs (n+1)
+	in
+		print_aux pop 1
+
+let print_population_all pop =
   List.map (fun x -> match x with
       | (foret,score) -> match foret with
         | (a,b,c,d,e,f) -> print_tree a 0;
