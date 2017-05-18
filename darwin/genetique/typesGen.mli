@@ -6,7 +6,8 @@ type t_candidat = t_foret * score
 
 type t_population = t_candidat list
 
-val print_population : t_population -> unit
+val print_population : t_population -> unit  (*print des scores surtout*)
+val print_population_all  : t_population -> unit (*print de tout les arbres et de leurs scores*)
 
 (**Constantes**)
 

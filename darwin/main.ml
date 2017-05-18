@@ -83,8 +83,7 @@ let compute_Action id unite_type foret = (*prend une id t_ID de piece et return 
 (* id = 0 -> on est la ref
    id = 1 -> on est un candidat *)
 let main id =
-  Printf.printf "START MAIN\n%!";
-  init_data ();
+   init_data ();
   let foret = if id = 0 then ToolsArbres.read_arbre "foret_ref.frt"
     else ToolsArbres.read_arbre "foret_cand.frt"
   in
@@ -109,7 +108,6 @@ let main id =
     reset_move_all ();
     receive ()
   done;
-  print_endline "Fin de partie";
   get_score () 
 
 let () = if ((Array.length Sys.argv) > 1) then let _ = main (int_of_string Sys.argv.(1)) in ()
