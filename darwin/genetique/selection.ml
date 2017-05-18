@@ -21,6 +21,15 @@ open Random (*ajouter*)
 let () =
   Random.self_init ()
 
+(*removes a candidate from a population ONCE, Si il n'y est pas fail*)
+let remove pop wanted =
+	let rec aux_rmv acu p w  = 
+      		match p with
+		| [] -> failwith "Candidat pas présent dans la liste"
+		| c::cs -> if (c = w) then acu @ cs else aux_rmv (c::acu) cs w (*change l'ordre des elements, peut etre replacé par @*)
+	in
+	aux_rmv [] pop wanted 
+	
 
 (*best beetween 2 individuals, according to score*)
 let best ind1 ind2 =
@@ -51,7 +60,7 @@ let select_n_best pool n =
     if n = 0 then acu (* si l'on teste avec n=1, ca fonctionne mais on ne selectionne qu'un element, avec n=0 on appelle bestofList sur une liste vide ce qui cause le bug*)
     else
       let b = (bestOfList pool) in
-      aux_select_n_best (b::acu) (List.filter (fun i -> i <> b) pool) (n-1)  (*définir l'égalité d'individus? pointeur devrait être ok mais TODO tester!*)
+      aux_select_n_best (b::acu) (remove pool b) (n-1)  
   in
   aux_select_n_best [] pool n
 
@@ -87,7 +96,7 @@ let select_n_proportional_bis pool n = (*version avec IMpossibilité de choisir 
     if n = 0 then acu
     else
       let b = find_winner pool win_nb in
-      aux_select_n_proportional (b::acu) (List.filter (fun i -> i <> b) pool) (n-1) (*définir l'égalité d'individus? pointeur devrait être ok mais TODO tester!*)
+      aux_select_n_proportional (b::acu) (remove pool b) (n-1) 
   in
   aux_select_n_proportional [] pool n
 

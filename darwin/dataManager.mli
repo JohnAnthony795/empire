@@ -22,6 +22,7 @@ val set_move_to_zero : int -> unit
 val set_move_to_zero_unite : int -> unit
 val init_data : unit -> unit
 val set_city_production : Types.city_id -> Types.unites -> unit
+val increment_turn_counter : unit -> unit
 
 val traiter_set_visible: string list -> unit
 val traiter_set_explored: string list -> unit

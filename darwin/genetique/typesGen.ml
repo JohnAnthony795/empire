@@ -36,7 +36,7 @@ type t_population = t_candidat list
 
 (**Constantes**)
 
-let taille_population = 100
+let taille_population = 16
 
 let profondeur_max_arbre = 20 
 

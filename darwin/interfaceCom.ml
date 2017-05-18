@@ -207,7 +207,7 @@ let handle_action action =
   let fonctionToDo = match action with
     | Move (pid, did) -> send_to_server (action_to_string action);receive () (*TODO *)
     | Set_city_prod (cid, ptid) -> DataManager.set_city_production cid ptid;send_to_server (action_to_string action); receive ()
-    | End_turn -> send_to_server (action_to_string action); receive ()
+    | End_turn -> increment_turn_counter (); send_to_server (action_to_string action); receive ()
     | Do_nothing (cid) -> DataManager.set_move_to_zero cid; Printf.printf "La ville %d ne fait rien.\n%!" cid
   in
   fonctionToDo  (* on effectue la fonction souhaitée *)

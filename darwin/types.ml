@@ -52,18 +52,8 @@ type t_arbre =
   | Leaf of t_action
   | Node of (t_arbre * t_predicat * t_arbre)
 
-(*type arbre_de =
-  	 Army_tree of t_arbre
-  	|Patrol_tree of t_arbre
-  	;;                     A VOIR*)
-
 type t_foret =  t_arbre * t_arbre * t_arbre * t_arbre * t_arbre * t_arbre ;; (* 5 unités , ville , (stratégie ?) *)
 
-
-(*print arbre   ### A PIMPER ###*)
-(*EN particulier compléter prédicats_tostring  + les sous-call*)
-(*Note: Point positif, les arbres sont bien verbeux. Par contre cela pose t'il des problèmes des parsing dans les fichiers?
-  	Peut-etre creer une fonction "code_arbre" similaire mais avec des formats genre  INSTR:val1:val2   par exemple ET pour End_Turn  ou NBUAP:A|5|<  pour "moins de 5 ARMY aliée proche" *)
 
 (*fonctions de print verbeux des types:*)
 
