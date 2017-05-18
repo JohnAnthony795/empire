@@ -45,7 +45,10 @@ let muter_candidat candidat =
     in
     let muter_action (action:t_action) (unite_type:uniteville) = 
     match unite_type with
-    | CITY -> Set_city_prod (1,random_unit)
+    | CITY -> (match (Random.int 2) with 
+              | 0 -> Set_city_prod (1,random_unit)
+              | 1 -> End_turn
+              | _ -> failwith "muter_action : valeur non attendue")
     | _ -> Move (1,random_direction)
 
     in
@@ -70,7 +73,8 @@ let muter_candidat candidat =
                 | Nb_ville_ennemie_proche (a,b,c) -> Nb_ville_ennemie_proche (Random.int 10,Random.int 10,c)
                 | Littoral_adjacent -> Littoral_adjacent
                 | Transport -> Transport
-                | Fog_proche (a) -> Fog_proche (Random.int 10))
+                | Fog_proche (a) -> Fog_proche (Random.int 10)
+                | Unite_en_production -> Unite_en_production)
               | _ -> failwith "muter_candidat : valeur non attendue")
     in 
     match arbre with 

@@ -57,7 +57,6 @@ let read_arbre fichier =
   let ic = open_in fichier in
   try
     let stringarbre = input_line ic in  (* read line from in_channel and discard \n *)
-    print_endline ("\nstring de Foret lue:" ^ stringarbre ^ "\n");          (* ##TEST## *)
     flush stdout;                (* write on the underlying device now *)
     let forest = parseforet stringarbre in
     close_in ic;                  (* close the input channel *)

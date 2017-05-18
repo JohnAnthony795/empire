@@ -188,6 +188,9 @@ let rec rm_ennemi rmcid =
 let get_unite pid =
   List.find (fun (element:unite_list) -> element.pid = pid) !liste_unites
 
+let get_ville_allie cid =
+  List.find (fun (element:allie) -> element.cid = cid) !liste_ville_alliee
+
 (* Ajouté distance en parametre*)
 let get_nb_unite_proche unites pid distance=
   let unite = get_unite pid in
@@ -236,6 +239,12 @@ let fog_proche pid distance =
   (* TODO *)
   let unite = get_unite pid in
   false
+
+let unite_en_production cid =
+  let ville = get_ville_allie cid in 
+    match ville.prod with 
+    | None -> false
+    | _ -> true
 
 (* TODO *)
 let get_next_playable () =

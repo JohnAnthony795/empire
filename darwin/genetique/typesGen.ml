@@ -1,6 +1,17 @@
 open Types
 
 let print_population pop =
+	let rec print_aux p n =
+	match p with
+		|[]-> Printf.printf ".\n%!"
+		|c::cs -> let (f,s) = c in 
+			Printf.printf "%s" ((string_of_int n) ^" : "
+					^ (string_of_float s) ^" pts\n") ;
+			print_aux cs (n+1)
+	in
+		print_aux pop 1
+
+let print_population_all pop =
   List.map (fun x -> match x with
       | (foret,score) -> match foret with
         | (a,b,c,d,e,f) -> print_tree a 0;
@@ -34,7 +45,9 @@ let profondeur_max_arbre = 20
 let arbre0 = Leaf End_turn
 (* let arbre0 = Node (Leaf End_turn,Nb_unite_allie_proche (ARMY,7,Inf),Node (Leaf End_turn,Nb_unite_allie_proche (ARMY,7,Inf),Leaf End_turn)) *)
 
-let foret0 = (arbre0, arbre0, arbre0, arbre0, arbre0, arbre0)
+let arbreVille = Node (Leaf End_turn, Unite_en_production, Leaf (Set_city_prod (1,ARMY)))
+
+let foret0 = (arbre0, arbre0, arbre0, arbre0, arbre0, arbreVille)
 
 let candidat0 = (foret0, 12.0)
 
