@@ -2,6 +2,6 @@
 
 val init_socket: string -> int -> unit
 
-val send: Types.t_action -> unit
+val handle_action : Types.t_action -> unit
 val receive: unit -> unit
 

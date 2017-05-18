@@ -57,7 +57,6 @@ let read_arbre fichier =
   let ic = open_in fichier in
   try
     let stringarbre = input_line ic in  (* read line from in_channel and discard \n *)
-    print_endline ("\nstring de Foret lue:" ^ stringarbre ^ "\n");          (* ##TEST## *)
     flush stdout;                (* write on the underlying device now *)
     let forest = parseforet stringarbre in
     close_in ic;                  (* close the input channel *)
@@ -66,7 +65,7 @@ let read_arbre fichier =
   with e ->                      (* some unexpected exception occurs *)
     close_in_noerr ic;           (* emergency closing *)
     raise e                      (* exit with error: files are closed but
-                             		channels are not flushed *)
+                                    		channels are not flushed *)
 
 
 let write_arbre fichier forest =
