@@ -37,9 +37,6 @@
     - get_city_id_by_loc ; q ; r
 *)
 
-(** TODO : au début de la partie, le serveur envoie un (ou plusieurs) messages d'init, tels que "width %d"
-      Il faut les découvrir et traiter, peut être cf. empire-server/Main.ml **)
-
 open Unix
 open DataManager
 open Types
@@ -91,7 +88,7 @@ let init_socket server port =
     output_channel := Some (Unix.out_channel_of_descr (get_socket ()))
   with Failure("int_of_string") -> Printf.eprintf "bad port number";
     exit 2
-    
+
 let close_socket () =
   Unix.close (get_socket ())
 
@@ -206,13 +203,13 @@ let send_to_server message =
 
 (* TODO : toutes les choses à faire avant d'envoyer une action au serveur (exemple : update dataManager) *)
 let handle_action action =
-	let fonctionToDo = match action with
-	| Move (pid, did) -> () (*TODO *)
-	| Set_city_prod (cid, ptid) -> DataManager.set_city_production cid ptid
-	| End_turn -> () (*TODO *)
-	in
-	fonctionToDo ; (* on effectue la fonction souhaitée *)
-	send_to_server (action_to_string action) (* puis on envoie le message au serveur *)
+  let fonctionToDo = match action with
+    | Move (pid, did) -> () (*TODO *)
+    | Set_city_prod (cid, ptid) -> DataManager.set_city_production cid ptid
+    | End_turn -> () (*TODO *)
+  in
+  fonctionToDo ; (* on effectue la fonction souhaitée *)
+  send_to_server (action_to_string action) (* puis on envoie le message au serveur *)
 
 
 

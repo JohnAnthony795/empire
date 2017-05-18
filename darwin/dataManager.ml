@@ -72,14 +72,25 @@ let ptid_to_unites ptid = match ptid with
   | 3 -> PATROL
   | 4 -> BATTLESHIP
   | _ -> failwith "Erreur ptid_to_unites : entrée non gérée"
-  
+
+(* TODO : récupérer infos dynamiquement *)
+(* renvoie la portee de deplacement d'un type d'unité *)
+let ptid_to_move ptid =
+  match ptid with
+  | 0 -> 1
+  | 1 -> 8
+  | 2 -> 2
+  | 3 -> 4
+  | 4 -> 2 
+  | _ -> failwith "Erreur ptid_to_move : entrée non gérée"
+
 (* TODO : récupérer infos dynamiquement *)
 let unite_to_productionTime unite_type = match unite_type with
-| ARMY -> 5
-| FIGHT -> 10
-| TRANSPORT -> 30
-| PATROL -> 15
-| BATTLESHIP -> 40
+  | ARMY -> 5
+  | FIGHT -> 10
+  | TRANSPORT -> 30
+  | PATROL -> 15
+  | BATTLESHIP -> 40
 
 (***** CARTES *****)
 
@@ -112,21 +123,9 @@ let update_unite_alliee q r pid unite_type hp mov =
   liste_unites := {q=q; r=r ; pid=pid; unite_type=unite_type; hp=hp ; mov=mov} :: (List.filter (pid_is_not pid) !liste_unites)
 
 (* Unités ennemies *)
-
-(* TODO : liste d'unites (pos, pid, type unité, hp? (pour battleship)) *)
-
 type unite_ennemies_list = {q:int; r:int; pid : int ; unite_type : Types.unites ; hp : int}
 
-(* TODO : récupérer infos dynamiquement *)
-(* renvoie la portee de deplacement d'un type d'unité *)
-let ptid_to_move ptid =
-  match ptid with
-  | 0 -> 1
-  | 1 -> 8
-  | 2 -> 2
-  | 3 -> 4
-  | 4 -> 2 
-  | _ -> failwith "Erreur ptid_to_move : entrée non gérée"
+
 
 
 let liste_ennemis = ref([])
@@ -161,9 +160,9 @@ let set_city_production cid unite_type =
   let ville = List.find (cid_is cid) !liste_ville_alliee in (* ville à update *)
   let autresVilles = List.filter (cid_is_not cid) !liste_ville_alliee in (* toutes les villes sauf celle à udpate *)
   let tours = unite_to_productionTime unite_type in (* nombre de tours de production *)
-  
+
   liste_ville_alliee := {q= ville.q ; r= ville.r ; cid = cid ; prod = Some(unite_type) ; tours_restants = tours} :: autresVilles
-  
+
 
 (* Liste villes ennemies *)
 type (*ville*) ennemi = {q : int ;r : int ;cid : int }

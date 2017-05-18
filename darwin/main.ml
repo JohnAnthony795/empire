@@ -70,9 +70,9 @@ let compute_Action id unite_type foret = (*prend une id t_ID de piece et return 
   in
   let rec action_from_tree t id = match t with
     | Leaf a -> (match a with 
-              | Move (pid,dir) -> Move (id,dir)
-              | Set_city_prod (cid,unite) -> Set_city_prod (id,unite)
-              | End_turn -> End_turn)
+        | Move (pid,dir) -> Move (id,dir)
+        | Set_city_prod (cid,unite) -> Set_city_prod (id,unite)
+        | End_turn -> End_turn)
     | Node (t1,p,t2) -> if evaluate_pred p id then action_from_tree t1 id else action_from_tree t2 id
   in
   let decision_tree = get_arbre foret unite_type (*TODO obtenir l'arbre qui concerne cette unité : get_type_by_id()? puis arbre n *)
@@ -81,10 +81,10 @@ let compute_Action id unite_type foret = (*prend une id t_ID de piece et return 
 
 
 (* id = 0 -> on est la ref
-  id = 1 -> on est un candidat *)
+   id = 1 -> on est un candidat *)
 let main id =
-   Printf.printf "START MAIN\n%!";
-   init_data ();
+  Printf.printf "START MAIN\n%!";
+  init_data ();
   let foret = if id = 0 then ToolsArbres.read_arbre "foret_ref.frt"
     else ToolsArbres.read_arbre "foret_cand.frt"
   in
@@ -98,8 +98,8 @@ let main id =
     handle_action (compute_Action (get_next_playable ()) CITY foret);
     receive ();
     while(match get_next_movable () with
-          | (-1,ARMY) -> false
-          | _ -> true) do
+        | (-1,ARMY) -> false
+        | _ -> true) do
       let next_unite = get_next_movable () in
       handle_action (compute_Action (fst next_unite) (unite_to_uniteville (snd next_unite)) foret);
       receive ()
