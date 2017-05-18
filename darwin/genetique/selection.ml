@@ -30,8 +30,8 @@ let best ind1 ind2 =
 (*best individual within a list*)
 let bestOfList lInd = 
   let lIndHd = match lInd with
-    | hd :: _ -> hd
-    | [] -> failwith "selection.bestOfList"
+    | hd :: _ -> print_endline "HD bestoflist"; hd
+    | [] -> failwith "selection.bestOfList: liste vide"
   in
   List.fold_left best lIndHd lInd
 
