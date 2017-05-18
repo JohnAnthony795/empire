@@ -5,8 +5,8 @@ let print_population pop =
 	match p with
 		|[]-> Printf.printf ".\n%!"
 		|c::cs -> let (f,s) = c in 
-			Printf.printf "%s" ("Candidat n#" ^ (string_of_int n) ^" : "
-					^ (string_of_float s) ^" points\n%!") ;
+			Printf.printf "%s" ((string_of_int n) ^" : "
+					^ (string_of_float s) ^" pts\n") ;
 			print_aux cs (n+1)
 	in
 		print_aux pop 1

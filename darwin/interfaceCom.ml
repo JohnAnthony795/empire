@@ -70,7 +70,7 @@ let open_connection sockaddr =
   with exn -> Unix.close sock ; raise exn
 
 let shutdown_connection inchan =
-  Printf.printf "Closing client socket\n\n";
+  (*Printf.printf "Closing client socket\n\n";*)
   Unix.shutdown (Unix.descr_of_in_channel inchan) Unix.SHUTDOWN_SEND
 
 
@@ -86,7 +86,7 @@ let init_socket server port =
   in try
     let sockaddr = Unix.ADDR_INET(server_addr,port) in
     socket := Some(open_connection sockaddr); (* On crée le socket pour affecter les canaux in/out *)
-    Printf.printf "Socket created\n\n";
+    (* Printf.printf "Socket created\n\n"; *)
     input_channel := Some (Unix.in_channel_of_descr (get_socket ()));
     output_channel := Some (Unix.out_channel_of_descr (get_socket ()))
   with Failure("int_of_string") -> Printf.eprintf "bad port number";
@@ -157,13 +157,13 @@ let traiter_message message =
   | "width" -> set_map_width tlMsg
   | "height" -> set_map_height tlMsg
   | "piece_types" -> () (* TODO : Peupler une structure de données avec *)
-  | "random_seed" -> Printf.printf "Seed de la map : %s\n" (List.hd tlMsg)
+  | "random_seed" -> () (* Printf.printf "Seed de la map : %s\n" (List.hd tlMsg) *)
   | "draw" -> set_draw ()
   | "winner" -> set_victoire tlMsg
   | "error" -> Printf.printf "Received error : %s" (List.hd tlMsg)
   | "set_visible" -> traiter_set_visible tlMsg
   | "set_explored" -> traiter_set_explored tlMsg
-  | "get_action" -> Printf.printf "get_action recu \n" (* TODO A ENLEVER *)
+  | "get_action" -> () (* Printf.printf "get_action recu \n"*) 
   | "delete_piece" -> traiter_delete_piece tlMsg
   | "create_piece" -> traiter_create_piece tlMsg
   | "move" -> traiter_move tlMsg
@@ -190,12 +190,12 @@ let rec receive () =
   | "get_action" -> traiter_message "get_action"
   | "draw" -> traiter_message "draw"
   | "winner" -> traiter_message "winner"
-  | m -> print_endline (string_of_int (Thread.id (Thread.self ())) ^ " : " ^ m); traiter_message m; receive ()
+  | m ->  (* print_endline (string_of_int (Thread.id (Thread.self ())) ^ " : " ^ m);*) traiter_message m; receive ()
 
 (*  SEND_TO_SERVER : string -> unit
       L'envoi concret du message par le socket *)
 let send_to_server message =
-  Printf.printf "Sending \"%s\" to the server\n %!" message;
+  (* Printf.printf "Sending \"%s\" to the server\n %!" message; *)
   match !output_channel with
   | Some (oc) -> output_string oc (message ^ "\n");
     flush oc
