@@ -1,1 +1,1 @@
-!ET#!ET#!ET#!ET#!ET#(!ET,?UEP,!SCP:°1:A)
+!ET#!ET#!ET#!ET#!ET#(!ET,?UEP,!ET)

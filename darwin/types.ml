@@ -130,7 +130,7 @@ let pred_to_code p = match p with   (*tenir à jour avec les prédicats ;)  STAN
 
 let action_to_code a = match a with (* tenir a jour aussi  STANDARD : mettre un '!' au debut *)
   | Move (id,dir) -> "!MV:" ^ (string_of_int id) ^ ":" ^ (direction_to_code dir)
-  | Set_city_prod (id,p_type) -> "!SCP:°" ^ (string_of_int id) ^ ":" ^ (unite_to_code p_type) (*clarifier le piece type id avec un piece type id to string??*)
+  | Set_city_prod (id,p_type) -> "!SCP:" ^ (string_of_int id) ^ ":" ^ (unite_to_code p_type) (*clarifier le piece type id avec un piece type id to string??*)
   | End_turn -> "!ET"
 
 (*fonctions principales*)
