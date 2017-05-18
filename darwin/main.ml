@@ -96,14 +96,17 @@ let main id =
   while (get_score () = -1.0) do
     (* get next unité/ville à jouer *)
     send (compute_Action (get_next_playable ()) CITY foret);
+    receive ();
     while(match get_next_movable () with
           | (-1,ARMY) -> false
           | _ -> true) do
       let next_unite = get_next_movable () in
       send (compute_Action (fst next_unite) (unite_to_uniteville (snd next_unite)) foret);
+      receive ()
     done;
     (*Fin du tour*)
     send(End_turn);
+    reset_move_all ();
     receive ()
   done;
   print_endline "Fin de partie";

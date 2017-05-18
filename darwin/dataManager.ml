@@ -238,7 +238,7 @@ let get_next_movable () =
 
 let reset_move_all () =
   let reset_move (unite:unite_list) = {q=unite.q;r=unite.r;pid=unite.pid;unite_type=unite.unite_type;hp=unite.hp;mov=(ptid_to_move unite.mov)} in
-  List.map reset_move !liste_unites
+  liste_unites := List.map reset_move !liste_unites
 
 let init_data () =
   a_gagne := None;

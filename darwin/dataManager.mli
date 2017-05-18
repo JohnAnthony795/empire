@@ -16,7 +16,7 @@ val set_map_width: string list -> unit
 val set_map_height: string list -> unit
 val set_victoire : string list -> unit
 val set_draw : unit -> unit
-
+val reset_move_all : unit -> unit 
 val init_data : unit -> unit
 
 val traiter_set_visible: string list -> unit
