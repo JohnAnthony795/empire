@@ -103,7 +103,9 @@ let main () =
     let popu1 = Evaluation.evaluer popu Evaluation.AFF10 in (* Met à jour le score d'adaptabilité de chaque individu *)
     let popu2 = Selection.select_n_parents popu1 individusASelectionner 1 in (* popu2 garde les meilleurs individus ; c'est là que se passent les affrontements *)
     let popu3 = Croisement.main_cross popu2 in (* popu3 sont les nouveaux individus obtenus par recombinaison *)
+   	print_population popu3 ;
     let popu4 = Mutation.mute popu3 in (* ces individus recombinés ont ensuite des chances de muter pour donner popu4 *)
+    print_population popu4 ; 
     let popu5 = Selection.merge_generations popu1 popu4 1 in (* on garde parmi la population initiale (popu1) et les nouveaux mutants recombinés (popu4) certains individus pour la prochaine génération *)
     if nbreGen < (nbreGenInitial + iterations) then
       mainLoop popu5 (nbreGen +1)
