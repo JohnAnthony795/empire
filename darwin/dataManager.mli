@@ -18,6 +18,7 @@ val set_victoire : string list -> unit
 val set_draw : unit -> unit
 val reset_move_all : unit -> unit 
 val init_data : unit -> unit
+val set_city_production : Types.city_id -> Types.unites -> unit
 
 val traiter_set_visible: string list -> unit
 val traiter_set_explored: string list -> unit

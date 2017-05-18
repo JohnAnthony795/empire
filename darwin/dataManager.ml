@@ -34,12 +34,13 @@ privées :
 - 
 
 *)
+
 open Types
 
 (** TAILLE MAP **)
-let map_width = ref(45)
+let map_width = ref(44)
 
-let map_height = ref(45)
+let map_height = ref(44)
 
 let our_jid = ref(0)
 
@@ -59,6 +60,38 @@ let set_map_height = function
   | [new_height] -> map_height := int_of_string new_height
   | _ -> failwith "erreur set_map_height";;
 
+(***** OUTILS *****)
+
+(* permet de calculer la vraie distance  entre deux cases *)
+let tiles_distance (qa, ra) (qb, rb) = (abs (qa - qb) + abs (qa + ra - qb - rb) + abs (ra - rb)) / 2
+
+let ptid_to_unites ptid = match ptid with
+  | 0 -> ARMY
+  | 1 -> FIGHT
+  | 2 -> TRANSPORT
+  | 3 -> PATROL
+  | 4 -> BATTLESHIP
+  | _ -> failwith "Erreur ptid_to_unites : entrée non gérée"
+
+(* TODO : récupérer infos dynamiquement *)
+(* renvoie la portee de deplacement d'un type d'unité *)
+let ptid_to_move ptid =
+  match ptid with
+  | 0 -> 1
+  | 1 -> 8
+  | 2 -> 2
+  | 3 -> 4
+  | 4 -> 2 
+  | _ -> failwith "Erreur ptid_to_move : entrée non gérée"
+
+(* TODO : récupérer infos dynamiquement *)
+let unite_to_productionTime unite_type = match unite_type with
+  | ARMY -> 5
+  | FIGHT -> 10
+  | TRANSPORT -> 30
+  | PATROL -> 15
+  | BATTLESHIP -> 40
+
 (***** CARTES *****)
 
 (* Carte du terrain (terrain ou ville ou autre) *)
@@ -76,100 +109,76 @@ let fill_terrain terrain q r =
   | _ -> failwith "erreur fill_terrain"
 
 
-
-(** Non pertinent ? **)
-
-(* Carte ennemis 
-   type ennemi = City | Unit | Other ;;
-
-   let map_ennemi = Array.make_matrix map_width map_height Other ;;
-*)
-
 (***** LISTES *****)
 
 (** Listes unités **)
 
 (* Unités alliées *)
-type unite_list = {q:int; r:int; pid : int ; unite_type : Types.unites ; hp : int ; mov : int};;
+type unite_list = {q:int; r:int; pid : int ; unite_type : Types.unites ; hp : int ; mov : int}
 
-let liste_unites = ref([]);;
+let liste_unites = ref([])
 
 let update_unite_alliee q r pid unite_type hp mov = 
   let pid_is_not pid element = element.pid <> pid in
-  liste_unites := {q=q; r=r ; pid=pid; unite_type=unite_type; hp=hp ; mov=mov} :: (List.filter (pid_is_not pid) !liste_unites) ;;
+  liste_unites := {q=q; r=r ; pid=pid; unite_type=unite_type; hp=hp ; mov=mov} :: (List.filter (pid_is_not pid) !liste_unites)
 
 (* Unités ennemies *)
-
-(* TODO : liste d'unites (pos, pid, type unité, hp? (pour battleship)) *)
-
-type unite_ennemies_list = {q:int; r:int; pid : int ; unite_type : Types.unites ; hp : int};;
-
-let ptid_to_move ptid =
-  match ptid with
-  | 0 -> 1
-  | 1 -> 8
-  | 2 -> 2
-  | 3 -> 4
-  | 4 -> 2 
-  | _ -> failwith "Erreur ptid_to_move : entrée non gérée"
+type unite_ennemies_list = {q:int; r:int; pid : int ; unite_type : Types.unites ; hp : int}
 
 
-let liste_ennemis = ref([]);;
+
+
+let liste_ennemis = ref([])
 
 let update_unite_ennemie q r pid unite_type hp = 
   let pid_is_not pid element = element.pid <> pid in
-  liste_ennemis := {q=q; r=r ; pid=pid; unite_type=unite_type; hp=hp} :: (List.filter (pid_is_not pid) !liste_ennemis) ;;
+  liste_ennemis := {q=q; r=r ; pid=pid; unite_type=unite_type; hp=hp} :: (List.filter (pid_is_not pid) !liste_ennemis)
 
 (** Listes villes **)
 (*Liste villes alliées*)
 
-type (*ville*) allie = {q : int ;r : int ;cid : int ; prod : unites option; tours_restants : int} ;;
+type (*ville*) allie = {q : int ;r : int ;cid : int ; prod : unites option; tours_restants : int}
 
 let liste_ville_alliee = ref ([]) ;;
 
-(* a utiliser avec listealliee = add_alliee *)
-let update_ville_allie q r cid = 
+(* USAGE: add_ville_allie q r cid; *)
+let add_ville_allie q r cid = 
   let cid_is cid element = element.cid = cid in
   if List.exists (cid_is cid) !liste_ville_alliee then ()
-  else liste_ville_alliee := {q =q ; r =r ; cid = cid ; prod = None ; tours_restants = -1} :: !liste_ville_alliee ;;
+  else liste_ville_alliee := {q =q ; r =r ; cid = cid ; prod = None ; tours_restants = -1} :: !liste_ville_alliee
 
-(* a utiliser avec listealliee = rm_alliee *)
-let rec rm_allie rmcid =
-  let pred id alpha = alpha.cid <> id in
-  liste_ville_alliee := List.filter (pred rmcid) !liste_ville_alliee
+(* USAGE: rm_ville_allie cid; *)
+let rm_ville_allie rmcid =
+  let cid_is_not id alpha = alpha.cid <> id in
+  liste_ville_alliee := List.filter (cid_is_not rmcid) !liste_ville_alliee
 
 (*TODO : set production ville alliée *)
+(* set_city_production filtre la liste pour enlever la ville concernée puis la rajoute en modifiée *)
+let set_city_production cid unite_type =
+  let cid_is cid element = element.cid = cid in
+  let cid_is_not cid element = element.cid <> cid in
+  let ville = List.find (cid_is cid) !liste_ville_alliee in (* ville à update *)
+  let autresVilles = List.filter (cid_is_not cid) !liste_ville_alliee in (* toutes les villes sauf celle à udpate *)
+  let tours = unite_to_productionTime unite_type in (* nombre de tours de production *)
+
+  liste_ville_alliee := {q= ville.q ; r= ville.r ; cid = cid ; prod = Some(unite_type) ; tours_restants = tours} :: autresVilles
+
 
 (* Liste villes ennemies *)
-type (*ville*) ennemi = {q : int ;r : int ;cid : int } ;;
+type (*ville*) ennemi = {q : int ;r : int ;cid : int }
 
-let liste_ville_ennemie = ref([]) ;;
+let liste_ville_ennemie = ref([])
 
 let add_ville_ennemi q r cid = 
   let cid_is cid element = element.cid = cid in
   if List.exists (cid_is cid) !liste_ville_ennemie then ()
-  else liste_ville_ennemie := {q=q ; r=r ; cid=cid} :: !liste_ville_ennemie ;;
+  else liste_ville_ennemie := {q=q ; r=r ; cid=cid} :: !liste_ville_ennemie
 
 let rec rm_ennemi rmcid =
   let pred id alpha = alpha.cid <> id in
   liste_ville_ennemie := List.filter (pred rmcid) !liste_ville_ennemie
 
 (* Liste ville neutres *)
-
-(***** OUTILS *****)
-
-(* permet de calculer la vraie distance  entre deux cases *)
-let tiles_distance (qa, ra) (qb, rb) = (abs (qa - qb) + abs (qa + ra - qb - rb) + abs (ra - rb)) / 2
-
-let ptid_to_unites ptid = match ptid with
-  | 0 -> ARMY
-  | 1 -> FIGHT
-  | 2 -> TRANSPORT
-  | 3 -> PATROL
-  | 4 -> BATTLESHIP
-  | _ -> failwith "Erreur ptid_to_unites : entrée non gérée"
-
-(* TODO ajouter d'autres *)
 
 (***** GETTERS *****)
 (* permet de récupérer une unite à partir d'un pid *)
@@ -261,7 +270,7 @@ let traiter_set_visible args =
   | [ q ; r ; terrain ; "city" ; cid ] -> fill_terrain "city" (ios q) (ios r) 
   | [ q ; r ; terrain ; "owned_city" ; cid ; jid ] -> if (ios jid) = !our_jid then 
       (fill_terrain "our_city" (ios q) (ios r) ; 
-       update_ville_allie (ios q) (ios r) (ios cid)) 
+       add_ville_allie (ios q) (ios r) (ios cid)) 
     else 
       (fill_terrain "their_city" (ios q) (ios r) ; 
        add_ville_ennemi (ios q) (ios r) (ios cid))
@@ -329,7 +338,7 @@ let traiter_enter_piece args =
 let traiter_ok_invasion args = 
   let ios = int_of_string in
   match args with
-  | [cid ; q ; r] ->  update_ville_allie (ios q) (ios r) (ios cid);
+  | [cid ; q ; r] ->  add_ville_allie (ios q) (ios r) (ios cid);
     rm_ennemi (ios cid)
   | _ -> failwith "erreur traiter_ok_invasion";;
 
@@ -340,26 +349,9 @@ let traiter_ko_invasion args = ()
 let traiter_city_units_limit args = ()
 
 (*Le joueur a atteint son quota d'unites*)
-let traiter_created_units_limit args = ();;
-
-(* TODO : 
-   | "set_explored" -> traiter_set_explored tlMsg
-   |  "delete_piece" -> traiter_delete_piece tlMsg
-   |  "create_piece" -> traiter_create_piece tlMsg
-   |  "move" -> traiter_move tlMsg
-   |  "lose_city" -> traiter_lose_city tlMsg
-   |  "leave_terrain" -> traiter_leave_terrain tlMsg
-   |  "enter_city" -> traiter_enter_city tlMsg
-   |  "enter_piece" -> traiter_enter_piece tlMsg
-   |  "leave_city" -> traiter_leave_city tlMsg
-   |  "leave_piece" -> traiter_leave_piece tlMsg
-   |  "ok-invasion" -> traiter_ok-invasion tlMsg
-   |  "ko-invasion" -> traiter_ko-invasion tlMsg
-   |  "city-units-limit" -> traiter_city-units-limit tlMsg
-   |  "created-units-limit" -> traiter_created-units-limit tlMsg
+let traiter_created_units_limit args = ()
 
 
-*)
 
 
 

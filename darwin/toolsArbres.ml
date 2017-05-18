@@ -65,7 +65,7 @@ let read_arbre fichier =
   with e ->                      (* some unexpected exception occurs *)
     close_in_noerr ic;           (* emergency closing *)
     raise e                      (* exit with error: files are closed but
-                             		channels are not flushed *)
+                                    		channels are not flushed *)
 
 
 let write_arbre fichier forest =
