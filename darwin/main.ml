@@ -95,17 +95,17 @@ let main id =
   (* TODO true -> partie terminée ? *)
   while (get_score () = -1.0) do
     (* get next unité/ville à jouer *)
-    send (compute_Action (get_next_playable ()) CITY foret);
+    handle_action (compute_Action (get_next_playable ()) CITY foret);
     receive ();
     while(match get_next_movable () with
           | (-1,ARMY) -> false
           | _ -> true) do
       let next_unite = get_next_movable () in
-      send (compute_Action (fst next_unite) (unite_to_uniteville (snd next_unite)) foret);
+      handle_action (compute_Action (fst next_unite) (unite_to_uniteville (snd next_unite)) foret);
       receive ()
     done;
     (*Fin du tour*)
-    send(End_turn);
+    handle_action (End_turn);
     reset_move_all ();
     receive ()
   done;
@@ -114,12 +114,4 @@ let main id =
 
 let () = if ((Array.length Sys.argv) > 1) then let _ = main (int_of_string Sys.argv.(1)) in ()
 
-(* let () = print_endline (string_of_float (main (9301, (read_arbre "IA.ads")))); () *)
-
-(*
-let () =
-  write_arbre file (Leaf End_turn,Leaf End_turn,Leaf End_turn,Leaf End_turn,Leaf End_turn,Leaf End_turn) ;
-  let (t1,_,_,_,_,t6) = (read_arbre file)  in printf "1er Arbre lu dans le fichier :\n"; print_tree t1 0 ;
-  printf "\nDernier Arbre lu dans le fichier :\n"; print_tree t6 0
-;;*)
 

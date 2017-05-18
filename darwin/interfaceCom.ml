@@ -130,13 +130,6 @@ let unites_to_ptid u = match u with
   | PATROL -> "3"
   | BATTLESHIP -> "4"
 
-let action_to_string action =
-  let soi = string_of_int in
-  match action with
-  | End_turn -> "end_turn"
-  | Set_city_prod (cid, ptid) -> "set_city_production " ^ (soi cid) ^ " " ^ (unites_to_ptid ptid)
-  | Move (pid, did) -> "move " ^ (soi pid) ^ " " ^ (dir_to_string did)
-
 (*  pid : piece_id
       ppid : parent_piece_id
       tp_pid: transport_piece_id
@@ -192,6 +185,16 @@ let rec receive () =
   | "winner" -> traiter_message "winner"
   | m -> print_endline (string_of_int (Thread.id (Thread.self ())) ^ " : " ^ m); traiter_message m; receive ()
 
+
+(***** ENVOI *****)
+
+let action_to_string action =
+  let soi = string_of_int in
+  match action with
+  | End_turn -> "end_turn"
+  | Set_city_prod (cid, ptid) -> "set_city_production " ^ (soi cid) ^ " " ^ (unites_to_ptid ptid)
+  | Move (pid, did) -> "move " ^ (soi pid) ^ " " ^ (dir_to_string did)
+
 (*  SEND_TO_SERVER : string -> unit
       L'envoi concret du message par le socket *)
 let send_to_server message =
@@ -201,9 +204,15 @@ let send_to_server message =
     flush oc
   | None -> failwith "Output_channel not initialized"
 
-(*  SEND : t_action -> unit           Fonction "publique"
-      Reçoit un type action de Tree/main, le convertit en string et l'envoie au serveur par le socket *)
-let send action =
-  send_to_server (action_to_string action)
-  (* bloquant : traiter_message jusqu'au prochain get_action *)
+(* TODO : toutes les choses à faire avant d'envoyer une action au serveur (exemple : update dataManager) *)
+let handle_action action =
+	let fonctionToDo = match action with
+	| Move (pid, did) -> () (*TODO *)
+	| Set_city_prod (cid, ptid) -> DataManager.set_city_production cid ptid
+	| End_turn -> () (*TODO *)
+	in
+	fonctionToDo ; (* on effectue la fonction souhaitée *)
+	send_to_server (action_to_string action) (* puis on envoie le message au serveur *)
+
+
 
