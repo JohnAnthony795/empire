@@ -17,7 +17,7 @@ let evaluer popu methode =
   let eval_candidat candidat =
   	let (foret, _) = candidat in
     let _ = Unix.system "../empire-server/Main.native &" in
-    let _ = Unix.sleep 3 in
+    let _ = Unix.sleep 1 in
     let _ = Unix.system "./main.native 0 &" in
     let score = Main.main 1 in (* renvoie le score de ce candidat contre la ref *)
     (foret, score)
