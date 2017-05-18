@@ -44,21 +44,24 @@ let map_height = ref(44)
 
 let our_jid = ref(0)
 
-let current_turn = 0 ;; (* TODO à récupérer par requête *)
+let current_turn = ref(0)
 
 (***** SETTERS *****)
 
 let set_our_jid = function
   | [new_jid] -> our_jid := int_of_string new_jid
-  | _ -> failwith "erreur set_our_jid";;
+  | _ -> failwith "erreur set_our_jid"
 
 let set_map_width = function
   | [new_width] -> map_width := int_of_string new_width
-  | _ -> failwith "erreur set_map_width";;
+  | _ -> failwith "erreur set_map_width"
 
 let set_map_height = function
   | [new_height] -> map_height := int_of_string new_height
-  | _ -> failwith "erreur set_map_height";;
+  | _ -> failwith "erreur set_map_height"
+  
+let increment_turn_counter () =
+	current_turn := !current_turn + 1
 
 (***** OUTILS *****)
 
@@ -95,9 +98,9 @@ let unite_to_productionTime unite_type = match unite_type with
 (***** CARTES *****)
 
 (* Carte du terrain (terrain ou ville ou autre) *)
-type terrain = Ground | Water | Ally | Ennemy | Neutral | Unknown  ;;
+type terrain = Ground | Water | Ally | Ennemy | Neutral | Unknown
 
-let map_terrain = Array.make_matrix !map_width !map_height Unknown ;;
+let map_terrain = Array.make_matrix !map_width !map_height Unknown
 
 let fill_terrain terrain q r =
   match terrain with 
@@ -108,6 +111,9 @@ let fill_terrain terrain q r =
   | "city" -> map_terrain.(q).(r) <- Neutral
   | _ -> failwith "erreur fill_terrain"
 
+let terrain_is terrain_type q r =
+	if (q<0 || q> !map_width || r<0 || r> !map_height) then false
+	else map_terrain.(q).(r) = terrain_type
 
 (***** LISTES *****)
 
@@ -124,9 +130,6 @@ let update_unite_alliee q r pid unite_type hp mov =
 
 (* Unités ennemies *)
 type unite_ennemies_list = {q:int; r:int; pid : int ; unite_type : Types.unites ; hp : int}
-
-
-
 
 let liste_ennemis = ref([])
 
@@ -152,7 +155,7 @@ let rm_ville_allie rmcid =
   let cid_is_not id alpha = alpha.cid <> id in
   liste_ville_alliee := List.filter (cid_is_not rmcid) !liste_ville_alliee
 
-(*TODO : set production ville alliée *)
+
 (* set_city_production filtre la liste pour enlever la ville concernée puis la rajoute en modifiée *)
 let set_city_production cid unite_type =
   let cid_is cid element = element.cid = cid in
@@ -198,11 +201,12 @@ let get_nb_ville_proche_ennemi pid distance =
   let unite = get_unite pid in
   List.length (List.filter (fun (element:ennemi) -> (tiles_distance (unite.q,unite.r) (element.q,element.r))<distance) !liste_ville_ennemie) ;;
 
+
 (* littoral dans une des 6 cases adjacentes *)
 let littoral_adj pid =
   let unite = get_unite pid in
-  (*TODO*)
-  false
+  let (q,r) = (unite.q, unite.r) in
+  terrain_is Water (q+1) r || terrain_is Water (q+1) (r-1) || terrain_is Water q (r-1) || terrain_is Water (q-1) r || terrain_is Water (q-1) (r+1) || terrain_is Water q (r+1)
 
 let a_gagne = ref(None)
 
@@ -254,6 +258,7 @@ let init_data () =
   map_width := 0;
   map_height := 0;
   our_jid := 0;
+  current_turn := 0;
   liste_unites := [];
   liste_ennemis := [];
   liste_ville_alliee := [];

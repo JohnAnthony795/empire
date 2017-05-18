@@ -206,7 +206,7 @@ let handle_action action =
   let fonctionToDo = match action with
     | Move (pid, did) -> () (*TODO *)
     | Set_city_prod (cid, ptid) -> DataManager.set_city_production cid ptid
-    | End_turn -> () (*TODO *)
+    | End_turn -> increment_turn_counter (); () (*TODO *)
   in
   fonctionToDo ; (* on effectue la fonction souhaitée *)
   send_to_server (action_to_string action) (* puis on envoie le message au serveur *)
