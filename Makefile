@@ -13,6 +13,9 @@ CLEAN_DARWIN := cd darwin/; make clean; cd ..;
 all :
 	$(CLIENT) $(SERVER) $(GTK_CLIENT) $(DARWIN)
 	
+nous :
+	$(SERVER) $(DARWIN)
+	
 clean:
 	$(CLEAN_CLIENT) $(CLEAN_SERVER) $(CLEAN_GTK_CLIENT) $(CLEAN_DARWIN)
 	
