@@ -68,7 +68,7 @@ let cross_foret foret1 foret2 =
 (* main_cross : t_population -> t_population retourne la population croisée *)
 let rec main_cross pop =
   match pop with
-  |(foret1,score1)::(foret2,score2)::tl-> List.append (cross_foret foret1 foret2) (main_cross tl) 
+  |(foret1,score1)::((foret2,score2)::tl)-> print_endline "passage main_cross" ; List.append (cross_foret foret1 foret2) (main_cross tl) 
   |[] -> []
   | _ -> failwith("weird list to cross")
 ;;

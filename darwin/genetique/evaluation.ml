@@ -21,7 +21,8 @@ let evaluer popu methode =
     let _ = ToolsArbres.write_arbre "foret_cand.frt" foret in
     (*let _ = Unix.system "xterm -hold -e \"../empire-server/Main.native\" &" in (*version de debug, ouvre l'out serveur dans un terminal*)*)
     let _ = Unix.system "../empire-server/Main.native > /dev/null &" in (*pas de sortie serveur*)
-    let _ = Unix.sleep 3 in
+    let _ = Unix.sleep 1 in
+
     let _ = Unix.system "./main.native 0 &" in
     let score = Main.main 1 in (* renvoie le score de ce candidat contre la ref *)
     (foret, score)
