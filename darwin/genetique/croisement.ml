@@ -29,7 +29,7 @@ let rec get_random_node arbre =
   | Node (Leaf l,b,c) -> if (ratio () < eval) then Node(Leaf l,b,c) else get_random_node c (*1/2 on retourne cette node sinon on poursuit*)
   | Node (a,b,Leaf l) -> if(ratio () < eval) then Node(a,b,Leaf l) else get_random_node a (*1/2 on retourne cette node sinon on poursuit*)
   | Node (a,b,c) -> if (ratio () < eval) then Node (a,b,c) else (if (Random.bool ()) then get_random_node a else get_random_node c) (*1/2 on retourne cette node sinon 1/2 sur chaque branche*)
-  | Leaf _ -> failwith ("rip");
+  | Leaf x ->Leaf x
 ;;
 
 let rec replace pred sub tree =
@@ -68,7 +68,7 @@ let cross_foret foret1 foret2 =
 (* main_cross : t_population -> t_population retourne la population croisée *)
 let rec main_cross pop =
   match pop with
-  |(foret1,score1)::((foret2,score2)::tl)-> print_endline "passage main_cross" ; List.append (cross_foret foret1 foret2) (main_cross tl) 
+  |(foret1,score1)::((foret2,score2)::tl)-> List.append (cross_foret foret1 foret2) (main_cross tl) 
   |[] -> []
   | _ -> failwith("weird list to cross")
 ;;
