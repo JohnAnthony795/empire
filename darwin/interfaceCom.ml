@@ -150,7 +150,7 @@ let traiter_message message =
   | "random_seed" -> () (* Printf.printf "Seed de la map : %s\n" (List.hd tlMsg) *)
   | "draw" -> set_draw ()
   | "winner" -> set_victoire tlMsg 
-  | "error" ->  Printf.printf "Received error : %s\n%!" (List.hd tlMsg); traiter_invalid_terrain ()
+  | "error" ->  (*Printf.printf "Received error : %s\n%!" (List.hd tlMsg); *)traiter_invalid_terrain ()
   | "set_visible" -> traiter_set_visible tlMsg
   | "set_explored" -> traiter_set_explored tlMsg
   | "get_action" -> () (* Printf.printf "get_action recu \n"*) 
@@ -196,7 +196,7 @@ let action_to_string action =
 (*  SEND_TO_SERVER : string -> unit
       L'envoi concret du message par le socket *)
 let send_to_server message =
-   Printf.printf "Sending \"%s\" to the server\n %!" message; 
+  (* Printf.printf "Sending \"%s\" to the server\n %!" message; *)
   match !output_channel with
   | Some (oc) -> output_string oc (message ^ "\n");
     flush oc
@@ -207,8 +207,8 @@ let handle_action action =
   let fonctionToDo = match action with
     | Move (pid, did) -> send_to_server (action_to_string action);receive () (*TODO *)
     | Set_city_prod (cid, ptid) -> DataManager.set_city_production cid ptid;send_to_server (action_to_string action); receive ()
-    | End_turn -> increment_turn_counter (); send_to_server (action_to_string action); receive ()
-    | Do_nothing (cid) -> DataManager.set_move_to_zero cid; Printf.printf "La ville %d ne fait rien.\n%!" cid
+    | End_turn -> increment_turn_counter (); send_to_server (action_to_string action); if (get_score () = -1.0) then receive ()
+    | Do_nothing (cid) -> DataManager.set_move_to_zero cid (*; Printf.printf "La ville %d ne fait rien.\n%!" cid*)
   in
   fonctionToDo  (* on effectue la fonction souhaitée *)
    (* puis on envoie le message au serveur *)

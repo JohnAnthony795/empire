@@ -98,7 +98,7 @@ let main id =
   (* TODO true -> partie terminée ? *)
   while (get_score () = -1.0) do
     (* get next unité/ville à jouer *)
-    Printf.printf  "nouveau tour : %d et next playable %d \n%!" id (get_next_playable ());
+    (*Printf.printf  "nouveau tour : %d et next playable %d \n%!" id (get_next_playable ());*)
     while(match get_next_playable () with
         | -1 -> false
         | _ -> true) do
@@ -109,12 +109,12 @@ let main id =
         | _ -> if (get_score () = -1.0) then true else false) do
 
       let next_unite = get_next_movable () in
-      Printf.printf "Test %d\n%!" (fst next_unite);
+      (*Printf.printf "Test %d\n%!" (fst next_unite);*)
       handle_action (compute_Action (fst next_unite) (unite_to_uniteville (snd next_unite)) foret);
     done;
     (*Fin du tour*)
     handle_action (End_turn);
-    Printf.printf "Fin du tour %d\n%!" id;
+    (*Printf.printf "Fin du tour %d\n%!" id;*)
     reset_move_all ();
   done;
   Printf.printf  "fin de partie : %d \n%!" id;

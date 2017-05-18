@@ -282,7 +282,7 @@ let get_next_movable () =
 let reset_move_all () =
   let reset_move (unite:unite_list) = {q=unite.q;r=unite.r;pid=unite.pid;unite_type=unite.unite_type;hp=unite.hp;mov=(ptid_to_move (unite_to_ptid unite.unite_type))} in
   let reset_move_ville (ville:allie) = {q=ville.q;r=ville.r;cid=ville.cid;prod=ville.prod;tours_restants=ville.tours_restants;mov=1} in
-    print_endline "reset_move_all";
+    (*print_endline "reset_move_all";*)
     liste_unites := List.map reset_move !liste_unites;
     liste_ville_alliee := List.map reset_move_ville !liste_ville_alliee
 
