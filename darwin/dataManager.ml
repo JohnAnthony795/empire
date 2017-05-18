@@ -94,6 +94,14 @@ let unite_to_productionTime unite_type = match unite_type with
   | TRANSPORT -> 30
   | PATROL -> 15
   | BATTLESHIP -> 40
+  
+(* TODO : fonction qui renvoie dans une liste les cases à "distance" de distance de (q,r) *)
+(* let get_cases_proches q r distance =
+	let rec loop distance acu =
+		if distance = 0 then acu
+		else loop (distance -1) (lesbonnescases :: acu)
+	in loop distance []
+*)
 
 (***** CARTES *****)
 
@@ -213,20 +221,22 @@ let littoral_adj pid =
 
 let a_gagne = ref(None)
 
+(* format du message : tl = jid vainqueur *)
 let set_victoire msg =
   let msgHd = match msg with 
     | hd :: tail -> hd
     | [] -> failwith "dataManager.set_victoire"
   in
-  let victoire = (if (int_of_string msgHd) = !our_jid then 1 else 0) in
+  let victoire = (if (int_of_string msgHd) = !our_jid then 1.0 else 0.0) in
   a_gagne := Some(victoire)
 
+(* score pour draw *)
 let set_draw () = 
-  a_gagne := Some(2)
+  a_gagne := Some(0.3)
 
 let get_score () =
   match !a_gagne with
-  | Some (victoire) -> float_of_int victoire
+  | Some (victoire) -> victoire
   | None -> -1.0
 
 (* piece dans un transport*)
@@ -236,7 +246,7 @@ let transport pid =
 
 
 let fog_proche pid distance =
-  (* TODO *)
+  (* TODO : code puis utiliser get_cases_proches *)
   let unite = get_unite pid in
   false
 
