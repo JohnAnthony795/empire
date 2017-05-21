@@ -37,14 +37,17 @@ privées :
 
 open Types
 
-(** TAILLE MAP **)
-let map_width = ref(44)
+(** DECLARATIONS **)
+let map_width = ref(0)
 
-let map_height = ref(44)
+let map_height = ref(0)
 
 let our_jid = ref(0)
 
 let current_turn = ref(0)
+
+let directions =
+  [(+1,  0); (+1, -1); ( 0, -1); (-1,  0); (-1, +1); ( 0, +1)]
 
 (***** SETTERS *****)
 
@@ -82,7 +85,6 @@ let unite_to_ptid (unite:unites) = match unite with
   | TRANSPORT -> 2
   | PATROL -> 3
   | BATTLESHIP -> 4
-  | _ -> failwith "Erreur unite_to_ptid : entrée non gérée"
 
 (* TODO : récupérer infos dynamiquement *)
 (* renvoie la portee de deplacement d'un type d'unité *)
@@ -102,35 +104,44 @@ let unite_to_productionTime unite_type = match unite_type with
   | TRANSPORT -> 30
   | PATROL -> 15
   | BATTLESHIP -> 40
-  
-(* TODO : fonction qui renvoie dans une liste les cases à "distance" de distance de (q,r) *)
-(* let get_cases_proches q r distance =
-	let rec loop distance acu =
-		if distance = 0 then acu
-		else loop (distance -1) (lesbonnescases :: acu)
-	in loop distance []
-*)
+	
 
 (***** CARTES *****)
 
 (* Carte du terrain (terrain ou ville ou autre) *)
 type terrain = Ground | Water | Ally | Ennemy | Neutral | Unknown
 
-let map_terrain = Array.make_matrix !map_width !map_height Unknown
+(* Il s'agit d'une matrice (type_de_case, visible) *)
+let map_terrain = Array.make_matrix !map_width !map_height (Unknown, false)
 
-let fill_terrain terrain q r =
+let set_terrain terrain q r visibleBool =
   match terrain with 
-  | "water" -> map_terrain.(q).(r) <- Water
-  | "ground"-> map_terrain.(q).(r) <- Ground
-  | "our_city" -> map_terrain.(q).(r) <- Ally
-  | "their_city" -> map_terrain.(q).(r) <- Ennemy
-  | "city" -> map_terrain.(q).(r) <- Neutral
-  | _ -> failwith "erreur fill_terrain"
+  | "water" -> map_terrain.(q).(r) <- (Water, visibleBool)
+  | "ground"-> map_terrain.(q).(r) <- (Ground, visibleBool)
+  | "our_city" -> map_terrain.(q).(r) <- (Ally, visibleBool)
+  | "their_city" -> map_terrain.(q).(r) <- (Ennemy, visibleBool)
+  | "city" -> map_terrain.(q).(r) <- (Neutral, visibleBool)
+  | _ -> failwith "erreur set_terrain"
 
+(* Renvoie VRAI ssi la case n'est pas en dehors de la map *)
+let case_sur_map (q,r) =
+	q >= 0 && q <= !map_width && r >= 0 && r <= !map_height
+	
+(* Renvoie TRUE si la case en (q,r) est de type terrain *)
 let terrain_is terrain_type q r =
-	if (q<0 || q> !map_width || r<0 || r> !map_height) then false
-	else map_terrain.(q).(r) = terrain_type
+	if not (case_sur_map (q,r)) then false
+	else ( map_terrain.(q).(r) = (terrain_type, true) || map_terrain.(q).(r) = (terrain_type, false))
 
+(* Renvoie toutes les cases autour de (qa,ra), mais pas la case elle-même *)
+let get_cases_proches qa ra distance =
+	let rec loop qb rb acu =
+		if qb > !map_width then loop 0 (rb + 1) acu else
+		if rb > !map_height then acu else
+		let d = tiles_distance (qa, ra) (qb, rb) in
+		if (d > 0 && d <= distance) then loop (qb + 1) rb (map_terrain.(qb).(rb) :: acu) else loop (qb + 1) rb acu
+	in
+	loop 0 0 []
+	
 (***** LISTES *****)
 
 (** Listes unités **)
@@ -252,12 +263,21 @@ let transport pid =
   let unite = get_unite pid in
   List.length (List.filter (fun (element:unite_list) -> ((element.pid <> pid) && (element.unite_type == TRANSPORT) && (unite.q == element.q) && (unite.r==element.r))) !liste_unites) > 0
 
-
-let fog_proche pid distance =
-  (* TODO : code puis utiliser get_cases_proches *)
+(* Renvoie true s'il y a des cases Unknown à X cases ou moins *)
+let unknown_proche pid distance =
   let unite = get_unite pid in
-  false
-
+	let cases_proches = get_cases_proches unite.q unite.r distance in
+	let case_est_unknown (typecase, visible) = typecase = Unknown in
+  List.exists (case_est_unknown) cases_proches
+	
+(* Renvoie true s'il y a du fog à X cases ou moins
+	fog = cases explorées mais non visibles *)	
+let fog_proche pid distance =
+	let unite = get_unite pid in
+	let cases_proches = get_cases_proches unite.q unite.r distance in
+	let case_est_fog (typecase, visible) = not visible in
+  List.exists (case_est_fog) cases_proches
+	
 let unite_en_production cid =
   let ville = get_ville_allie cid in 
     match ville.prod with 
@@ -295,7 +315,6 @@ let set_move_to_zero cid =
   liste_ville_alliee := {q= ville.q ; r= ville.r ; cid = cid ; prod = ville.prod ; tours_restants = ville.tours_restants ; mov = 0} :: autresVilles
 
 let set_move_to_zero_unite pid =
-  let ios = int_of_string in
   let piece = List.find (fun (element:unite_list) -> element.pid = pid) !liste_unites in 
     update_unite_alliee piece.q piece.r pid piece.unite_type piece.hp 0
 
@@ -317,21 +336,24 @@ let init_data () =
 let traiter_set_visible args =
   let ios = int_of_string in
   match args with
-  | [ q ; r ; terrain ; "none" ] -> fill_terrain terrain (ios q) (ios r)
-  | [ q ; r ; terrain ; "city" ; cid ] -> fill_terrain "city" (ios q) (ios r) 
+  | [ q ; r ; terrain ; "none" ] -> set_terrain terrain (ios q) (ios r) true
+  | [ q ; r ; terrain ; "city" ; cid ] -> set_terrain "city" (ios q) (ios r) true
   | [ q ; r ; terrain ; "owned_city" ; cid ; jid ] -> if (ios jid) = !our_jid then 
-      (fill_terrain "our_city" (ios q) (ios r) ; 
+      (set_terrain "our_city" (ios q) (ios r) true ; 
        add_ville_allie (ios q) (ios r) (ios cid)) 
     else 
-      (fill_terrain "their_city" (ios q) (ios r) ; 
+      (set_terrain "their_city" (ios q) (ios r) true ; 
        add_ville_ennemi (ios q) (ios r) (ios cid))
   | [ q ; r ; terrain ; "piece" ; jid ; pid ; ptid ; hp ] -> if (ios jid) = !our_jid then 
   let piece = List.find (fun (element:unite_list) -> element.pid = (ios pid)) !liste_unites in
   (update_unite_alliee (ios q) (ios r) (ios pid) (ptid_to_unites (ios ptid)) (ios hp) (piece.mov)) else (update_unite_ennemie (ios q) (ios r) (ios pid) (ptid_to_unites (ios ptid)) (ios hp))
   | _ -> failwith "erreur traiter_set_visible"
 
-(*Faut-il gérer visible et explored pour l'algo génétique? *)
-let traiter_set_explored args = ()
+let traiter_set_explored args =
+	let ios = int_of_string in
+	match args with
+	| [ q ; r ; terrain] -> set_terrain terrain (ios q) (ios r) false
+	| _ -> failwith "ERREUR traiter_set_explored"
 
 (*Supprime la piece de pid = args dans liste_unites ou liste_ennemis *)
 let traiter_delete_piece args =
