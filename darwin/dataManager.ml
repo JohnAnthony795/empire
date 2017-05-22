@@ -238,7 +238,53 @@ let littoral_adj pid =
   let (q,r) = (unite.q, unite.r) in
   terrain_is Water (q+1) r || terrain_is Water (q+1) (r-1) || terrain_is Water q (r-1) || terrain_is Water (q-1) r || terrain_is Water (q-1) (r+1) || terrain_is Water q (r+1)
 
+(**Fonctions de scores fin de partie**)
+  
 let a_gagne = ref(None)
+
+(*
+SCORE: le score est la somme de valeurs concrete en mémoire fois un coefficient d'importance.
+Les quantités considérées sont:
+-Valeur de l'arsenal créé (nombre de pièce fois leur cout de production)
+-Nombre de villes possédées
+-taille de la zone explorée
+-taille de la zone visible
+*)
+
+(*Getteurs de quantitées:*)
+let get_nb_unite type_unite = 
+	match type_unite with
+		|ARMY -> List.length (List.filter (fun (x : unite_list) -> (x.unite_type) = ARMY) (!liste_unites)) (*egalité de contenu*)
+		|PATROL ->  List.length (List.filter (fun (x : unite_list) -> x.unite_type = PATROL) (!liste_unites))
+		|BATTLESHIP ->  List.length (List.filter (fun (x : unite_list) -> x.unite_type = BATTLESHIP) (!liste_unites))
+		|FIGHT ->  List.length (List.filter (fun (x : unite_list) -> x.unite_type = FIGHT) (!liste_unites))
+		|TRANSPORT ->  List.length (List.filter (fun (x : unite_list) -> x.unite_type = TRANSPORT) (!liste_unites))
+		
+let get_arsenal_value () = 	
+		 (get_nb_unite ARMY) * 3 (*TODO mettre les vrais scores*)		
+		+(get_nb_unite PATROL) * 5
+		+(get_nb_unite BATTLESHIP) * 15
+		+(get_nb_unite FIGHT) * 10
+		+(get_nb_unite TRANSPORT) * 5
+		
+		
+let get_nb_ville () = List.length (!liste_ville_alliee)
+
+let get_explored_size() =
+	let flatten matrix = (*turns a matrix (package Array) to a list. Loses info but easier to handle*)
+		let v1 = Array.to_list matrix in (*we should have a list of arrays here*)
+		let v2 = List.map (Array.to_list) v1 in (*flattening all arrays insinde the list*)
+			List.concat v2  (*merging the 'terrain List List' into a 'terrain List'*)		
+	in 
+	 (!map_height * !map_width) - List.length (List.filter (fun x-> match x with (t,_) -> t = Unknown) (flatten map_terrain)) (*TODO _ bizarre pas ltemp*)
+	 
+let get_visible_size() = 1 (*TODO j'ai pas réussi a trouver l'info du coup elle y est now.*)
+
+let calculate_score () =  (*Set coefs here*)
+		   float_of_int( get_arsenal_value()) *. 1.0 
+		+. float_of_int( get_nb_ville()     ) *. 10.0
+		+. float_of_int( get_explored_size()) *. 0.1
+		+. float_of_int( get_visible_size() ) *. 0.2
 
 (* format du message : tl = jid vainqueur *)
 let set_victoire msg =
@@ -246,12 +292,14 @@ let set_victoire msg =
     | hd :: tail -> hd
     | [] -> failwith "dataManager.set_victoire"
   in
-  let victoire = (if (int_of_string msgHd) = !our_jid then 1.0 else 0.0) in
-  a_gagne := Some(victoire)
+  let victoire = (if (int_of_string msgHd) = !our_jid then 1.3 else 0.7) in (*En tant que multiplicateur*)
+  let prescore = calculate_score () in 
+  a_gagne := Some(victoire *. prescore)     
 
 (* score pour draw *)
 let set_draw () = 
-  a_gagne := Some(0.3)
+	let prescore = calculate_score () in
+	a_gagne := Some(1.0 *.prescore)
 
 let get_score () =
   match !a_gagne with
