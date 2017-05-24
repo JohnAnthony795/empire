@@ -129,7 +129,7 @@ let case_sur_map (q,r) =
 	
 (* Renvoie TRUE si la case en (q,r) est de type terrain *)
 let terrain_is terrain_type q r =
-  Printf.printf "terrain is %d %d\n%!" q r;
+  if Opt.doPrint then Printf.printf "terrain is %d %d\n%!" q r else ()
 	if not (case_sur_map (q,r)) then false
 	else ( map_terrain.(q).(r) = (terrain_type, true) || map_terrain.(q).(r) = (terrain_type, false))
 
@@ -292,12 +292,11 @@ let get_nb_unite type_unite =
 		|TRANSPORT ->  List.length (List.filter (fun (x : unite_list) -> x.unite_type = TRANSPORT) (!liste_unites))
 		
 let get_arsenal_value () = 	
-		 (get_nb_unite ARMY) * 3 (*TODO mettre les vrais scores*)		
-		+(get_nb_unite PATROL) * 5
-		+(get_nb_unite BATTLESHIP) * 15
+		 (get_nb_unite ARMY) * 5		
+		+(get_nb_unite PATROL) * 15
+		+(get_nb_unite BATTLESHIP) * 40
 		+(get_nb_unite FIGHT) * 10
-		+(get_nb_unite TRANSPORT) * 5
-		
+		+(get_nb_unite TRANSPORT) * 30
 		
 let get_nb_ville () = List.length (!liste_ville_alliee)
 
@@ -378,8 +377,6 @@ let get_next_playable () =
 
 let get_next_movable () = 
   let liste_movable = List.filter (fun (element:unite_list) -> element.mov > 0) !liste_unites in
-  (*let _ = Printf.printf "lenght : %d\n%!" (List.length liste_movable); 
-  List.map (fun (element:unite_list) -> Printf.printf "pid=%d,mov=%d | %!" element.pid element.mov ) liste_movable in*)
   match liste_movable with
   | hd :: tail -> (hd.pid,hd.unite_type)
   | [] -> (-1,ARMY)
@@ -387,7 +384,7 @@ let get_next_movable () =
 let reset_move_all () =
   let reset_move (unite:unite_list) = {q=unite.q;r=unite.r;pid=unite.pid;unite_type=unite.unite_type;hp=unite.hp;mov=(ptid_to_move (unite_to_ptid unite.unite_type))} in
   let reset_move_ville (ville:allie) = {q=ville.q;r=ville.r;cid=ville.cid;prod=ville.prod;tours_restants=ville.tours_restants;mov=1} in
-    (*print_endline "reset_move_all";*)
+    if Opt.doPrint then print_endline "reset_move_all" else ();
     liste_unites := List.map reset_move !liste_unites;
     liste_ville_alliee := List.map reset_move_ville !liste_ville_alliee
 
@@ -461,10 +458,8 @@ let traiter_move args =
   let ios = int_of_string in
   match args with
   | [pid ; q ; r] -> let piece = List.find (fun (element:unite_list) -> element.pid = (ios pid)) !liste_unites in 
-    (*Printf.printf "traiter move %d\n%!" (piece.mov-1); *)
-    update_unite_alliee (ios q) (ios r) (ios pid) piece.unite_type piece.hp (piece.mov-1)(*;
-    let _ = List.map (fun (element:unite_list) -> Printf.printf "pid=%d,mov=%d | %!" element.pid element.mov ) !liste_unites in ()*)
-
+    if Opt.doPrint then Printf.printf "traiter move %d\n%!" (piece.mov-1) else ();
+    update_unite_alliee (ios q) (ios r) (ios pid) piece.unite_type piece.hp (piece.mov-1)
   | _ -> failwith "erreur traiter_move";;
 
 (*Une ville alliee est prise par l'ennemi*)

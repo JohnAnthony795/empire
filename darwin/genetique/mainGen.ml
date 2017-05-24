@@ -22,8 +22,6 @@ Remarques / suggestions :
         	5. on sélectionne dans (popu1 U popu4) des individus pour la prochaine génération -> popu5
 *)
 
-(* TODO: stocker nbreGen dans le fichier config après coup, exporter meilleurs arbres de chaque génération ? *)
-
 open ToolsArbres
 open Types
 open TypesGen
@@ -32,9 +30,23 @@ let individusASelectionner = 2 (* DOIT ETRE PAIR!!!! *)
 
 let iterations = 20 (* nombre de générations à simuler avant de s'arrêter; on pourrait la mettre en paramètre *)
 
-let write_nbreGen nbreGen = ()
-
 (** TOOLS **)
+
+let read_file filename = (* renvoie une liste de lignes du fichier *)
+    let lines = ref [] in
+    let chan = open_in filename in
+    try
+      while (true); do
+        lines := input_line chan :: !lines
+      done; !lines
+    with End_of_file ->
+      close_in chan;
+      List.rev !lines 
+
+let write_nbreGen configFile nbreGen = 
+	let out_chan = open_out configFile in
+	let str = "nbreGen=" ^ (string_of_int nbreGen) in
+	output_string out_chan str
 
 let strSplit strToSplit delim =
   let str_start str len = String.sub str 0 len in
@@ -50,17 +62,6 @@ let strSplit strToSplit delim =
 
 (* Récupère dans le fichier passé en paramètre la valeur après nbreGen= et la renvoie *)
 let getNbreGenInitial configFile =
-  let read_file filename = (* renvoie une liste de lignes du fichier *)
-    let lines = ref [] in
-    let chan = open_in filename in
-    try
-      while (true); do
-        lines := input_line chan :: !lines
-      done; !lines
-    with End_of_file ->
-      close_in chan;
-      List.rev !lines 
-  in
   let findValueOf strToFind lines =
     let rec recfindValueOf strToFind lines = (* renvoie la valeur de nbreGen en String *)
       match lines with
@@ -77,7 +78,7 @@ let getNbreGenInitial configFile =
     if valueFound = "" then failwith ("findValueOf : could not find \"" ^ strToFind ^ "\" in the lines") else valueFound in
   int_of_string (findValueOf "nbreGen" (read_file configFile))
 
-let nbreGenInitial = getNbreGenInitial "config.cfg" (* nombre de générations simulées depuis le début *)
+let nbreGenInitial = getNbreGenInitial "nbreGen.cfg" (* nombre de générations simulées depuis le début *)
 
 let shuffle entryList =
   let nd = List.map (fun c -> (Random.bits (), c)) entryList in
@@ -85,27 +86,25 @@ let shuffle entryList =
   List.map snd sond
 
 (** MAIN **)
- 
+
 let foretTest = (arbre0,arbre0,arbre0,arbre0,arbre0,arbre0)  
 let popuTest = (foretTest,10.0)
 
 let rec first_popu acu =
-if (acu <> taille_population) then
-  popuTest::(first_popu (acu+1))
-else
-  [popuTest];;
+  if (acu <> taille_population) then
+    popuTest::(first_popu (acu+1))
+  else
+    [popuTest]
 
 let main () =
   (*ToolsArbres.write_population "current_gen.pop" (first_popu 1);*)
   let rec mainLoop popu nbreGen =
-	      print_endline ("Génération n° "^ (string_of_int nbreGen)); (*TODO Remove?*)
-      	      print_population popu;
-              (*print_population_all popu;
-                Unix.sleep 10;*)
+    print_endline ("Génération n° "^ (string_of_int nbreGen));
+    print_population popu;
     let popu1 = Evaluation.evaluer popu Evaluation.AFF10 in (* Met à jour le score d'adaptabilité de chaque individu *)
     let popu2 = Selection.select_n_parents popu1 individusASelectionner 1 in (* popu2 garde les meilleurs individus ; c'est là que se passent les affrontements *)
     let popu3 = Croisement.main_cross popu2 in (* popu3 sont les nouveaux individus obtenus par recombinaison *)
-   	print_population popu3 ;
+    print_population popu3 ;
     let popu4 = Mutation.mute popu3 in (* ces individus recombinés ont ensuite des chances de muter pour donner popu4 *)
     print_population popu4 ; 
     let popu5 = Selection.merge_generations popu1 popu4 1 in (* on garde parmi la population initiale (popu1) et les nouveaux mutants recombinés (popu4) certains individus pour la prochaine génération *)
@@ -113,7 +112,7 @@ let main () =
       mainLoop popu5 (nbreGen +1)
     else begin
       ToolsArbres.write_population "current_gen.pop" popu5; (* on sauvegarde notre population actuelle dans des fichiers *)
-      write_nbreGen nbreGen ; (* on sauvegarde notre nombre de générations simulées dans un fichier *)
+      write_nbreGen "nbreGen.cfg" nbreGen ; (* on sauvegarde notre nombre de générations simulées dans un fichier *)
       ()
     end
   in

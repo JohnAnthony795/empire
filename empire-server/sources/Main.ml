@@ -23,6 +23,8 @@ let config =
   }
 
 let init_tables () =
+  Random.self_init ();
+
   Hashtbl.add piece_types 0
     { a_id = 0
     ; a_name = "ARMY"

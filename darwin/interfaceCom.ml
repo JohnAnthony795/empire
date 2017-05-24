@@ -83,7 +83,7 @@ let init_socket server port =
   in try
     let sockaddr = Unix.ADDR_INET(server_addr,port) in
     socket := Some(open_connection sockaddr); (* On crée le socket pour affecter les canaux in/out *)
-    (* Printf.printf "Socket created\n\n"; *)
+    if Opt.doPrint then Printf.printf "Socket created\n\n" else ();
     input_channel := Some (Unix.in_channel_of_descr (get_socket ()));
     output_channel := Some (Unix.out_channel_of_descr (get_socket ()))
   with Failure("int_of_string") -> Printf.eprintf "bad port number";
@@ -147,13 +147,13 @@ let traiter_message message =
   | "width" -> set_map_width tlMsg
   | "height" -> set_map_height tlMsg
   | "piece_types" -> () (* TODO : Peupler une structure de données avec *)
-  | "random_seed" -> () (* Printf.printf "Seed de la map : %s\n" (List.hd tlMsg) *)
+  | "random_seed" -> if Opt.doPrint then Printf.printf "Seed de la map : %s\n" (List.hd tlMsg) else ()
   | "draw" -> set_draw ()
   | "winner" -> set_victoire tlMsg
-  | "error" ->  (*Printf.printf "Received error : %s\n%!" (List.hd tlMsg); *)traiter_invalid_terrain ()
+  | "error" ->  (*Printf.printf "Received error : %s\n%!" (List.hd tlMsg); *) traiter_invalid_terrain ()
   | "set_visible" -> traiter_set_visible tlMsg
   | "set_explored" -> traiter_set_explored tlMsg
-  | "get_action" ->  Printf.printf "get_action recu \n%!" 
+  | "get_action" ->  if Opt.doPrint then Printf.printf "get_action recu \n%!" else ()
   | "delete_piece" -> traiter_delete_piece tlMsg
   | "create_piece" -> traiter_create_piece tlMsg
   | "move" -> traiter_move tlMsg
@@ -181,7 +181,7 @@ let rec receive () =
   | "draw" -> traiter_message "draw"
   | "winner 0" -> traiter_message "winner 0"
   | "winner 1" -> traiter_message "winner 1"
-  | m ->   print_endline (string_of_int (Thread.id (Thread.self ())) ^ " : " ^ m); traiter_message m; receive ()
+  | m -> if Opt.doPrint then print_endline ("Received : " ^ m) else (); traiter_message m; receive ()
 
 
 (***** ENVOI *****)
@@ -197,7 +197,7 @@ let action_to_string action =
 (*  SEND_TO_SERVER : string -> unit
       L'envoi concret du message par le socket *)
 let send_to_server message =
-   Printf.printf "Sending \"%s\" to the server\n %!" message; 
+  if Opt.doPrint then Printf.printf "Sending \"%s\" to the server\n %!" message else (); 
   match !output_channel with
   | Some (oc) -> output_string oc (message ^ "\n");
     flush oc
@@ -212,7 +212,7 @@ let handle_action action =
     | Do_nothing (cid) -> DataManager.set_move_to_zero cid (*; Printf.printf "La ville %d ne fait rien.\n%!" cid*)
   in
   fonctionToDo  (* on effectue la fonction souhaitée *)
-   (* puis on envoie le message au serveur *)
+(* puis on envoie le message au serveur *)
 
 
 

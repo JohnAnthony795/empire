@@ -127,10 +127,12 @@ let action_to_code a = match a with (* tenir a jour aussi  STANDARD : mettre un 
   | Do_nothing (id) -> "!DN:" ^ (string_of_int id) 
 
 (*fonctions principales*)
-let print_action a d = printf "%s\n" ((String.make d '~') ^ (String.make d '~') ^ (action_to_string a));; (*moche mais on peut mettre que un carac*)
+let print_action a d = printf "%s\n" ((String.make d '~') ^ (String.make d '~') ^ (action_to_string a)) (*moche mais on peut mettre que un carac*)
 let print_pred p depth =
-  printf "%s\n" ((String.make depth '~') ^ (String.make depth '~') ^ (pred_to_string p)) ;;
+  printf "%s\n" ((String.make depth '~') ^ (String.make depth '~') ^ (pred_to_string p))
+
 let rec print_tree t depth =
   match t with
-    Leaf a -> print_action a depth
-  |Node (t1,p,t2) -> (print_tree t1 (depth+1) ; print_pred p (depth);print_tree t2 (depth+1)) ;;
+  | Leaf a -> print_action a depth
+  | Node (t1,p,t2) -> (print_tree t1 (depth+1) ; print_pred p (depth); print_tree t2 (depth+1))
+
