@@ -129,7 +129,7 @@ let case_sur_map (q,r) =
 	
 (* Renvoie TRUE si la case en (q,r) est de type terrain *)
 let terrain_is terrain_type q r =
-  if Opt.doPrint then Printf.printf "terrain is %d %d\n%!" q r else ()
+  if Opt.doPrint then Printf.printf "terrain is %d %d\n%!" q r else ();
 	if not (case_sur_map (q,r)) then false
 	else ( map_terrain.(q).(r) = (terrain_type, true) || map_terrain.(q).(r) = (terrain_type, false))
 
