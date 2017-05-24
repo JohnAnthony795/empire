@@ -38,9 +38,9 @@ privées :
 open Types
 
 (** DECLARATIONS **)
-let map_width = ref(0)
+let map_width = ref(44)
 
-let map_height = ref(0)
+let map_height = ref(44)
 
 let our_jid = ref(0)
 
@@ -129,14 +129,15 @@ let case_sur_map (q,r) =
 	
 (* Renvoie TRUE si la case en (q,r) est de type terrain *)
 let terrain_is terrain_type q r =
+  Printf.printf "terrain is %d %d\n%!" q r;
 	if not (case_sur_map (q,r)) then false
 	else ( map_terrain.(q).(r) = (terrain_type, true) || map_terrain.(q).(r) = (terrain_type, false))
 
 (* Renvoie toutes les cases autour de (qa,ra), mais pas la case elle-même *)
 let get_cases_proches qa ra distance =
 	let rec loop qb rb acu =
-		if qb > !map_width then loop 0 (rb + 1) acu else
-		if rb > !map_height then acu else
+		if qb >= !map_width then loop 0 (rb + 1) acu else
+		if rb >= !map_height then acu else
 		let d = tiles_distance (qa, ra) (qb, rb) in
 		if (d > 0 && d <= distance) then loop (qb + 1) rb (map_terrain.(qb).(rb) :: acu) else loop (qb + 1) rb acu
 	in
@@ -213,30 +214,60 @@ let rec rm_ennemi rmcid =
 (***** GETTERS *****)
 (* permet de récupérer une unite à partir d'un pid *)
 let get_unite pid =
-  List.find (fun (element:unite_list) -> element.pid = pid) !liste_unites
+  try (List.find (fun (element:unite_list) -> element.pid = pid) !liste_unites) with
+  Not_found -> {q=(-1);r=(-1);pid =(-1) ; unite_type =ARMY;hp=(-1);mov = 0}
 
 let get_ville_allie cid =
-  List.find (fun (element:allie) -> element.cid = cid) !liste_ville_alliee
+  try (List.find (fun (element:allie) -> element.cid = cid) !liste_ville_alliee) with
+  Not_found -> {q=(-1) ;r=(-1) ;cid=(-1) ; prod =None; tours_restants =0; mov =0}
 
 (* Ajouté distance en parametre*)
 let get_nb_unite_proche unites pid distance=
   let unite = get_unite pid in
-  List.length (List.filter (fun (element:unite_list) -> ((element.pid <> pid) && (element.unite_type =unites) && ((tiles_distance (unite.q,unite.r) (element.q,element.r))<distance))) !liste_unites) ;;
+  if (unite.pid <> -1) then
+  List.length (List.filter (fun (element:unite_list) -> ((element.pid <> pid) && (element.unite_type =unites) && ((tiles_distance (unite.q,unite.r) (element.q,element.r))<distance))) !liste_unites)
+else 
+  let ville = get_ville_allie pid in
+  List.length (List.filter (fun (element:unite_list) -> ((element.pid <> pid) && (element.unite_type =unites) && ((tiles_distance (ville.q,ville.r) (element.q,element.r))<distance))) !liste_unites)
+  
 
 let get_nb_ville_proche_allie pid distance =
   let unite = get_unite pid in
-  List.length (List.filter (fun (element:allie) -> (tiles_distance (unite.q,unite.r) (element.q,element.r))<distance) !liste_ville_alliee) ;;
+  if (unite.pid <> -1) then
+  List.length (List.filter (fun (element:allie) -> (tiles_distance (unite.q,unite.r) (element.q,element.r))<distance) !liste_ville_alliee) 
+else
+  let ville = get_ville_allie pid in
+   List.length (List.filter (fun (element:allie) -> (tiles_distance (ville.q,ville.r) (element.q,element.r))<distance) !liste_ville_alliee) 
+
 
 let get_nb_ville_proche_ennemi pid distance =
   let unite = get_unite pid in
-  List.length (List.filter (fun (element:ennemi) -> (tiles_distance (unite.q,unite.r) (element.q,element.r))<distance) !liste_ville_ennemie) ;;
-
+  if (unite.pid <> -1) then
+  List.length (List.filter (fun (element:ennemi) -> (tiles_distance (unite.q,unite.r) (element.q,element.r))<distance) !liste_ville_ennemie)
+else
+let ville = get_ville_allie pid in
+ List.length (List.filter (fun (element:ennemi) -> (tiles_distance (ville.q,ville.r) (element.q,element.r))<distance) !liste_ville_ennemie)
 
 (* littoral dans une des 6 cases adjacentes *)
 let littoral_adj pid =
   let unite = get_unite pid in
+  if (unite.pid <> -1) then
   let (q,r) = (unite.q, unite.r) in
-  terrain_is Water (q+1) r || terrain_is Water (q+1) (r-1) || terrain_is Water q (r-1) || terrain_is Water (q-1) r || terrain_is Water (q-1) (r+1) || terrain_is Water q (r+1)
+  terrain_is Water (q+1) r || 
+  terrain_is Water (q+1) (r-1) ||
+  terrain_is Water q (r-1) ||
+  terrain_is Water (q-1) r || 
+  terrain_is Water (q-1) (r+1) || 
+  terrain_is Water q (r+1)
+else
+  let ville = get_ville_allie pid in
+  let (q,r) = (ville.q, ville.r) in
+  terrain_is Water (q+1) r || 
+  terrain_is Water (q+1) (r-1) ||
+  terrain_is Water q (r-1) ||
+  terrain_is Water (q-1) r || 
+  terrain_is Water (q-1) (r+1) || 
+  terrain_is Water q (r+1)
 
 (**Fonctions de scores fin de partie**)
   
@@ -322,8 +353,14 @@ let unknown_proche pid distance =
 	fog = cases explorées mais non visibles *)	
 let fog_proche pid distance =
 	let unite = get_unite pid in
+  if (unite.pid <> -1) then
 	let cases_proches = get_cases_proches unite.q unite.r distance in
 	let case_est_fog (typecase, visible) = not visible in
+  List.exists (case_est_fog) cases_proches
+else
+  let ville = get_ville_allie pid in
+  let cases_proches = get_cases_proches ville.q ville.r distance in
+  let case_est_fog (typecase, visible) = not visible in
   List.exists (case_est_fog) cases_proches
 	
 let unite_en_production cid =
@@ -438,7 +475,9 @@ let traiter_lose_city args =
   | _ -> failwith "erreur traiter_lose_city";;
 
 let traiter_invalid_terrain () =
-  set_move_to_zero_unite (fst (get_next_movable ()))
+  let pid = fst (get_next_movable ()) in
+  if pid <> -1 then
+  set_move_to_zero_unite (pid)
 
 (*Inutiles?*)
 let traiter_leave_terrain args = ()
@@ -475,7 +514,10 @@ let traiter_ok_invasion args =
 let traiter_ko_invasion args = ()
 
 (*Une ville est pleine*)
-let traiter_city_units_limit args = ()
+let traiter_city_units_limit args = 
+  let pid = fst (get_next_movable ()) in
+  if pid <> -1 then
+  set_move_to_zero_unite (pid)
 
 (*Le joueur a atteint son quota d'unites*)
 let traiter_created_units_limit args = ()

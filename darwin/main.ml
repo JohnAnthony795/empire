@@ -39,7 +39,9 @@ let get_arbre foret (ptid:uniteville) =
 (*Parcours d'arbre ( prise de décision ) --------------------------------------------*)
 
 let compute_Action id unite_type foret = (*prend une id t_ID de piece et return une action t_action à jouer        (prendre aussi la foret?????? )*)
-  let evaluate_pred pred piece_id = match pred with (* prend un predicat retourne un booleen  TENIR A JOUR voir directement mettre dans type*)
+  let evaluate_pred pred piece_id = 
+print_endline (pred_to_string pred);
+  match pred with (* prend un predicat retourne un booleen  TENIR A JOUR voir directement mettre dans type*)
     | Nb_unite_allie_proche ( d, u, n, c ) -> let nbproche = (get_nb_unite_proche u piece_id d) in (*il manque une quantification de "proche" en fait *) 
       (match c with
        | Inf -> nbproche < n
@@ -101,19 +103,20 @@ let main id =
     (*Printf.printf  "nouveau tour : %d et next playable %d \n%!" id (get_next_playable ());*)
     while(match get_next_playable () with
         | -1 -> false
-        | _ -> true) do
+        | _ -> (get_score () = -1.0)) do
+      Printf.printf "VILLE ------------------ %d\n%!" (get_next_playable ());
       handle_action (compute_Action (get_next_playable ()) CITY foret);
     done;
     while(match get_next_movable () with
         | (-1,ARMY) -> false
-        | _ -> if (get_score () = -1.0) then true else false) do
+        | _ -> (get_score () = -1.0)) do
 
       let next_unite = get_next_movable () in
       (*Printf.printf "Test %d\n%!" (fst next_unite);*)
       handle_action (compute_Action (fst next_unite) (unite_to_uniteville (snd next_unite)) foret);
     done;
     (*Fin du tour*)
-    handle_action (End_turn);
+    if (get_score () = -1.0) then handle_action (End_turn);
     (*Printf.printf "Fin du tour %d\n%!" id;*)
     reset_move_all ();
   done;

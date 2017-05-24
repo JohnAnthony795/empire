@@ -149,11 +149,11 @@ let traiter_message message =
   | "piece_types" -> () (* TODO : Peupler une structure de données avec *)
   | "random_seed" -> () (* Printf.printf "Seed de la map : %s\n" (List.hd tlMsg) *)
   | "draw" -> set_draw ()
-  | "winner" -> set_victoire tlMsg 
+  | "winner" -> set_victoire tlMsg
   | "error" ->  (*Printf.printf "Received error : %s\n%!" (List.hd tlMsg); *)traiter_invalid_terrain ()
   | "set_visible" -> traiter_set_visible tlMsg
   | "set_explored" -> traiter_set_explored tlMsg
-  | "get_action" -> () (* Printf.printf "get_action recu \n"*) 
+  | "get_action" ->  Printf.printf "get_action recu \n%!" 
   | "delete_piece" -> traiter_delete_piece tlMsg
   | "create_piece" -> traiter_create_piece tlMsg
   | "move" -> traiter_move tlMsg
@@ -179,8 +179,9 @@ let rec receive () =
   | "" -> failwith "receive: Empty message"
   | "get_action" -> traiter_message "get_action"
   | "draw" -> traiter_message "draw"
-  | "winner" -> traiter_message "winner"
-  | m ->  (* print_endline (string_of_int (Thread.id (Thread.self ())) ^ " : " ^ m);*) traiter_message m; receive ()
+  | "winner 0" -> traiter_message "winner 0"
+  | "winner 1" -> traiter_message "winner 1"
+  | m ->   print_endline (string_of_int (Thread.id (Thread.self ())) ^ " : " ^ m); traiter_message m; receive ()
 
 
 (***** ENVOI *****)
@@ -196,7 +197,7 @@ let action_to_string action =
 (*  SEND_TO_SERVER : string -> unit
       L'envoi concret du message par le socket *)
 let send_to_server message =
-  (* Printf.printf "Sending \"%s\" to the server\n %!" message; *)
+   Printf.printf "Sending \"%s\" to the server\n %!" message; 
   match !output_channel with
   | Some (oc) -> output_string oc (message ^ "\n");
     flush oc

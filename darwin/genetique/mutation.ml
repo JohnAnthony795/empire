@@ -43,30 +43,47 @@ let muter_candidat candidat =
       | 4 -> SupEq
       | _ -> failwith "muter_candidat : valeur non attendue"
     in
-    let muter_action (action:t_action) (unite_type:uniteville) = 
-    match unite_type with
-    | CITY -> (match (Random.int 2) with 
-              | 0 -> Set_city_prod (1,random_unit)
-              | 1 -> Do_nothing (1)
-              | _ -> failwith "muter_action : valeur non attendue")
-    | _ -> Move (1,random_direction)
-
-    in
-    let muter_predicat (predicat:t_predicat) (unite_type:uniteville) = 
-    match unite_type with 
-    | CITY -> (match (Random.int 2) with 
+    let random_city_pred =
+    match (Random.int 2) with 
               | 0 -> Littoral_adjacent
               | 1 -> Fog_proche (Random.int 10)
-              | _ -> failwith "muter_candidat : valeur non attendue")
-    | _ -> (match (Random.int 2) with
-              | 0 -> (match (Random.int 6) with
+              | _ -> failwith "muter_candidat : valeur non attendue"
+    in
+    let random_unit_pred =
+    match (Random.int 6) with
                 | 0 -> Nb_unite_allie_proche (Random.int 10,random_unit,(Random.int 10),random_operator)
                 | 1 -> Nb_ville_allie_proche (Random.int 10,(Random.int 10),random_operator)
                 | 2 -> Nb_ville_ennemie_proche (Random.int 10,Random.int 10,random_operator)
                 | 3 -> Littoral_adjacent
                 | 4 -> Transport
                 | 5 -> Fog_proche (Random.int 10)
-                | _ -> failwith "muter_candidat : valeur non attendue")
+                | _ -> failwith "muter_candidat : valeur non attendue"
+    in
+    let random_city_action =
+    match (Random.int 2) with 
+                  | 0 -> Leaf (Set_city_prod (1,random_unit))
+                  | 1 -> Leaf (Do_nothing (1))
+                  | _ -> failwith "muter_action : valeur non attendue"
+    in
+    let random_unit_action =
+    Leaf (Move (1,random_direction))
+    in
+    let muter_action (action:t_action) (unite_type:uniteville) :t_arbre= 
+    match unite_type with
+    | CITY -> (match (Random.int 2) with 
+              | 0 -> Node (random_city_action,random_city_pred,random_city_action)
+              | 1 -> random_city_action
+              | _ -> failwith "muter_candidat : valeur non attendue")
+    | _ -> (match (Random.int 2) with
+            | 0 -> Node (random_unit_action,random_unit_pred,random_unit_action)
+            | 1 -> random_unit_action
+            | _ -> failwith "muter_candidat : valeur non attendue")
+    in
+    let muter_predicat (predicat:t_predicat) (unite_type:uniteville) = 
+    match unite_type with 
+    | CITY -> random_city_pred
+    | _ -> (match (Random.int 2) with
+              | 0 -> random_unit_pred
               | 1 -> (match predicat with
                 | Nb_unite_allie_proche (a,b,c,d) -> Nb_unite_allie_proche (Random.int 10,random_unit,(Random.int 10),d)
                 | Nb_ville_allie_proche (a,b,c) -> Nb_ville_allie_proche (Random.int 10,(Random.int 10),c)
@@ -83,7 +100,7 @@ let muter_candidat candidat =
       else 
         Node ((muter_arbre (chance-1) a unite_type),b,(muter_arbre (chance-1) c unite_type))
     | Leaf action 	-> 	if roll_Mutation then
-        Leaf (muter_action action unite_type)
+        (muter_action action unite_type)
       else
         Leaf action
   in
