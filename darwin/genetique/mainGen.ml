@@ -28,9 +28,21 @@ open TypesGen
 
 let individusASelectionner = 2 (* DOIT ETRE PAIR!!!! *)
 
-let iterations = 20 (* nombre de générations à simuler avant de s'arrêter; on pourrait la mettre en paramètre *)
+let iterations = 1 (* nombre de générations à simuler avant de s'arrêter; on pourrait la mettre en paramètre *)
 
 (** TOOLS **)
+
+let marshal_read_popu filename =
+	let ic = open_in_bin filename in
+	let return = (Marshal.from_channel ic : t_population) in
+	close_in ic;
+	return
+	
+let marshal_write_popu filename popu =
+	let oc = open_out_bin filename in
+	Marshal.to_channel oc popu [Marshal.Closures; Marshal.Compat_32];
+	close_out oc;
+	()
 
 let read_file filename = (* renvoie une liste de lignes du fichier *)
     let lines = ref [] in
@@ -97,7 +109,11 @@ let rec first_popu acu =
     [popuTest]
 
 let main () =
-  (*ToolsArbres.write_population "current_gen.pop" (first_popu 1);*)
+	(* On reset la popu si le nbreGen a manuellement été reset *)
+  if nbreGenInitial = 0 then
+		let _ = marshal_write_popu "marshaled_pop" popu0 in ();
+	else ();
+	
   let rec mainLoop popu nbreGen =
     print_endline ("Génération n° "^ (string_of_int nbreGen));
     print_population popu;
@@ -112,13 +128,15 @@ let main () =
       mainLoop popu5 (nbreGen +1)
     else begin
       ToolsArbres.write_population "current_gen.pop" popu5; (* on sauvegarde notre population actuelle dans des fichiers *)
-      write_nbreGen "nbreGen.cfg" nbreGen ; (* on sauvegarde notre nombre de générations simulées dans un fichier *)
+      let _ = marshal_write_popu "marshaled_pop" popu5 in
+			write_nbreGen "nbreGen.cfg" nbreGen ; (* on sauvegarde notre nombre de générations simulées dans un fichier *)
       ()
     end
   in
 
+	let popu = marshal_read_popu "marshaled_pop" in
   (** let popu = ToolsArbres.read_population "current_gen.pop" in (* initialisation de la population, lue depuis le disque *) **)
-  let popu = popu0 in
+  (* let popu = popu0 in *)
   mainLoop popu nbreGenInitial
 
 
