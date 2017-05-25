@@ -61,12 +61,15 @@ let muter_candidat candidat =
     in
     let random_city_action =
     match (Random.int 2) with 
-                  | 0 -> Leaf (Set_city_prod (1,random_unit))
-                  | 1 -> Leaf (Do_nothing (1))
-                  | _ -> failwith "muter_action : valeur non attendue"
+                | 0 -> Leaf (Set_city_prod (1,random_unit))
+                | 1 -> Leaf (Do_nothing (1))
+                | _ -> failwith "muter_action : valeur non attendue"
     in
     let random_unit_action =
-    Leaf (Move (1,random_direction))
+    match (Random.int 2) with
+                | 0 -> Leaf (Move (1,random_direction))
+                | 1 -> Leaf (Moves (1,1,1))
+                | _ -> failwith "muter_action : valeur non attendue"
     in
     let muter_action (action:t_action) (unite_type:uniteville) :t_arbre= 
     match unite_type with

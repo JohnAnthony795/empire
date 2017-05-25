@@ -17,6 +17,7 @@ type set_city_production =
 
 type t_action = 
   | Move of move 
+  | Moves of (int*int*int)
   | Set_city_prod of set_city_production 
   | End_turn 
   | Do_nothing of (int)

@@ -192,6 +192,7 @@ let action_to_string action =
   | End_turn -> "end_turn"
   | Set_city_prod (cid, ptid) -> "set_city_production " ^ (soi cid) ^ " " ^ (unites_to_ptid ptid)
   | Move (pid, did) -> "move " ^ (soi pid) ^ " " ^ (dir_to_string did)
+  | Moves (pid,q,r) -> "moves " ^ (soi pid) ^ " " ^(soi q) ^ " " ^(soi r)
   | Do_nothing (cid) -> "pas vraiment une action"
 
 (*  SEND_TO_SERVER : string -> unit
@@ -207,6 +208,7 @@ let send_to_server message =
 let handle_action action =
   let fonctionToDo = match action with
     | Move (pid, did) -> send_to_server (action_to_string action);receive () (*TODO *)
+    | Moves (pid,q,r) -> send_to_server (action_to_string action);receive ()
     | Set_city_prod (cid, ptid) -> DataManager.set_city_production cid ptid;send_to_server (action_to_string action); receive ()
     | End_turn -> increment_turn_counter (); send_to_server (action_to_string action); if (get_score () = -1.0) then receive ()
     | Do_nothing (cid) -> DataManager.set_move_to_zero cid (*; Printf.printf "La ville %d ne fait rien.\n%!" cid*)

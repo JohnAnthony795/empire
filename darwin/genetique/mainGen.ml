@@ -28,7 +28,7 @@ open TypesGen
 
 let individusASelectionner = 2 (* DOIT ETRE PAIR!!!! *)
 
-let iterations = 1 (* nombre de générations à simuler avant de s'arrêter; on pourrait la mettre en paramètre *)
+let iterations = 20 (* nombre de générations à simuler avant de s'arrêter; on pourrait la mettre en paramètre *)
 
 (** TOOLS **)
 

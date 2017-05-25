@@ -36,6 +36,7 @@ privées :
 *)
 
 open Types
+open Astar
 
 (** DECLARATIONS **)
 let map_width = ref(44)
@@ -48,6 +49,11 @@ let current_turn = ref(0)
 
 let directions =
   [(+1,  0); (+1, -1); ( 0, -1); (-1,  0); (-1, +1); ( 0, +1)]
+
+  let directions_array =
+  [| (+1,  0); (+1, -1); ( 0, -1);
+     (-1,  0); (-1, +1); ( 0, +1)
+  |] ;;
 
 (***** SETTERS *****)
 
@@ -70,6 +76,8 @@ let increment_turn_counter () =
 
 (* permet de calculer la vraie distance  entre deux cases *)
 let tiles_distance (qa, ra) (qb, rb) = (abs (qa - qb) + abs (qa + ra - qb - rb) + abs (ra - rb)) / 2
+
+let tile_delta (q1, r1) (q2, r2) = q2 - q1, r2 - r1
 
 let ptid_to_unites ptid = match ptid with
   | 0 -> ARMY
@@ -361,12 +369,188 @@ else
   let cases_proches = get_cases_proches ville.q ville.r distance in
   let case_est_fog (typecase, visible) = not visible in
   List.exists (case_est_fog) cases_proches
+
+let fog_adjacent q r =
+  let cases_proches = get_cases_proches q r 1 in
+  let case_est_fog (typecase, visible) = not visible in
+  List.exists (case_est_fog) cases_proches
 	
 let unite_en_production cid =
   let ville = get_ville_allie cid in 
     match ville.prod with 
     | None -> false
     | _ -> true
+
+let rec get_coords_ville (lst:ennemi list) =
+  match lst with
+  | [] -> []
+  | x::tail -> (x.q,x.r)::(get_coords_ville tail)
+
+let rec get_coords_unite (lst:unite_ennemies_list list) =
+  match lst with
+  | [] -> []
+  | x::tail -> (x.q,x.r)::(get_coords_unite tail)
+
+let get_coords_fog pid =
+let unite = get_unite pid in
+match unite.unite_type with
+| ARMY -> ( 
+let acu = ref([]) in
+for i=0 to (!map_width-1) do
+  for j=0 to (!map_height-1) do
+    match (map_terrain.(i).(j)) with
+    | (Ground, true) -> if(fog_adjacent i j) then acu := (i,j)::!acu
+    | _ -> ()
+  done; 
+done; 
+!acu)
+| FIGHT -> ( 
+let acu = ref([]) in
+for i=0 to (!map_width-1) do
+  for j=0 to (!map_height-1) do
+    match (map_terrain.(i).(j)) with
+    | (Ground, true) -> if(fog_adjacent i j) then acu := (i,j)::!acu
+    | (Water, true) -> if(fog_adjacent i j) then acu := (i,j)::!acu
+    | _ -> ()
+  done; 
+done; 
+!acu)
+| _ -> ( 
+let acu = ref([]) in
+for i=0 to (!map_width-1) do
+  for j=0 to (!map_height-1) do
+    match (map_terrain.(i).(j)) with
+    | (Water, true) -> if(fog_adjacent i j) then acu := (i,j)::!acu
+    | _ -> ()
+  done; 
+done; 
+!acu)
+
+
+
+(*TODO Get closest coords visible of unexplored area*)
+(*Récupère les coords de l'unité ennemi la plus proche que l'on peut attaquer *)
+let get_closest_ennemy_coords pid =
+  let unite = get_unite pid in
+  (*if (unite.pid <> -1) then*)
+  let list_coords = (match unite.unite_type with
+  | ARMY -> (List.append (get_coords_ville !liste_ville_ennemie) 
+  (get_coords_unite (List.filter (fun (x:unite_ennemies_list) -> (match (map_terrain.(x.q).(x.r)) with 
+                                          | (Ground,_) -> true
+                                          | _ -> false))
+                                 !liste_ennemis)))
+  | FIGHT -> (get_coords_unite !liste_ennemis)
+  | _ -> (get_coords_unite (List.filter (fun (x:unite_ennemies_list) -> match (map_terrain.(x.q).(x.r)) with 
+                                          | (Water,_) -> true
+                                          | _ -> false)
+                                 !liste_ennemis))
+  ) in
+  match list_coords with
+  | [] -> (let acu = ref([]) in
+          for i=0 to (!map_width-1) do
+            for j=0 to (!map_height-1) do
+              match (map_terrain.(i).(j)) with
+              | (Neutral, _) -> acu := (i,j)::!acu
+              | _ -> ()
+            done; 
+          done; 
+        match !acu with
+        | [] -> (-1,-1)
+        | _ -> (  List.fold_left (fun (qa,ra) (qb,rb) 
+    -> if ((tiles_distance (unite.q,unite.r) (qa,ra)) < (tiles_distance (unite.q,unite.r) (qb,rb))) then 
+    (qa,ra) else (qb,rb)) (List.hd !acu) !acu))
+  | _ -> (  List.fold_left (fun (qa,ra) (qb,rb) 
+    -> if ((tiles_distance (unite.q,unite.r) (qa,ra)) < (tiles_distance (unite.q,unite.r) (qb,rb))) then 
+    (qa,ra) else (qb,rb)) (List.hd list_coords) list_coords)
+  (*else
+  let ville = get_ville_allie pid in
+  List.fold_left (fun (qa,ra) (qb,rb) 
+    -> if ((tiles_distance (ville.q,ville.r) (qa,ra)) < (tiles_distance (ville.q,ville.r) (qb,rb))) then 
+    (qa,ra) else (qb,rb)) (List.hd list_coords) list_coords*)
+
+(** Renvoie les coords de la case visible, adjacente a une case fog, la plus pres *)
+let get_closest_fog_coords pid =
+  let list_coords = get_coords_fog pid in
+  match list_coords with 
+  | [] -> (-1,-1)
+  | _ -> (
+  let unite = get_unite pid in
+  (*if (unite.pid <> -1) then*)
+  (List.fold_left (fun (qa,ra) (qb,rb) 
+    -> if ((tiles_distance (unite.q,unite.r) (qa,ra)) < (tiles_distance (unite.q,unite.r) (qb,rb))) then 
+    (qa,ra) else (qb,rb)) (List.hd list_coords) list_coords))
+
+  (*else
+  let ville = get_ville_allie pid in
+  List.fold_left (fun (qa,ra) (qb,rb) 
+    -> if ((tiles_distance (ville.q,ville.r) (qa,ra)) < (tiles_distance (ville.q,ville.r) (qb,rb))) then 
+    (qa,ra) else (qb,rb)) (List.hd list_coords) list_coords*)
+
+
+(*Cherche le chemin le plsu court vers l'unité ennemi la plus proche et renvoie des coordonnées possible pour moves*)
+let get_coords_moves pid =
+  let first_coords = get_closest_ennemy_coords pid in
+  let coords = (
+  match first_coords with
+    | (-1,-1) -> (let fog_coords = get_closest_fog_coords pid in 
+                match fog_coords with 
+                | (-1,-1) -> (-1,-1)
+                | _ -> fog_coords)
+    | (a,b) -> (a,b)) in
+  match coords with
+  | (-1,-1) -> (-1,-1)
+  | _ -> (
+  let unite = get_unite pid in
+  let current_move = ref(unite.mov) in
+  let last_coord = ref((0,0)) in
+  let old_loc = (unite.q,unite.r) in
+  let heuristic = tiles_distance in 
+  let neighbors (q_loc, r_loc) =
+    (* XXX Printf.printf "neighbors: %d %d\n" q_loc r_loc ;*)
+    let test_direction neighbors (q_delta, r_delta) =
+      let (q1, r1) as loc = q_delta + q_loc, r_delta + r_loc in
+      (* Ce voisin n'est pas considere si il est hors de la carte ou si la piece ne peut pas marcher sur
+       * ce terrain ou si il y a quelque chose alors que ce n'est pas la destination finale (q, r) ou
+       * encore si cette position n'est pas visible par le joueur.
+       *)
+       (*TODO Ajout test de terrain*)
+      if not (case_sur_map loc) || 
+      (match unite.unite_type with 
+        | ARMY -> ((match (map_terrain.(q1).(r1)) with
+                                    | (Ground,_) -> false
+                                    | (Unknown,_) -> false
+                                    | _ -> true)
+        && loc <> ((fst coords), (snd coords)))
+        | FIGHT -> ((match (map_terrain.(q1).(r1)) with
+                                    | (Ground,_) -> false
+                                    | (Water,_) -> false
+                                    | (Unknown,_) -> false
+                                    | _ -> true)
+        && loc <> ((fst coords), (snd coords)))
+        | _ -> ((match (map_terrain.(q1).(r1)) with
+                                    | (Water,_) -> false
+                                    | (Unknown,_) -> false
+                                    | _ -> true)
+        && loc <> ((fst coords), (snd coords)))) 
+      then neighbors else (q1, r1) :: neighbors in
+    Array.fold_left test_direction [] directions_array in
+  let cost _ _ = 1 in
+  (*Printf.printf "neighbors %d %d\n%!" (fst coords) (snd coords);
+  Printf.printf "neighbors %d %d\n%!" (fst old_loc) (snd old_loc);*)
+  let path = Astar.astar_goal old_loc ((fst coords), (snd coords)) 30 neighbors cost heuristic in
+  let rec do_path = function
+    | [] -> !last_coord
+    | h :: t -> (*Printf.printf "suceeees %d\n%!" !current_move;*)
+    if(!current_move>0) then
+                  (current_move := (!current_move-1);
+                  last_coord := h;
+                  (do_path t))
+                else
+                  !last_coord
+        in
+  match path with
+    | None -> Printf.printf("Erreur moves !!!\n%!");(-1,-1)
+    | Some l -> do_path l)
 
 (* TODO *)
 let get_next_playable () =
@@ -401,6 +585,11 @@ let set_move_to_zero_unite pid =
     update_unite_alliee piece.q piece.r pid piece.unite_type piece.hp 0
 
 let init_data () =
+  for i=0 to (!map_width-1) do
+  for j=0 to (!map_height-1) do
+      map_terrain.(i).(j) <- (Unknown,false)
+    done;
+  done;
   a_gagne := None;
   map_width := 0;
   map_height := 0;
@@ -411,6 +600,7 @@ let init_data () =
   liste_ville_alliee := [];
   liste_ville_ennemie := [];
   ()
+
 
 
 (***** TRAITEMENT *****)
@@ -426,7 +616,7 @@ let traiter_set_visible args =
     else 
       (set_terrain "their_city" (ios q) (ios r) true ; 
        add_ville_ennemi (ios q) (ios r) (ios cid))
-  | [ q ; r ; terrain ; "piece" ; jid ; pid ; ptid ; hp ] -> if (ios jid) = !our_jid then 
+  | [ q ; r ; terrain ; "piece" ; jid ; pid ; ptid ; hp ] -> set_terrain terrain (ios q) (ios r) true; if (ios jid) = !our_jid then 
   let piece = List.find (fun (element:unite_list) -> element.pid = (ios pid)) !liste_unites in
   (update_unite_alliee (ios q) (ios r) (ios pid) (ptid_to_unites (ios ptid)) (ios hp) (piece.mov)) else (update_unite_ennemie (ios q) (ios r) (ios pid) (ptid_to_unites (ios ptid)) (ios hp))
   | _ -> failwith "erreur traiter_set_visible"
@@ -485,7 +675,7 @@ let traiter_enter_city args =
   match args with
   | [pid ; cid] ->  let city = List.find (fun (element:allie) -> element.cid = (ios cid)) !liste_ville_alliee in
     let piece = List.find (fun (element:unite_list) -> element.pid = (ios pid)) !liste_unites in
-    update_unite_alliee city.q city.r (ios pid) piece.unite_type piece.hp piece.mov
+    update_unite_alliee city.q city.r (ios pid) piece.unite_type piece.hp (piece.mov-1)
   | _ -> failwith "erreur traiter_enter_city";;
 
 (*Une unite alliee entre dans un transport*)

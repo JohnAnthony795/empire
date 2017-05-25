@@ -57,6 +57,7 @@ rule token = parse
 
 (*actions*)
 | "MV" 	     { MV }
+| "MVS"       { MVS }
 | "SCP"            { SCP }
 | "ET"             { ET }
 | "DN"      { DN}
