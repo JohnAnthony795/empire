@@ -18,6 +18,9 @@ type set_city_production =
 type t_action = 
   | Move of move 
   | Attaquer of (int*int*int)
+  | Explorer of (int*int*int)
+  | Envahir of (int*int*int)
+  | Transporter of (int*int*int)
   | Set_city_prod of set_city_production 
   | End_turn 
   | Do_nothing of (int)

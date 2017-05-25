@@ -32,6 +32,9 @@ type set_city_production =
 type t_action = (*pass*)
   | Move of move
   | Attaquer of (int*int*int) (*pid q r*)
+  | Explorer of (int*int*int)
+  | Envahir of (int*int*int)
+  | Transporter of (int*int*int)
   | Set_city_prod of set_city_production
   | End_turn
   | Do_nothing of (int)
@@ -93,6 +96,9 @@ let pred_to_string p = match p with   (*tenir à jour avec les prédicats *)
 let action_to_string a = match a with
   | Move (id,dir) -> "Move id°" ^ (string_of_int id) ^ " " ^ (direction_to_string dir)
   | Attaquer (id,q,r) -> "Attaquer id°"^ (string_of_int id) ^ " " ^(string_of_int q)^ " " ^(string_of_int r)
+  | Explorer (id,q,r) -> "Explorer id°"^ (string_of_int id) ^ " " ^(string_of_int q)^ " " ^(string_of_int r)
+  | Envahir (id,q,r) -> "Envahir id°"^ (string_of_int id) ^ " " ^(string_of_int q)^ " " ^(string_of_int r)
+  | Transporter (id,q,r) -> "Transporter id°"^ (string_of_int id) ^ " " ^(string_of_int q)^ " " ^(string_of_int r)
   | Set_city_prod (id,p_type) -> "Set_city_prod id°" ^ (string_of_int id) ^ " " ^ (unite_to_string p_type) (*clarifier le piece type id avec un piece type id to string??*)
   | End_turn -> "End_turn"
   | Do_nothing (id) -> "Do_nothing id°" ^ (string_of_int id) 
@@ -125,6 +131,9 @@ let pred_to_code p = match p with   (*tenir à jour avec les prédicats ;)  STAN
 let action_to_code a = match a with (* tenir a jour aussi  STANDARD : mettre un '!' au debut *)
   | Move (id,dir) -> "!MV:" ^ (string_of_int id) ^ ":" ^ (direction_to_code dir)
   | Attaquer (id,q,r) -> "!AT:" ^ (string_of_int id) ^ ":" ^ (string_of_int q) ^ ":" ^ (string_of_int r)
+  | Explorer (id,q,r) -> "!EX:" ^ (string_of_int id) ^ ":" ^ (string_of_int q) ^ ":" ^ (string_of_int r)
+  | Envahir (id,q,r) -> "!EN:" ^ (string_of_int id) ^ ":" ^ (string_of_int q) ^ ":" ^ (string_of_int r)
+  | Transporter (id,q,r) -> "!TRA:" ^ (string_of_int id) ^ ":" ^ (string_of_int q) ^ ":" ^ (string_of_int r)
   | Set_city_prod (id,p_type) -> "!SCP:" ^ (string_of_int id) ^ ":" ^ (unite_to_code p_type) (*clarifier le piece type id avec un piece type id to string??*)
   | End_turn -> "!ET"
   | Do_nothing (id) -> "!DN:" ^ (string_of_int id) 

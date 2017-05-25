@@ -10,7 +10,7 @@ open Printf (*for debug purposes*)
                                                               %token <Types.direction> DIR
 
 %token NBUAP NBVAP NBVEP LIADJ TR FOG UEP
-%token MV AT SCP ET DN
+%token MV AT EX EN TRA SCP ET DN
 
 %token LPAREN RPAREN HASH VIRG COLON QMARK EMARK
 %token EOL
@@ -41,6 +41,9 @@ open Printf (*for debug purposes*)
       codeaction:
     MV COLON INT COLON DIR     { Move ($3,$5) }
 |   AT COLON INT COLON INT COLON INT { Attaquer ($3,$5,$7) }
+|   EX COLON INT COLON INT COLON INT { Explorer ($3,$5,$7) }
+|   EN COLON INT COLON INT COLON INT { Envahir ($3,$5,$7) }
+|   TRA COLON INT COLON INT COLON INT { Transporter ($3,$5,$7) }
 | SCP COLON INT COLON UNITE    { Set_city_prod ($3,$5) }
 | ET                         { End_turn }
 | DN COLON INT                { Do_nothing ($3)}

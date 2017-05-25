@@ -41,6 +41,16 @@ let get_arbre foret (ptid:uniteville) =
   | CITY -> a6
 (*Parcours d'arbre ( prise de décision ) --------------------------------------------*)
 
+let random_direction =
+  match (Random.int 6) with
+  | 0 -> Up
+  | 1 -> Down
+  | 2 -> Right
+  | 3 -> Left
+  | 4 -> Upleft
+  | 5 -> Downright
+  | _ -> failwith "muter_candidat : valeur non attendue"
+
 let compute_Action id unite_type foret = (* prend une id t_ID de piece et return une action t_action à jouer *)
   let evaluate_pred pred piece_id = 
     if Opt.doPrint then print_endline (pred_to_string pred) else ();
@@ -78,18 +88,21 @@ let compute_Action id unite_type foret = (* prend une id t_ID de piece et return
     | Leaf a -> (match a with 
         | Move (pid,dir) -> Move (id,dir)
         | Attaquer (pid,q,r) -> (let coords = (get_coords_moves id) in 
-                  match coords with
-                  | (-1,-1) -> (let random_direction =
-      match (Random.int 6) with
-      | 0 -> Up
-      | 1 -> Down
-      | 2 -> Right
-      | 3 -> Left
-      | 4 -> Upleft
-      | 5 -> Downright
-      | _ -> failwith "muter_candidat : valeur non attendue"
-    in Move (id,random_direction))
-                  | _ -> Attaquer (id,(fst coords),(snd coords)))
+                                  match coords with
+                                  | (-1,-1) -> (Move (id,random_direction))
+                                  | _ -> Attaquer (id,(fst coords),(snd coords)))
+        | Explorer (pid,q,r) -> (let coords = (get_coords_moves id) in 
+                                  match coords with
+                                  | (-1,-1) -> (Move (id,random_direction))
+                                  | _ -> Explorer (id,(fst coords),(snd coords)))
+        | Envahir (pid,q,r) -> (let coords = (get_coords_moves id) in 
+                                  match coords with
+                                  | (-1,-1) -> (Move (id,random_direction))
+                                  | _ -> Envahir (id,(fst coords),(snd coords)))
+        | Transporter (pid,q,r) -> (let coords = (get_coords_moves id) in 
+                                  match coords with
+                                  | (-1,-1) -> (Move (id,random_direction))
+                                  | _ -> Transporter (id,(fst coords),(snd coords)))
         | Set_city_prod (cid,unite) -> Set_city_prod (id,unite)
         | End_turn -> End_turn
         | Do_nothing (cid) -> Do_nothing (id)) 
