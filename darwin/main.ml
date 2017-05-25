@@ -21,6 +21,9 @@ open Printf
 open InterfaceCom
 open DataManager
 
+let () = Random.self_init()
+
+
 type uniteville = ARMY | FIGHT | TRANSPORT | PATROL | BATTLESHIP | CITY ;;
 
 let unite_to_uniteville (unite:unites) :uniteville =
@@ -76,7 +79,16 @@ let compute_Action id unite_type foret = (* prend une id t_ID de piece et return
         | Move (pid,dir) -> Move (id,dir)
         | Moves (pid,q,r) -> (let coords = (get_coords_moves id) in 
                   match coords with
-                  | (-1,-1) -> Move (id,Up) 
+                  | (-1,-1) -> (let random_direction =
+      match (Random.int 6) with
+      | 0 -> Up
+      | 1 -> Down
+      | 2 -> Right
+      | 3 -> Left
+      | 4 -> Upleft
+      | 5 -> Downright
+      | _ -> failwith "muter_candidat : valeur non attendue"
+    in Move (id,random_direction))
                   | _ -> Moves (id,(fst coords),(snd coords)))
         | Set_city_prod (cid,unite) -> Set_city_prod (id,unite)
         | End_turn -> End_turn

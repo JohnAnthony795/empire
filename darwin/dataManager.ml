@@ -133,7 +133,7 @@ let set_terrain terrain q r visibleBool =
 
 (* Renvoie VRAI ssi la case n'est pas en dehors de la map *)
 let case_sur_map (q,r) =
-	q >= 0 && q <= !map_width && r >= 0 && r <= !map_height
+	q >= 0 && q < !map_width && r >= 0 && r < !map_height
 	
 (* Renvoie TRUE si la case en (q,r) est de type terrain *)
 let terrain_is terrain_type q r =
@@ -549,7 +549,7 @@ let get_coords_moves pid =
                   !last_coord
         in
   match path with
-    | None -> Printf.printf("Erreur moves !!!\n%!");(-1,-1)
+    | None -> (*Printf.printf("Erreur moves !!!\n%!");*)(-1,-1)
     | Some l -> do_path l)
 
 (* TODO *)
@@ -656,7 +656,7 @@ let traiter_move args =
 let traiter_lose_city args = 
   let ios = int_of_string in
   match args with
-  | [cid] -> liste_ville_alliee := List.filter (fun (element:allie) -> element.cid <> (ios cid)) !liste_ville_alliee
+  | [cid] -> let city = List.find (fun (element:allie) -> element.cid = (ios cid)) !liste_ville_alliee in add_ville_ennemi city.q city.r city.cid; liste_ville_alliee := List.filter (fun (element:allie) -> element.cid <> (ios cid)) !liste_ville_alliee
   | _ -> failwith "erreur traiter_lose_city";;
 
 let traiter_invalid_terrain () =

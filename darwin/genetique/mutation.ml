@@ -99,7 +99,12 @@ let muter_candidat candidat =
     in 
     match arbre with 
     | Node (a,b,c) 	-> 	if roll_Mutation then
-        Node ((muter_arbre (chance-1) a unite_type,(muter_predicat b unite_type),(muter_arbre (chance-1) c unite_type)))
+        (match (a,b,c) with
+        | (Leaf d,_,Leaf f) -> (match (Random.int 4) with
+                                  | 0 -> (muter_action d unite_type)
+                                  | 1 -> (muter_action f unite_type)
+                                  | _ -> Node ((muter_arbre (chance-1) a unite_type,(muter_predicat b unite_type),(muter_arbre (chance-1) c unite_type))))
+        | _ -> Node ((muter_arbre (chance-1) a unite_type,(muter_predicat b unite_type),(muter_arbre (chance-1) c unite_type)))) 
       else 
         Node ((muter_arbre (chance-1) a unite_type),b,(muter_arbre (chance-1) c unite_type))
     | Leaf action 	-> 	if roll_Mutation then

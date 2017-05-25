@@ -23,7 +23,7 @@ let evaluer popu methode =
     let _ = Unix.system "../empire-server/Main.native > /dev/null &" in (*pas de sortie serveur*)
     (* let _ = Unix.system "../empire-server/Main.native &" in *)
     let _ = Unix.sleep 1 in
-
+    (*let _ = Unix.system "../empire-captain/ai1.py localhost 9301 > /dev/null &" in*)
     let _ = Unix.system "./main.native 0 &" in
     let score = Main.main 1 in (* renvoie le score de ce candidat contre la ref *)
     (foret, score)
