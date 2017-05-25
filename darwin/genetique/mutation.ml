@@ -68,7 +68,7 @@ let muter_candidat candidat =
     let random_unit_action =
     match (Random.int 2) with
                 | 0 -> Leaf (Move (1,random_direction))
-                | 1 -> Leaf (Moves (1,1,1))
+                | 1 -> Leaf (Attaquer (1,1,1))
                 | _ -> failwith "muter_action : valeur non attendue"
     in
     let muter_action (action:t_action) (unite_type:uniteville) :t_arbre= 

@@ -77,7 +77,7 @@ let compute_Action id unite_type foret = (* prend une id t_ID de piece et return
   let rec action_from_tree t id = match t with
     | Leaf a -> (match a with 
         | Move (pid,dir) -> Move (id,dir)
-        | Moves (pid,q,r) -> (let coords = (get_coords_moves id) in 
+        | Attaquer (pid,q,r) -> (let coords = (get_coords_moves id) in 
                   match coords with
                   | (-1,-1) -> (let random_direction =
       match (Random.int 6) with
@@ -89,7 +89,7 @@ let compute_Action id unite_type foret = (* prend une id t_ID de piece et return
       | 5 -> Downright
       | _ -> failwith "muter_candidat : valeur non attendue"
     in Move (id,random_direction))
-                  | _ -> Moves (id,(fst coords),(snd coords)))
+                  | _ -> Attaquer (id,(fst coords),(snd coords)))
         | Set_city_prod (cid,unite) -> Set_city_prod (id,unite)
         | End_turn -> End_turn
         | Do_nothing (cid) -> Do_nothing (id)) 
