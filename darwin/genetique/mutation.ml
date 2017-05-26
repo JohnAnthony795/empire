@@ -24,7 +24,7 @@ let muter_candidat candidat =
       | 4 -> PATROL
       | _ -> failwith "muter_candidat : valeur non attendue"
     in
-    let random_direction =
+    (*let random_direction =
       match (Random.int 6) with
       | 0 -> Up
       | 1 -> Down
@@ -33,7 +33,7 @@ let muter_candidat candidat =
       | 4 -> Upleft
       | 5 -> Downright
       | _ -> failwith "muter_candidat : valeur non attendue"
-    in
+    in*)
     let random_operator =
       match (Random.int 5) with
       | 0 -> Inf
@@ -65,10 +65,42 @@ let muter_candidat candidat =
                 | 1 -> Leaf (Do_nothing (1))
                 | _ -> failwith "muter_action : valeur non attendue"
     in
-    let random_unit_action =
-    match (Random.int 2) with
-                | 0 -> Leaf (Move (1,random_direction))
-                | 1 -> Leaf (Attaquer (1,1,1))
+    let random_battle_action =
+    match (Random.int 2) with (*
+                | 0 -> Leaf (Move (1,random_direction))*)
+                | 0 -> Leaf (Attaquer (1,1,1))
+                | 1 -> Leaf (Explorer (1,1,1))
+                | _ -> failwith "muter_action : valeur non attendue"
+    in
+    let random_patrol_action =
+    match (Random.int 2) with (*
+                | 0 -> Leaf (Move (1,random_direction))*)
+                | 0 -> Leaf (Attaquer (1,1,1))
+                | 1 -> Leaf (Explorer (1,1,1))
+                | _ -> failwith "muter_action : valeur non attendue"
+    in
+    let random_army_action =
+    match (Random.int 3) with(*
+                | 0 -> Leaf (Move (1,random_direction))*)
+                | 0 -> Leaf (Attaquer (1,1,1))
+                | 1 -> Leaf (Explorer (1,1,1))
+                | 2 -> Leaf (Envahir (1,1,1))
+                (*| 4 -> Leaf (Transporter (1,1,1))*)
+                | _ -> failwith "muter_action : valeur non attendue"
+    in
+    let random_fight_action =
+    match (Random.int 1) with(*
+                | 0 -> Leaf (Move (1,random_direction))*)
+                | 0 -> Leaf (Explorer (1,1,1))
+                (*| 2 -> Leaf (Do_nothing (1)) *)
+                | _ -> failwith "muter_action : valeur non attendue"
+    in
+    let random_transport_action =
+    match (Random.int 1) with(*
+                | 0 -> Leaf (Move (1,random_direction))*)
+                | 0 -> Leaf (Explorer (1,1,1))
+                (*| 2 -> Leaf (Accoster (1,1,1))
+                | 3 -> Leaf (Do_nothing (1))*)
                 | _ -> failwith "muter_action : valeur non attendue"
     in
     let muter_action (action:t_action) (unite_type:uniteville) :t_arbre= 
@@ -77,9 +109,25 @@ let muter_candidat candidat =
               | 0 -> Node (random_city_action,random_city_pred,random_city_action)
               | 1 -> random_city_action
               | _ -> failwith "muter_candidat : valeur non attendue")
-    | _ -> (match (Random.int 2) with
-            | 0 -> Node (random_unit_action,random_unit_pred,random_unit_action)
-            | 1 -> random_unit_action
+    | ARMY -> (match (Random.int 2) with
+            | 0 -> Node (random_army_action,random_unit_pred,random_army_action)
+            | 1 -> random_army_action
+            | _ -> failwith "muter_candidat : valeur non attendue")
+    | FIGHT -> (match (Random.int 2) with
+            | 0 -> Node (random_fight_action,random_unit_pred,random_fight_action)
+            | 1 -> random_fight_action
+            | _ -> failwith "muter_candidat : valeur non attendue")
+    | TRANSPORT -> (match (Random.int 2) with
+            | 0 -> Node (random_transport_action,random_unit_pred,random_transport_action)
+            | 1 -> random_transport_action
+            | _ -> failwith "muter_candidat : valeur non attendue")
+    | PATROL -> (match (Random.int 2) with
+            | 0 -> Node (random_patrol_action,random_unit_pred,random_patrol_action)
+            | 1 -> random_patrol_action
+            | _ -> failwith "muter_candidat : valeur non attendue")
+    | BATTLESHIP -> (match (Random.int 2) with
+            | 0 -> Node (random_battle_action,random_unit_pred,random_battle_action)
+            | 1 -> random_battle_action
             | _ -> failwith "muter_candidat : valeur non attendue")
     in
     let muter_predicat (predicat:t_predicat) (unite_type:uniteville) = 

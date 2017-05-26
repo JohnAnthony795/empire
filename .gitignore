@@ -2,7 +2,7 @@
 #FICHIERS A IGNORER
 #"**" signifie "dans n'importe quel sous-répertoire"
 #Les fichiers compilés
-**/*.native
+#**/*.native
 **/*.byte
 **/_build
 #Les fichiers générés pendant la compilation (ocamlc)

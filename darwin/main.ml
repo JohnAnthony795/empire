@@ -87,19 +87,19 @@ let compute_Action id unite_type foret = (* prend une id t_ID de piece et return
   let rec action_from_tree t id = match t with
     | Leaf a -> (match a with 
         | Move (pid,dir) -> Move (id,dir)
-        | Attaquer (pid,q,r) -> (let coords = (get_coords_moves id) in 
+        | Attaquer (pid,q,r) -> (let coords = (get_coords_attaquer id) in 
                                   match coords with
                                   | (-1,-1) -> (Move (id,random_direction))
                                   | _ -> Attaquer (id,(fst coords),(snd coords)))
-        | Explorer (pid,q,r) -> (let coords = (get_coords_moves id) in 
+        | Explorer (pid,q,r) -> (let coords = (get_coords_explorer id) in 
                                   match coords with
                                   | (-1,-1) -> (Move (id,random_direction))
                                   | _ -> Explorer (id,(fst coords),(snd coords)))
-        | Envahir (pid,q,r) -> (let coords = (get_coords_moves id) in 
+        | Envahir (pid,q,r) -> (let coords = (get_coords_envahir id) in 
                                   match coords with
                                   | (-1,-1) -> (Move (id,random_direction))
                                   | _ -> Envahir (id,(fst coords),(snd coords)))
-        | Transporter (pid,q,r) -> (let coords = (get_coords_moves id) in 
+        | Transporter (pid,q,r) -> (let coords = (get_coords_transporter id) in 
                                   match coords with
                                   | (-1,-1) -> (Move (id,random_direction))
                                   | _ -> Transporter (id,(fst coords),(snd coords)))
