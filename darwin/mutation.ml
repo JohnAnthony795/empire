@@ -65,7 +65,7 @@ let muter_candidat candidat =
   | (foret,score) -> match foret with
     | (a,b,c,d,e,f) -> (((muter_arbre 10 a),(muter_arbre 10 b),(muter_arbre 10 c),(muter_arbre 10 d),(muter_arbre 10 e),(muter_arbre 10 f)),score)
 
-let mute population  = 
+let mute population = 
   List.map (muter_candidat) population;;
 
 (*let main () =
