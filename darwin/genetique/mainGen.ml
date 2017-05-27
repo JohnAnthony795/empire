@@ -32,6 +32,17 @@ let iterations = 1 (* nombre de générations à simuler avant de s'arrêter; on
 
 (** TOOLS **)
 
+let marshal_read_popu filename =
+  let ic = open_in_bin filename in
+  let return = (Marshal.from_channel ic : t_stockage) in
+  close_in ic;
+  return
+
+let marshal_write filename element =
+  let oc = open_out_bin filename in
+  Marshal.to_channel oc element [Marshal.Closures; Marshal.Compat_32];
+  close_out oc;
+	()
 
 let read_file filename = (* renvoie une liste de lignes du fichier *)
   let lines = ref [] in
@@ -124,7 +135,7 @@ let main () =
       mainLoop popu5 (nbreGen +1)
     else begin
       ToolsArbres.write_population "current_gen.pop" popu5; (* on sauvegarde notre population actuelle dans des fichiers *)
-      let _ = marshal_write_popu "marshaled_pop" (popu5, nbreGen) in
+      let _ = marshal_write "marshaled_pop" (popu5, nbreGen) in
       write_nbreGen "nbreGen.cfg" nbreGen ; (* on sauvegarde notre nombre de générations simulées dans un fichier *)
       ()
     end
@@ -136,7 +147,7 @@ let main () =
 
 
 let () =
-  (* let _ = marshal_write_popu "marshaled_pop" (popu0,0) in *)
+  (* let _ = marshal_write "marshaled_pop" (popu0,0) in *)
   print_endline "Start mainGen.";
   Random.self_init ();
   main ()

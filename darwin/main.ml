@@ -21,6 +21,20 @@ open DataManager
 
 let () = Random.self_init()
 
+(** TOOLS **)
+
+let marshal_read_cand filename =
+  let ic = open_in_bin filename in
+  let return = (Marshal.from_channel ic : TypesGen.t_candidat) in
+  close_in ic;
+  return
+
+let marshal_write filename element =
+  let oc = open_out_bin filename in
+  Marshal.to_channel oc element [Marshal.Closures; Marshal.Compat_32];
+  close_out oc;
+	()
+	
 
 type uniteville = ARMY | FIGHT | TRANSPORT | PATROL | BATTLESHIP | CITY ;;
 
@@ -118,8 +132,8 @@ let main id =
   (*let foret = if id = 0 then ToolsArbres.read_arbre "foret_ref.frt"
     else ToolsArbres.read_arbre "foret_cand.frt"
   in*)
-	let (foret,_) = if id = 0 then Tools.read_cand "foret_ref.frt"
-    else Tools.read_cand "foret_cand.frt"
+	let (foret,_) = if id = 0 then marshal_read_cand "marshaled_foret_ref.frt"
+    else marshal_read_cand "marshaled_foret_cand.frt"
   in
 
   init_socket "127.0.0.1" 9301;
