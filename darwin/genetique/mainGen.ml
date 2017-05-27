@@ -26,39 +26,28 @@ open ToolsArbres
 open Types
 open TypesGen
 
-let individusASelectionner = 2 (* DOIT ETRE PAIR!!!! *)
+let individusASelectionner = 12 (* DOIT ETRE PAIR!!!! *)
 
-let iterations = 200 (* nombre de générations à simuler avant de s'arrêter; on pourrait la mettre en paramètre *)
+let iterations = 1 (* nombre de générations à simuler avant de s'arrêter; on pourrait la mettre en paramètre *)
 
 (** TOOLS **)
 
-let marshal_read_popu filename =
-	let ic = open_in_bin filename in
-	let return = (Marshal.from_channel ic : t_population) in
-	close_in ic;
-	return
-	
-let marshal_write_popu filename popu =
-	let oc = open_out_bin filename in
-	Marshal.to_channel oc popu [Marshal.Closures; Marshal.Compat_32];
-	close_out oc;
-	()
 
 let read_file filename = (* renvoie une liste de lignes du fichier *)
-    let lines = ref [] in
-    let chan = open_in filename in
-    try
-      while (true); do
-        lines := input_line chan :: !lines
-      done; !lines
-    with End_of_file ->
-      close_in chan;
-      List.rev !lines 
+  let lines = ref [] in
+  let chan = open_in filename in
+  try
+    while (true); do
+      lines := input_line chan :: !lines
+    done; !lines
+  with End_of_file ->
+    close_in chan;
+    List.rev !lines 
 
 let write_nbreGen configFile nbreGen = 
-	let out_chan = open_out configFile in
-	let str = "nbreGen=" ^ (string_of_int nbreGen) in
-	output_string out_chan str
+  let out_chan = open_out configFile in
+  let str = "nbreGen=" ^ (string_of_int nbreGen) in
+  output_string out_chan str
 
 let strSplit strToSplit delim =
   let str_start str len = String.sub str 0 len in
@@ -97,6 +86,17 @@ let shuffle entryList =
   let sond = List.sort compare nd in
   List.map snd sond
 
+let reset_switch () =
+  let ic = open_in "RESET_FILE" in
+  let value = ref("") in
+  try
+    value := input_line ic;
+    close_in ic;
+    !value
+  with End_of_file ->
+    close_in ic;
+    ""
+
 (** MAIN **)
 
 let foretTest = (arbre0,arbre0,arbre0,arbre0,arbre0,arbre0)  
@@ -109,11 +109,7 @@ let rec first_popu acu =
     [popuTest]
 
 let main () =
-	(* On reset la popu si le nbreGen a manuellement été reset *)
-  if nbreGenInitial = 0 then
-		let _ = marshal_write_popu "marshaled_pop" popu0 in ();
-	else ();
-	
+
   let rec mainLoop popu nbreGen =
     print_endline ("Génération n° "^ (string_of_int nbreGen));
     print_population popu;
@@ -128,19 +124,20 @@ let main () =
       mainLoop popu5 (nbreGen +1)
     else begin
       ToolsArbres.write_population "current_gen.pop" popu5; (* on sauvegarde notre population actuelle dans des fichiers *)
-      let _ = marshal_write_popu "marshaled_pop" popu5 in
-			write_nbreGen "nbreGen.cfg" nbreGen ; (* on sauvegarde notre nombre de générations simulées dans un fichier *)
+      let _ = marshal_write_popu "marshaled_pop" (popu5, nbreGen) in
+      write_nbreGen "nbreGen.cfg" nbreGen ; (* on sauvegarde notre nombre de générations simulées dans un fichier *)
       ()
     end
   in
 
-	let popu = marshal_read_popu "marshaled_pop" in
-  (** let popu = ToolsArbres.read_population "current_gen.pop" in (* initialisation de la population, lue depuis le disque *) **)
-  (* let popu = popu0 in *)
-  mainLoop popu nbreGenInitial
+  let (popu, nbreGen) = marshal_read_popu "marshaled_pop" in
+  (* let popu = ToolsArbres.read_population "current_gen.pop" in (* initialisation de la population, lue depuis le disque *) *)
+  mainLoop popu nbreGen
 
 
-let () = 
-  print_endline ("Start mainGen : génération " ^ (string_of_int nbreGenInitial));
+let () =
+  (* let _ = marshal_write_popu "marshaled_pop" (popu0,0) in *)
+  print_endline "Start mainGen.";
   Random.self_init ();
   main ()
+

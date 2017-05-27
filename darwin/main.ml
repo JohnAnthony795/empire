@@ -14,8 +14,6 @@ note : mettre la lecture/écriture de fichier dans un fichier à part?
 *)
 
 
-(* TODO: autoriser le passage de l'IP server + du port en argument de ligne de commande (cf. main() dans empire-client/sources/Main.ml) *)
-
 open Types
 open Printf
 open InterfaceCom
@@ -117,12 +115,13 @@ let compute_Action id unite_type foret = (* prend une id t_ID de piece et return
    id = 1 -> on est un candidat *)
 let main id =
   init_data ();
-  let foret = if id = 0 then ToolsArbres.read_arbre "foret_ref.frt"
+  (*let foret = if id = 0 then ToolsArbres.read_arbre "foret_ref.frt"
     else ToolsArbres.read_arbre "foret_cand.frt"
+  in*)
+	let (foret,_) = if id = 0 then Tools.read_cand "foret_ref.frt"
+    else Tools.read_cand "foret_cand.frt"
   in
-  (*print_endline (ToolsArbres.forest_tocode foret);
-    Unix.sleep 10;*)
-  (*init socket*)
+
   init_socket "127.0.0.1" 9301;
 
   receive (); (* on reçoit les infos du début *)

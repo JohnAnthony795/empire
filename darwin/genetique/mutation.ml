@@ -6,7 +6,9 @@ type uniteville = ARMY | FIGHT | TRANSPORT | PATROL | BATTLESHIP | CITY ;;
 
 let () = Random.self_init()
 
-let rec depth (arbre:t_arbre) = match arbre with
+let mutation_chance = 10 
+
+let rec depth (arbre :t_arbre) = match arbre with
   | Leaf _ -> 0
   | Node (a,_,b) -> 1 + max (depth a) (depth b);;
 
@@ -162,7 +164,7 @@ let muter_candidat candidat =
   in
   match candidat with
   | (foret,score) -> match foret with
-    | (a,b,c,d,e,f) -> (((muter_arbre 10 a ARMY),(muter_arbre 10 b FIGHT),(muter_arbre 10 c TRANSPORT),(muter_arbre 10 d PATROL),(muter_arbre 10 e BATTLESHIP),(muter_arbre 10 f CITY)),score)
+    | (a,b,c,d,e,f) -> (((muter_arbre mutation_chance a ARMY),(muter_arbre mutation_chance b FIGHT),(muter_arbre mutation_chance c TRANSPORT),(muter_arbre mutation_chance d PATROL),(muter_arbre mutation_chance e BATTLESHIP),(muter_arbre mutation_chance f CITY)),score)
 
 let mute population  = 
   List.map (muter_candidat) population;;

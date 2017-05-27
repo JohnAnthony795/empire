@@ -1,10 +1,9 @@
-Mar 31 14:51:23.1233 [pid 4473] Clienmpire.ml [info] Launching Empire client
-Mar 31 14:51:23.1923 [pid 4473] src/connect.ml [info] Connecting...
-Mar 31 14:51:23.1925 [pid 4473] src/connect.ml [info] Connected.
-Mar 31 14:51:23.8828 [pid 4473] src/connect.ml [info] Size is 44, 44
+May 27 17:04:45.6285 [pid 12211] Clienmpire.ml [info] Launching Empire client
+May 27 17:04:45.7207 [pid 12211] src/connect.ml [info] Connecting...
+May 27 17:04:45.7209 [pid 12211] src/connect.ml [info] Connected.
+May 27 17:04:48.0532 [pid 12211] src/connect.ml [info] Size is 44, 44
   cat(2) -> TRANSPORT
   cat(0) -> ARMY
   cat(3) -> PATROL
   cat(1) -> FIGHT
   cat(4) -> BATTLESHIP
-Mar 31 14:54:03.8353 [pid 4473] src/connect.ml [error] wait_for_turn cannot read this data: winner 1
