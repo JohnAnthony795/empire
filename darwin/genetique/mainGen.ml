@@ -131,7 +131,7 @@ let main () =
     print_endline ("\nGénération n° "^ (string_of_int nbreGen));
     print_population popu;
     let popu1 = Evaluation.evaluer popu Evaluation.AFF10 in (* Met à jour le score d'adaptabilité de chaque individu ; c'est là que se passent les affrontements *)
-    let popu2 = Selection.select_n_parents popu1 individusASelectionner 1 in (* popu2 garde les meilleurs individus *)
+    let popu2 = Selection.select_n_parents popu1 individusASelectionner 2 in (* popu2 garde les meilleurs individus *)
     let popu3 = Croisement.main_cross popu2 in (* popu3 sont les nouveaux individus obtenus par recombinaison *)
     (*print_population popu3 ;*)
     let popu4 = Mutation.mute popu3 in (* ces individus recombinés ont ensuite des chances de muter pour donner popu4 *)

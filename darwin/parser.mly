@@ -9,7 +9,7 @@ open Printf (*for debug purposes*)
                                         %token <Types.unites> UNITE
                                                               %token <Types.direction> DIR
 
-%token NBUAP NBVAP NBVEP LIADJ TR FOG UEP
+%token NBUAP NBVAP NBVEP LIADJ TR FOG UKWN UEP
 %token MV AT EX EN TRA SCP ET DN
 
 %token LPAREN RPAREN HASH VIRG COLON QMARK EMARK
@@ -50,13 +50,15 @@ open Printf (*for debug purposes*)
   ;
   predicat:
     QMARK codepred                             { $2 } 
-      codepred:
+
+codepred:
     NBUAP COLON INT COLON UNITE COLON INT COLON COMP     { Nb_unite_allie_proche ($3,$5,$7,$9) }
 | NBVAP COLON INT COLON INT COLON COMP                 { Nb_ville_allie_proche ($3,$5,$7) }
 | NBVEP COLON INT COLON INT COLON COMP                 { Nb_ville_ennemie_proche ($3,$5,$7) }
 | LIADJ                                                { Littoral_adjacent }
 | TR                                                   { Transport }
 | FOG COLON INT                                        { Fog_proche ($3)}
+| UKWN COLON INT										{Unknown_proche ($3)}
 | UEP                                                  { Unite_en_production }
   ;
 

@@ -39,9 +39,9 @@ open Types
 open Astar
 
 (** DECLARATIONS **)
-let map_width = ref(22)
+let map_width = ref(44)
 
-let map_height = ref(22)
+let map_height = ref(44)
 
 let our_jid = ref(0)
 
@@ -379,7 +379,7 @@ let set_victoire msg =
   in
   let prescore = calculate_score () in 
   let victoire = (if (int_of_string msgHd) = !our_jid then (Printf.printf "WIN : Score total : %f\n" (prescore*.1.3) ;1.3) 
-else (Printf.printf "LOOSE : Score total : %f\n" (prescore*.0.7) ; 0.7)) in (*En tant que multiplicateur*)
+else (Printf.printf "LOSE : Score total : %f\n" (prescore*.0.7) ; 0.7)) in (*En tant que multiplicateur*)
   a_gagne := Some(victoire *. prescore)     
 
 (* score pour draw *)

@@ -53,6 +53,7 @@ rule token = parse
 | "LIADJ"          { LIADJ }
 | "TR"             { TR }
 | "FOG"            { FOG }
+| "UKWN"		   { UKWN }
 | "UEP"            { UEP }
 
 (*actions*)

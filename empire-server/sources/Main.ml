@@ -10,8 +10,8 @@ let soi = string_of_int
 let piece_types = Hashtbl.create 16
 
 let config =
-  { m_width = 22
-  ; m_height = 22
+  { m_width = 44
+  ; m_height = 44
   ; m_sea_level = -0.3 (*-0.3*)
   ; m_amplitude = 1.0
   ; m_octaves = 4
@@ -23,7 +23,7 @@ let config =
   }
 
 let init_tables () =
-  (*Random.self_init ();*)
+  Random.self_init ();
 
   Hashtbl.add piece_types 0
     { a_id = 0
