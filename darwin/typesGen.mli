@@ -22,3 +22,4 @@ val arbre0 : t_arbre
 val foret0 : t_foret
 val popu0 : t_population
 
+val genere_popu : int -> t_population

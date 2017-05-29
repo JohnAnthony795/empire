@@ -10,7 +10,7 @@ open Printf (*for debug purposes*)
                                                               %token <Types.direction> DIR
 
 %token NBUAP NBVAP NBVEP LIADJ TR FOG UKWN UEP
-%token MV AT EX EN TRA SCP ET DN
+%token MV AT EX EN ENN TRA SCP ET DN
 
 %token LPAREN RPAREN HASH VIRG COLON QMARK EMARK
 %token EOL

@@ -11,7 +11,7 @@ let marshal_write filename element =
 	 1 => la ref affronte tout le monde, sauf elle-même; son score n'est pas réévalué, mais baisse de 5% à chaque tour
 	 2 => la ref affronte tout le monde, sauf elle-même; elle affronte tout à la fin l'IA ayant le meilleur score pour s'évaluer elle-même
 	 3 => Captain prend le rôle de ref, et tout le monde l'affronte *)
-let methode_ref = 3
+let methode_ref = 2
 
 let eval_candidat_contre_Captain candidat =
   	let (foret, _) = candidat in

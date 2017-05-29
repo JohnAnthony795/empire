@@ -20,7 +20,8 @@ type t_action =
   | Attaquer of (int*int*int)
   | Explorer of (int*int*int)
   | Envahir of (int*int*int)
-  | Transporter of (int*int*int)
+  | Envahir_neutre of (int*int*int)	
+	| Transporter of (int*int*int)
   | Set_city_prod of set_city_production 
   | End_turn 
   | Do_nothing of (int)

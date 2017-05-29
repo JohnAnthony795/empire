@@ -504,7 +504,14 @@ let get_closest_ennemy_city_coords pid =
   (*if (unite.pid <> -1) then*)
   let list_coords = get_coords_ville !liste_ville_ennemie in
   match list_coords with
-  | [] -> (let acu = ref([]) in
+  | [] -> (-1,-1)
+  | _ -> (  List.fold_left (fun (qa,ra) (qb,rb) 
+                             -> if ((tiles_distance (unite.q,unite.r) (qa,ra)) < (tiles_distance (unite.q,unite.r) (qb,rb))) then 
+                                 (qa,ra) else (qb,rb)) (List.hd list_coords) list_coords)
+
+let get_closest_neutral_city_coords pid =
+	let unite = get_unite pid in
+	let acu = ref([]) in
            for i=0 to (!map_width-1) do
              for j=0 to (!map_height-1) do
                match (map_terrain.(i).(j)) with
@@ -516,11 +523,9 @@ let get_closest_ennemy_city_coords pid =
            | [] -> (-1,-1)
            | _ -> (  List.fold_left (fun (qa,ra) (qb,rb) 
                                       -> if ((tiles_distance (unite.q,unite.r) (qa,ra)) < (tiles_distance (unite.q,unite.r) (qb,rb))) then 
-                                          (qa,ra) else (qb,rb)) (List.hd !acu) !acu))
-  | _ -> (  List.fold_left (fun (qa,ra) (qb,rb) 
-                             -> if ((tiles_distance (unite.q,unite.r) (qa,ra)) < (tiles_distance (unite.q,unite.r) (qb,rb))) then 
-                                 (qa,ra) else (qb,rb)) (List.hd list_coords) list_coords)
-(*else
+                                          (qa,ra) else (qb,rb)) (List.hd !acu) !acu)
+																 
+																 (*else
   let ville = get_ville_allie pid in
   List.fold_left (fun (qa,ra) (qb,rb) 
   -> if ((tiles_distance (ville.q,ville.r) (qa,ra)) < (tiles_distance (ville.q,ville.r) (qb,rb))) then 
@@ -680,6 +685,70 @@ let get_coords_explorer pid =
       | None -> (*Printf.printf("Erreur moves explorer!!!\n%!");*)(-1,-1)
       | Some l -> do_path l)
 
+let get_coords_envahir_neutre pid =
+	let first_coords = get_closest_neutral_city_coords pid in
+  let coords = (
+    match first_coords with
+    | (-1,-1) -> (let fog_coords = get_closest_fog_coords pid in 
+                  match fog_coords with 
+                  | (-1,-1) -> (-1,-1)
+                  | _ -> fog_coords)
+    | (a,b) -> (a,b)) in
+  match coords with
+  | (-1,-1) -> (-1,-1)
+  | _ -> (
+      let unite = get_unite pid in
+      let current_move = ref(unite.mov) in
+      let last_coord = ref((0,0)) in
+      let old_loc = (unite.q,unite.r) in
+      let heuristic = tiles_distance in 
+      let neighbors (q_loc, r_loc) =
+        (* XXX Printf.printf "neighbors: %d %d\n" q_loc r_loc ;*)
+        let test_direction neighbors (q_delta, r_delta) =
+          let (q1, r1) as loc = q_delta + q_loc, r_delta + r_loc in
+          (* Ce voisin n'est pas considere si il est hors de la carte ou si la piece ne peut pas marcher sur
+           * ce terrain ou si il y a quelque chose alors que ce n'est pas la destination finale (q, r) ou
+           * encore si cette position n'est pas visible par le joueur.
+          *)
+          (*TODO Ajout test de terrain*)
+          if not (case_sur_map loc) || 
+             (match unite.unite_type with 
+              | ARMY -> ((match (map_terrain.(q1).(r1)) with
+                  | (Ground,_) -> false
+                  | (Unknown,_) -> false
+                  | _ -> true)
+                         && loc <> ((fst coords), (snd coords)))
+              | FIGHT -> ((match (map_terrain.(q1).(r1)) with
+                  | (Ground,_) -> false
+                  | (Water,_) -> false
+                  | (Unknown,_) -> false
+                  | _ -> true)
+                          && loc <> ((fst coords), (snd coords)))
+              | _ -> ((match (map_terrain.(q1).(r1)) with
+                  | (Water,_) -> false
+                  | (Unknown,_) -> false
+                  | _ -> true)
+                      && loc <> ((fst coords), (snd coords)))) 
+          then neighbors else (q1, r1) :: neighbors in
+        Array.fold_left test_direction [] directions_array in
+      let cost _ _ = 1 in
+      (*Printf.printf "neighbors %d %d\n%!" (fst coords) (snd coords);
+        Printf.printf "neighbors %d %d\n%!" (fst old_loc) (snd old_loc);*)
+      let path = Astar.astar_goal old_loc ((fst coords), (snd coords)) 30 neighbors cost heuristic in
+      let rec do_path = function
+        | [] -> !last_coord
+        | h :: t -> (*Printf.printf "suceeees %d\n%!" !current_move;*)
+          if(!current_move>0) then
+            (current_move := (!current_move-1);
+             last_coord := h;
+             (do_path t))
+          else
+            !last_coord
+      in
+      match path with
+      | None -> (*Printf.printf("Erreur moves !!!\n%!");*)(-1,-1)
+      | Some l -> do_path l)
+			
 let get_coords_envahir pid =
   let first_coords = get_closest_ennemy_city_coords pid in
   let coords = (

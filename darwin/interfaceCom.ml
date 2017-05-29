@@ -195,6 +195,7 @@ let action_to_string action =
   | Attaquer (pid,q,r) -> "moves " ^ (soi pid) ^ " " ^(soi q) ^ " " ^(soi r)
   | Explorer (pid,q,r) -> "moves " ^ (soi pid) ^ " " ^(soi q) ^ " " ^(soi r)
   | Envahir (pid,q,r) -> "moves " ^ (soi pid) ^ " " ^(soi q) ^ " " ^(soi r)
+  | Envahir_neutre (pid,q,r) -> "moves " ^ (soi pid) ^ " " ^(soi q) ^ " " ^(soi r)	
   | Transporter (pid,q,r) -> "moves " ^ (soi pid) ^ " " ^(soi q) ^ " " ^(soi r)
   | Do_nothing (cid) -> "pas vraiment une action"
 
@@ -214,6 +215,7 @@ let handle_action action =
     | Attaquer (pid,q,r) -> send_to_server (action_to_string action);receive ()
     | Explorer (pid,q,r) -> send_to_server (action_to_string action);receive ()
     | Envahir (pid,q,r) -> send_to_server (action_to_string action);receive ()
+    | Envahir_neutre (pid,q,r) -> send_to_server (action_to_string action);receive ()
     | Transporter (pid,q,r) -> send_to_server (action_to_string action);receive ()
     | Set_city_prod (cid, ptid) -> DataManager.set_city_production cid ptid;send_to_server (action_to_string action); receive ()
     | End_turn -> increment_turn_counter (); send_to_server (action_to_string action); if (get_score () = -1.0) then receive ()

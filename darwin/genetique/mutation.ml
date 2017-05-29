@@ -50,6 +50,7 @@ let random_city_pred nombre=
               | 2 -> Nb_unite_allie_proche (Random.int 10,(random_unit (Random.int 5)),(Random.int 10),(random_operator (Random.int 5)))
               | 3 -> Nb_ville_allie_proche (Random.int 10,(Random.int 10),(random_operator (Random.int 5)))
               | 4 -> Nb_ville_ennemie_proche (Random.int 10,Random.int 10,(random_operator (Random.int 5)))
+							| 5 -> Unknown_proche (Random.int 10)
               | _ -> failwith "muter_candidat : valeur non attendue"
     
 let random_unit_pred nombre =
@@ -60,6 +61,7 @@ let random_unit_pred nombre =
                 | 3 -> Littoral_adjacent
                 | 4 -> Transport
                 | 5 -> Fog_proche (Random.int 10)
+								| 6 -> Unknown_proche (Random.int 10)
                 | _ -> failwith "muter_candidat : valeur non attendue"
     
 let random_city_action nombre=
@@ -88,6 +90,7 @@ let random_army_action nombre=
                 | 0 -> Leaf (Attaquer (1,1,1))
                 | 1 -> Leaf (Explorer (1,1,1))
                 | 2 -> Leaf (Envahir (1,1,1))
+                | 3 -> Leaf (Envahir_neutre (1,1,1))
                 (*| 4 -> Leaf (Transporter (1,1,1))*)
                 | _ -> failwith "muter_action : valeur non attendue"
     
@@ -109,27 +112,27 @@ let random_transport_action nombre=
 let muter_action (action:t_action) (unite_type:uniteville) nombre :t_arbre= 
     match unite_type with
     | CITY -> (match nombre with 
-              | 0 -> Node ((random_city_action (Random.int 1)),(random_city_pred (Random.int 5)),(random_city_action (Random.int 1)))
+              | 0 -> Node ((random_city_action (Random.int 1)),(random_city_pred (Random.int 6)),(random_city_action (Random.int 1)))
               | 1 -> (random_city_action (Random.int 1))
               | _ -> failwith "muter_candidat : valeur non attendue")
     | ARMY -> (match nombre with
-            | 0 -> Node ((random_army_action (Random.int 3)),(random_unit_pred (Random.int 6)),(random_army_action (Random.int 3)))
+            | 0 -> Node ((random_army_action (Random.int 4)),(random_unit_pred (Random.int 7)),(random_army_action (Random.int 4)))
             | 1 -> (random_army_action (Random.int 3))
             | _ -> failwith "muter_candidat : valeur non attendue")
     | FIGHT -> (match nombre with
-            | 0 -> Node ((random_fight_action (Random.int 2)),(random_unit_pred (Random.int 6)),(random_fight_action (Random.int 2)))
+            | 0 -> Node ((random_fight_action (Random.int 2)),(random_unit_pred (Random.int 7)),(random_fight_action (Random.int 2)))
             | 1 -> (random_fight_action (Random.int 2))
             | _ -> failwith "muter_candidat : valeur non attendue")
     | TRANSPORT -> (match nombre with
-            | 0 -> Node ((random_transport_action (Random.int 1)),(random_unit_pred (Random.int 6)),(random_transport_action (Random.int 1)))
+            | 0 -> Node ((random_transport_action (Random.int 1)),(random_unit_pred (Random.int 7)),(random_transport_action (Random.int 1)))
             | 1 -> (random_transport_action (Random.int 1))
             | _ -> failwith "muter_candidat : valeur non attendue")
     | PATROL -> (match nombre with
-            | 0 -> Node ((random_patrol_action (Random.int 2)),(random_unit_pred (Random.int 6)),(random_patrol_action (Random.int 2)))
+            | 0 -> Node ((random_patrol_action (Random.int 2)),(random_unit_pred (Random.int 7)),(random_patrol_action (Random.int 2)))
             | 1 -> (random_patrol_action (Random.int 2))
             | _ -> failwith "muter_candidat : valeur non attendue")
     | BATTLESHIP -> (match nombre with
-            | 0 -> Node ((random_battle_action (Random.int 2)),(random_unit_pred (Random.int 6)),(random_battle_action (Random.int 2)))
+            | 0 -> Node ((random_battle_action (Random.int 2)),(random_unit_pred (Random.int 7)),(random_battle_action (Random.int 2)))
             | 1 -> (random_battle_action (Random.int 2))
             | _ -> failwith "muter_candidat : valeur non attendue")
     

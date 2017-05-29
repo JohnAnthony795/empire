@@ -61,6 +61,7 @@ rule token = parse
 | "AT"       { AT }
 | "EX" {EX}
 | "EN" {EN}
+| "EN" {ENN}
 | "TRA" {TRA}
 | "SCP"            { SCP }
 | "ET"             { ET }

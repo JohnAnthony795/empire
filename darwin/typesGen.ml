@@ -60,4 +60,11 @@ let candidat0 = (foret0, 12.0)
 
 let popu0 = [candidat0;candidat0; candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0; candidat0;]
 
-
+let genere_popu nombre =
+	let rec loop i acu =
+		if i >= nombre then
+			acu
+		else
+			loop (i+1) (candidat0 :: acu)
+	in
+	loop 0 []

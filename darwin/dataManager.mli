@@ -8,12 +8,11 @@ val transport : piece_id -> bool
 val fog_proche : piece_id -> int -> bool
 val unknown_proche : piece_id -> int -> bool
 val unite_en_production : piece_id -> bool
-val get_closest_ennemy_coords : piece_id -> (int*int)
 val get_coords_attaquer : piece_id -> (int*int)
 val get_coords_explorer : piece_id -> (int*int)
 val get_coords_envahir : piece_id -> (int*int)
+val get_coords_envahir_neutre : piece_id -> (int*int)
 val get_coords_transporter : piece_id -> (int*int)
-
 val get_next_playable: unit -> int
 val get_next_movable: unit -> (int*unites)
 val get_score : unit -> float

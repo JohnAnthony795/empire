@@ -115,7 +115,13 @@ let compute_Action id unite_type foret = (* prend une id t_ID de piece et return
                                   | _ -> Explorer (id,(fst coords),(snd coords)))
         | Envahir (pid,q,r) -> (let coords = (get_coords_envahir id) in 
                                   match coords with
-                                  | (-1,-1) -> (Move (id,random_direction))
+                                  (*| (-1,-1) -> (Move (id,random_direction))*)
+																	| (-1,-1) -> Do_nothing (id)
+                                  | _ -> Envahir (id,(fst coords),(snd coords)))
+				| Envahir_neutre (pid,q,r) -> (let coords = (get_coords_envahir_neutre id) in 
+                                  match coords with
+                                  (*| (-1,-1) -> (Move (id,random_direction))*)
+																	| (-1,-1) -> Do_nothing (id)
                                   | _ -> Envahir (id,(fst coords),(snd coords)))
         | Transporter (pid,q,r) -> (let coords = (get_coords_transporter id) in 
                                   match coords with
@@ -144,7 +150,7 @@ let main id =
     else marshal_read_cand "marshaled_foret_cand.frt"
   in*)
 
-  init_socket "127.0.0.1" 9301;
+  init_socket "127.0.0.1" 19301;
 
   receive (); (* on reçoit les infos du début *)
   while (get_score () = -1.0) do
