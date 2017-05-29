@@ -9,23 +9,30 @@ let marshal_write filename element =
 	
 (* 0 => la ref affronte tout le monde, dont elle-même; son score est donc réévalué à chaque tour
 	 1 => la ref affronte tout le monde, sauf elle-même; son score n'est pas réévalué, mais baisse de 5% à chaque tour
-	 2 => la ref affronte tout le monde, sauf elle-même; elle affronte tout à la fin l'IA ayant le meilleur score pour s'évaluer elle-même *)
-let methode_ref = 0
+	 2 => la ref affronte tout le monde, sauf elle-même; elle affronte tout à la fin l'IA ayant le meilleur score pour s'évaluer elle-même
+	 3 => Captain prend le rôle de ref, et tout le monde l'affronte *)
+let methode_ref = 3
 
-
-let evaluer popu =
-  let eval_candidat candidat =
+let eval_candidat_contre_Captain candidat =
+  	let (foret, _) = candidat in
+    let _ = ToolsArbres.write_arbre "foret_cand.frt" foret in
+    (*let _ = marshal_write "marshaled_foret_cand.frt" foret in*)
+    let _ = Unix.system "../empire-server/Main.native > /dev/null &" in (*pas de sortie serveur*)
+    let _ = Unix.system "../empire-captain/ai1.py localhost 9301 > /dev/null &" in
+		let score = Main.main 1 in (* renvoie le score de ce candidat contre Captain *)
+    (foret, score)
+		
+let eval_candidat candidat =
   	let (foret, _) = candidat in
     let _ = ToolsArbres.write_arbre "foret_cand.frt" foret in
     (*let _ = marshal_write "marshaled_foret_cand.frt" foret in*)
     (*let _ = Unix.system "xterm -hold -e \"../empire-server/Main.native\" &" in (*version de debug, ouvre l'out serveur dans un terminal*)*)
     let _ = Unix.system "../empire-server/Main.native > /dev/null &" in (*pas de sortie serveur*)
-    (*let _ = Unix.system "../empire-captain/ai1.py localhost 9301 > /dev/null &" in*)
     let _ = Unix.system "./main.native 0 > /dev/null &" in
 		let score = Main.main 1 in (* renvoie le score de ce candidat contre la ref *)
     (foret, score)
-  in
-	
+
+let evaluer popu =
 	let pop_ref = Selection.select_n_best popu 1 in (* pour cette génération, le meilleur candidat sera notre candidat de référence *)
   let cand_ref = match pop_ref with 
     | hd :: tail -> hd
@@ -58,5 +65,9 @@ let evaluer popu =
 	  Printf.printf "ref: %!";
 		let score_ref = Main.main 0 in (* renvoie le score de LA REF contre le meilleur candidat *)
 		(foret_ref,score_ref) :: popu_sauf_ref_evaluee
+	
+	else if methode_ref = 3 then
+		List.map eval_candidat_contre_Captain popu 
+	
 	else
 		failwith "ERREUR Evaluation.evaluer: mauvaise methode_ref spécifiée"
