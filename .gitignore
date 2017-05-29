@@ -1,14 +1,21 @@
 
 #FICHIERS A IGNORER
 #"**" signifie "dans n'importe quel sous-répertoire"
+
 #Les fichiers compilés
 **/*.native
 **/*.byte
 **/_build
+empire-captain/*.pyc
+
 #Les fichiers générés pendant la compilation (ocamlc)
 **/*.cmi
 **/*.cmo
+
 #Les fichiers temporaires générés par gedit
 **/*~
+
 #Les arbres (pour passage au main)
 darwin/marshaled_foret_*
+darwin/foret_*.frt
+
