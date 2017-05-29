@@ -50,6 +50,18 @@ let cross_subtree arbre1 arbre2 =
   (replace (nodequal node1) node2 arbre1 , replace (nodequal node2) node1 arbre2)
 ;;
 
+(*cross_pred : t_arbres -> t_arbre -> t_arbre * t_arbre retourne deux arbres*)
+let cross_pred arbre1 arbre2 =
+  let node1 = get_random_node arbre1 in
+  let node2 = get_random_node arbre2 in
+ match (node1,node2) with
+ |(Leaf x, _) -> (arbre1 ,arbre2)
+ |(_ , Leaf x) ->(arbre1 ,arbre2)
+ |(Node(a1,b1,c1),Node(a2,b2,c2) ) -> (replace (nodequal node1) (Node(a1,b2,c2)) arbre1 , replace (nodequal node2) (Node(a2,b1,c2)) arbre2)
+;; 
+
+
+
 (*cross_subtree_uniq : t_arbre -> t_arbre -> t_arbre  retourne un arbre unique *)
 let cross_subtree_uniq arbre1 arbre2 =
   let node1 = get_random_node arbre1 in
@@ -60,11 +72,17 @@ let cross_subtree_uniq arbre1 arbre2 =
 
 (* cross_foret : t_foret -> t_foret -> t_population *) (* /!\ a changer en dur si la foret grandit *)
 let cross_foret foret1 foret2 = 
-  let (a11,a12,a13,a14,a15,a16) = foret1   in
-  let (a21,a22,a23,a24,a25,a26) = foret2   in
-  let ((a31,a41),(a32,a42),(a33,a43),(a34,a44),(a35,a45),(a36,a46)) = (cross_subtree a11 a21,cross_subtree a12 a22,cross_subtree a13 a23,cross_subtree a14 a24,cross_subtree a15 a25,cross_subtree a16 a26) in
+let (a11,a12,a13,a14,a15,a16) = foret1   in
+let (a21,a22,a23,a24,a25,a26) = foret2   in
+let fonc = match Random.bool() with
+|true -> cross_subtree
+|false -> cross_pred
+in
+let ((a31,a41),(a32,a42),(a33,a43),(a34,a44),(a35,a45),(a36,a46)) = (fonc a11 a21,fonc a12 a22,fonc a13 a23,fonc a14 a24,fonc a15 a25,fonc a16 a26) in 
+
 [((a31,a32,a33,a34,a35,a36),-1.0);((a41,a42,a43,a44,a45,a46),-1.0)]
 ;;
+
 (* main_cross : t_population -> t_population retourne la population croisée *)
 let rec main_cross pop =
   match pop with
