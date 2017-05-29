@@ -145,6 +145,7 @@ let muter_predicat (predicat:t_predicat) (unite_type:uniteville) =
                 | Littoral_adjacent -> Littoral_adjacent
                 | Transport -> Transport
                 | Fog_proche (a) -> Fog_proche (Random.int 10)
+                | Unknown_proche (a) -> Unknown_proche (Random.int 10)
                 | Unite_en_production -> Unite_en_production)
               | _ -> failwith "muter_candidat : valeur non attendue")
     
