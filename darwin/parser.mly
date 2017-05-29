@@ -9,7 +9,7 @@ open Printf (*for debug purposes*)
                                         %token <Types.unites> UNITE
                                                               %token <Types.direction> DIR
 
-%token NBUAP NBVAP NBVEP LIADJ TR FOG UEP
+%token NBUAP NBVAP NBVEP LIADJ TR FOG UKWN UEP
 %token MV AT EX EN TRA SCP ET DN
 
 %token LPAREN RPAREN HASH VIRG COLON QMARK EMARK
@@ -57,6 +57,7 @@ open Printf (*for debug purposes*)
 | LIADJ                                                { Littoral_adjacent }
 | TR                                                   { Transport }
 | FOG COLON INT                                        { Fog_proche ($3)}
+| UKWN COLON INT                                       { Unknown_proche ($3)}
 | UEP                                                  { Unite_en_production }
   ;
 

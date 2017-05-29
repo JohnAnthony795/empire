@@ -49,7 +49,8 @@ type t_predicat= (* rajouter des prédicats en masse*)
   | Nb_ville_ennemie_proche of (int  * int * comparateur) (*distance proximité/Nb ville/plus ou moins de Nb ville ennemie proche*)
   | Littoral_adjacent (* presence de littoral dans une case adjacente*)
   | Transport (*présence de l'unité dans un transport*)
-  | Fog_proche of (int) (* distance proximité / plus ou moins loin *)
+  | Fog_proche of (int) (* distance proximité *)
+	| Unknown_proche of (int) (* distance proximité *)
   | Unite_en_production (* Test si la ville est en train de produire une unite *)
 
 type t_arbre =
@@ -90,8 +91,9 @@ let pred_to_string p = match p with   (*tenir à jour avec les prédicats *)
   | Nb_ville_ennemie_proche (d,n,c) -> "Nb de villes ennemies proches d'une distance de "  ^ (string_of_int d) ^ " " ^ (comparateur_to_string c) ^ " " ^ (string_of_int n) ^ "?"
   | Littoral_adjacent -> "Presence de littoral dans une case adjacente ?"
   | Transport -> "Présence de l'unité dans un transport ?"
-  | Fog_proche d -> "Présence du brouillard de guerre proche d'une distance de" ^ (string_of_int d) ^"?"
-  | Unite_en_production -> "Unite en cours de production par la ville?"
+  | Fog_proche d -> "Présence du brouillard de guerre proche d'une distance de " ^ (string_of_int d) ^"?"
+  | Unknown_proche d -> "Présence de cases inexplorées à moins de " ^ (string_of_int d) ^" cases ?"
+	| Unite_en_production -> "Unite en cours de production par la ville?"
 
 let action_to_string a = match a with
   | Move (id,dir) -> "Move id°" ^ (string_of_int id) ^ " " ^ (direction_to_string dir)
@@ -126,6 +128,7 @@ let pred_to_code p = match p with   (*tenir à jour avec les prédicats ;)  STAN
   | Littoral_adjacent -> "?LIADJ" 
   | Transport -> "?TR"
   | Fog_proche (d) -> "?FOG:" ^ (string_of_int d)
+	| Unknown_proche (d) -> "?UKWN:" ^ (string_of_int d)
   | Unite_en_production -> "?UEP"
 
 let action_to_code a = match a with (* tenir a jour aussi  STANDARD : mettre un '!' au debut *)
