@@ -115,7 +115,9 @@ let compute_Action id unite_type foret = (* prend une id t_ID de piece et return
                                   match coords with
                                   | (-1,-1) -> (Move (id,random_direction))
                                   | _ -> Transporter (id,(fst coords),(snd coords)))
-        | Set_city_prod (cid,unite) -> Set_city_prod (id,unite)
+        | Set_city_prod (cid,unite) -> let prod = (get_city_production id) in
+                    if((compare (Some(unite)) prod)=0) then (Do_nothing (id)) else Set_city_prod (id,unite)
+                                      
         | End_turn -> End_turn
         | Do_nothing (cid) -> Do_nothing (id)) 
     | Node (t1,p,t2) -> if evaluate_pred p id then action_from_tree t1 id else action_from_tree t2 id
@@ -129,12 +131,12 @@ let compute_Action id unite_type foret = (* prend une id t_ID de piece et return
    id = 1 -> on est un candidat *)
 let main id =
   init_data ();
-  (*let foret = if id = 0 then ToolsArbres.read_arbre "foret_ref.frt"
+  let foret = if id = 0 then ToolsArbres.read_arbre "foret_ref.frt"
     else ToolsArbres.read_arbre "foret_cand.frt"
-  in*)
-	let (foret,_) = if id = 0 then marshal_read_cand "marshaled_foret_ref.frt"
-    else marshal_read_cand "marshaled_foret_cand.frt"
   in
+	(*let (foret,_) = if id = 0 then marshal_read_cand "marshaled_foret_ref.frt"
+    else marshal_read_cand "marshaled_foret_cand.frt"
+  in*)
 
   init_socket "127.0.0.1" 9301;
 

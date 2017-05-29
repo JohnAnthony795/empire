@@ -202,6 +202,11 @@ let set_city_production cid unite_type =
 
   liste_ville_alliee := {q= ville.q ; r= ville.r ; cid = cid ; prod = Some(unite_type) ; tours_restants = tours ; mov = 0} :: autresVilles
 
+let get_city_production cid =
+  let cid_is cid element = element.cid = cid in
+  let ville = List.find (cid_is cid) !liste_ville_alliee in
+  ville.prod
+
 
 (* Liste villes ennemies *)
 type (*ville*) ennemi = {q : int ;r : int ;cid : int }
@@ -354,8 +359,8 @@ let get_visible_size() =
 let calculate_score () =  (*Set coefs here*)
 let (ars_val,nb_ville,explored_size,visible_size) = (get_arsenal_value(),get_nb_ville(),get_explored_size(),get_visible_size()) in
 let f = float_of_int in
-	Printf.printf "Arsenal value : %f \nNb_Ville : %f \nExplored_size : %f \nVisible_size : %f \n"  
-			(f ars_val *. 0.1) (f nb_ville*. 10.0) (f explored_size *. 0.2)  (f visible_size *. 0.05)  ;
+	(*Printf.printf "Arsenal value : %f \nNb_Ville : %f \nExplored_size : %f \nVisible_size : %f \n"  
+			(f ars_val *. 0.1) (f nb_ville*. 10.0) (f explored_size *. 0.2)  (f visible_size *. 0.05)  ;*)
 	
      float_of_int   ( ars_val) *. 0.1 
   +. float_of_int( nb_ville)   *. 10.0
@@ -368,18 +373,20 @@ let set_victoire msg =
     | hd :: tail -> hd
     | [] -> failwith "dataManager.set_victoire"
   in
-  let victoire = (if (int_of_string msgHd) = !our_jid then (Printf.printf "GAGNE\n";1.3) else (Printf.printf "PERDU\n"; 0.7)) in (*En tant que multiplicateur*)
   let prescore = calculate_score () in 
+  let victoire = (if (int_of_string msgHd) = !our_jid then (Printf.printf "WIN : Score total : %f\n" (prescore*.1.3) ;1.3) 
+else (Printf.printf "LOOSE : Score total : %f\n" (prescore*.0.7) ; 0.7)) in (*En tant que multiplicateur*)
   a_gagne := Some(victoire *. prescore)     
 
 (* score pour draw *)
 let set_draw () = 
   let prescore = calculate_score () in
+  Printf.printf "DRAW : Score total : %f\n" prescore ;
   a_gagne := Some(1.0 *.prescore)
 
 let get_score () =
   match !a_gagne with
-  | Some (victoire) -> Printf.printf "Score total : %f\n\n" victoire ; victoire
+  | Some (victoire) -> victoire
   | None -> -1.0
 
 (* piece dans un transport*)

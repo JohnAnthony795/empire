@@ -28,7 +28,7 @@ open TypesGen
 
 let individusASelectionner = 12 (* DOIT ETRE PAIR!!!! *)
 
-let iterations = 1 (* nombre de générations à simuler avant de s'arrêter; on pourrait la mettre en paramètre *)
+let iterations = 2000 (* nombre de générations à simuler avant de s'arrêter; on pourrait la mettre en paramètre *)
 
 (** TOOLS **)
 
@@ -58,7 +58,8 @@ let read_file filename = (* renvoie une liste de lignes du fichier *)
 let write_nbreGen configFile nbreGen = 
   let out_chan = open_out configFile in
   let str = "nbreGen=" ^ (string_of_int nbreGen) in
-  output_string out_chan str
+  output_string out_chan str;
+  close_out out_chan
 
 let strSplit strToSplit delim =
   let str_start str len = String.sub str 0 len in
@@ -122,32 +123,39 @@ let rec first_popu acu =
 let main () =
 
   let rec mainLoop popu nbreGen =
-    print_endline ("Génération n° "^ (string_of_int nbreGen));
+    print_endline ("\nGénération n° "^ (string_of_int nbreGen));
     print_population popu;
     let popu1 = Evaluation.evaluer popu Evaluation.AFF10 in (* Met à jour le score d'adaptabilité de chaque individu *)
     let popu2 = Selection.select_n_parents popu1 individusASelectionner 1 in (* popu2 garde les meilleurs individus ; c'est là que se passent les affrontements *)
     let popu3 = Croisement.main_cross popu2 in (* popu3 sont les nouveaux individus obtenus par recombinaison *)
-    print_population popu3 ;
+    (*print_population popu3 ;*)
     let popu4 = Mutation.mute popu3 in (* ces individus recombinés ont ensuite des chances de muter pour donner popu4 *)
-    print_population popu4 ; 
+    (*print_population popu4 ;*) 
     let popu5 = Selection.merge_generations popu1 popu4 1 in (* on garde parmi la population initiale (popu1) et les nouveaux mutants recombinés (popu4) certains individus pour la prochaine génération *)
     if nbreGen < (nbreGenInitial + iterations) then
+      begin
+      ToolsArbres.write_population "current_gen.pop" popu5; (* on sauvegarde notre population actuelle dans des fichiers *)
+      (*let _ = marshal_write "marshaled_pop" (popu5, nbreGen) in*)
+      write_nbreGen "nbreGen.cfg" nbreGen ; 
       mainLoop popu5 (nbreGen +1)
+    end
     else begin
       ToolsArbres.write_population "current_gen.pop" popu5; (* on sauvegarde notre population actuelle dans des fichiers *)
-      let _ = marshal_write "marshaled_pop" (popu5, nbreGen) in
+      (*let _ = marshal_write "marshaled_pop" (popu5, nbreGen) in*)
       write_nbreGen "nbreGen.cfg" nbreGen ; (* on sauvegarde notre nombre de générations simulées dans un fichier *)
       ()
     end
   in
 
-  let (popu, nbreGen) = marshal_read_popu "marshaled_pop" in
-  (* let popu = ToolsArbres.read_population "current_gen.pop" in (* initialisation de la population, lue depuis le disque *) *)
+  (*let (popu, nbreGen) = marshal_read_popu "marshaled_pop" in*)
+  let nbreGen = nbreGenInitial in
+  let popu = ToolsArbres.read_population "current_gen.pop" in (* initialisation de la population, lue depuis le disque *) 
   mainLoop popu nbreGen
 
 
 let () =
   (* let _ = marshal_write "marshaled_pop" (popu0,0) in *)
+  (*let _ = ToolsArbres.write_population "current_gen.pop" popu0 in*)
   print_endline "Start mainGen.";
   Random.self_init ();
   main ()
