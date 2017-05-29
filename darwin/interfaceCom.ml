@@ -47,28 +47,52 @@ open Types
 (* On utilise des refs pour pouvoir modifier leur valeur *)
 (* On utilise le type option pour pouvoir les initialiser à None *)
 (* Pour accéder à un canal, il faut matcher "Some c" et "None" puis utiliser "!c" pour accéder au canal lui-même *)
-let input_channel = ref(None)
-let output_channel = ref(None)
 let socket = ref(None)
 
 let get_socket () =
-  match !socket with
-  | Some (sock) -> sock
-  | None -> failwith "interfaceCom : socket non initialisé"
+    match !socket with
+    | Some (sock) -> sock
+    | None -> failwith "interfaceCom : socket non initialisé"
 
+let get_ic () = Unix.in_channel_of_descr (get_socket ())
+    
+let get_oc () = Unix.out_channel_of_descr (get_socket ())
+
+<<<<<<< HEAD
+=======
+let threadID () = "Thread " ^ string_of_int (Thread.id (Thread.self ()))
+
+let printSock () =
+  let mysockaddr = getsockname (get_socket ()) in
+  let myhostname = (Unix.getnameinfo mysockaddr []).ni_hostname in
+  let myport = (Unix.getnameinfo mysockaddr []).ni_service in
+  print_endline ((threadID ()) ^ ": hostname=" ^ myhostname ^ ", port=" ^ myport)
+
+>>>>>>> 9737818a2feab50443836208de3869d22b35de17
 (* Fonctions auxiliaires d'ouverture et de fermeture de connexion *)
 (* sockaddr -> socket *)
 let open_connection sockaddr =
   let domain = Unix.domain_of_sockaddr sockaddr in
+<<<<<<< HEAD
   let sock = Unix.socket domain Unix.SOCK_STREAM 0 
   in try Unix.connect sock sockaddr ;
+=======
+  let sock = Unix.socket domain Unix.SOCK_STREAM 0 in
+  try Unix.connect sock sockaddr ;
+>>>>>>> 9737818a2feab50443836208de3869d22b35de17
     sock
   (*(Unix.in_channel_of_descr sock , Unix.out_channel_of_descr sock)*)
   with exn -> Unix.close sock ; raise exn
 
+<<<<<<< HEAD
 let shutdown_connection inchan =
   (*f.printf "Closing client socket\n\n";*)
   Unix.shutdown (Unix.descr_of_in_channel inchan) Unix.SHUTDOWN_SEND
+=======
+let shutdown_connection () =
+  print_endline "Closing client socket\n";
+  Unix.shutdown (get_socket ()) Unix.SHUTDOWN_SEND
+>>>>>>> 9737818a2feab50443836208de3869d22b35de17
 
 
 (* Création d'un socket client et connexion au serveur *)
@@ -82,10 +106,16 @@ let init_socket server port =
       exit 2
   in try
     let sockaddr = Unix.ADDR_INET(server_addr,port) in
+<<<<<<< HEAD
     socket := Some(open_connection sockaddr); (* On crée le socket pour affecter les canaux in/out *)
     if Opt.doPrint then Printf.printf "Socket created\n\n" else ();
     input_channel := Some (Unix.in_channel_of_descr (get_socket ()));
     output_channel := Some (Unix.out_channel_of_descr (get_socket ()))
+=======
+    socket := Some(open_connection sockaddr);	(* On crée le socket pour affecter les canaux in/out *)
+    printSock ();    
+    ()
+>>>>>>> 9737818a2feab50443836208de3869d22b35de17
   with Failure("int_of_string") -> Printf.eprintf "bad port number";
     exit 2
 
@@ -140,9 +170,18 @@ let unites_to_ptid u = match u with
 
 let traiter_message message =
   let listeMsg = split message in
-  let tlMsg = List.tl listeMsg in
 
-  match List.hd listeMsg with
+  let (listeMsgHd, tlMsg) = match listeMsg with
+    | hd :: tail -> (hd, tail)
+    | [] -> failwith "interfaceCom.traiter_message: 1"
+  in
+  let tlMsgHd = match tlMsg with
+    | hd :: _ -> hd
+    | [] -> ""
+  in
+
+  match listeMsgHd with
+  | m -> print_endline (string_of_int (Thread.id (Thread.self ())) ^ " : recu message = \"" ^ m ^ "\"")
   | "player_id" -> set_our_jid tlMsg
   | "width" -> set_map_width tlMsg
   | "height" -> set_map_height tlMsg
@@ -167,6 +206,7 @@ let traiter_message message =
   | "ko-invasion" -> traiter_ko_invasion tlMsg
   | "city-units-limit" -> traiter_city_units_limit tlMsg
   | "created-units-limit" -> traiter_created_units_limit tlMsg
+<<<<<<< HEAD
   | x -> Printf.printf "traiter_message: message serveur imprévu : \"%s\", d'argument \"%s\"\n%!" x (List.hd tlMsg)
 
 let receive_next () =
@@ -197,15 +237,43 @@ let action_to_string action =
   | Envahir (pid,q,r) -> "moves " ^ (soi pid) ^ " " ^(soi q) ^ " " ^(soi r)
   | Transporter (pid,q,r) -> "moves " ^ (soi pid) ^ " " ^(soi q) ^ " " ^(soi r)
   | Do_nothing (cid) -> "pas vraiment une action"
+=======
+  | x -> Printf.printf "traiter_message: message serveur imprévu : \"%s\", d'argument \"%s\"\n" x tlMsgHd
+
+
+(* 	Définition de notre propre fonction input_line (qui normalement lit depuis un channel, ici depuis le socket
+   	En effet, utiliser input_line bloque TOUS les threads utilisés !! *)
+let my_input_line in_chan =
+  let fd = get_socket () in 
+  let s = " " and msg = ref "" in
+  while (ThreadUnix.read fd s 0 1 > 0) && s.[0] <> '\n' do
+    msg := !msg ^ s
+  done ;
+  !msg
+
+let rec receive () =
+  print_endline ("Waiting for reception on thread " ^ string_of_int (Thread.id (Thread.self ())));
+  match input_line (get_ic ()) with
+  | "" -> failwith "receive: Empty message"
+  | "get_action" -> print_endline ((threadID ()) ^ " : get_action"); traiter_message "get_action"
+  | m -> print_endline ((threadID ()) ^ " : réception " ^ m); traiter_message m; receive ()
+>>>>>>> 9737818a2feab50443836208de3869d22b35de17
 
 (*  SEND_TO_SERVER : string -> unit
       L'envoi concret du message par le socket *)
 let send_to_server message =
+<<<<<<< HEAD
   if Opt.doPrint then Printf.printf "Sending \"%s\" to the server\n %!" message else (); 
   match !output_channel with
   | Some (oc) -> output_string oc (message ^ "\n");
     flush oc
   | None -> failwith "Output_channel not initialized"
+=======
+  Printf.printf "Sending \"%s\" to the server\n %!" message;
+  let oc = get_oc () in  
+  output_string oc (message ^ "\n");
+  flush oc
+>>>>>>> 9737818a2feab50443836208de3869d22b35de17
 
 (* TODO : toutes les choses à faire avant d'envoyer une action au serveur (exemple : update dataManager) *)
 let handle_action action =

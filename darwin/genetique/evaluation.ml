@@ -37,3 +37,4 @@ let evaluer popu methode =
   let evaluatedpopunoref = List.map eval_candidat popunoref in
 	(foret_ref,score_ref *. 0.95) :: evaluatedpopunoref
 
+
