@@ -39,9 +39,9 @@ open Types
 open Astar
 
 (** DECLARATIONS **)
-let map_width = ref(44)
+let map_width = ref(22)
 
-let map_height = ref(44)
+let map_height = ref(22)
 
 let our_jid = ref(0)
 
@@ -358,12 +358,12 @@ let get_visible_size() =
     let v2 = List.map (Array.to_list) v1 in (*flattening all arrays insinde the list*)
     List.concat v2  (*merging the 'terrain List List' into a 'terrain List'*)		
   in 
-  (!map_height * !map_width) - List.length (List.filter (fun x-> match x with (_,visible) -> visible = false) (flatten map_terrain))
+  List.length (List.filter (fun x-> match x with (_,visible) -> visible = true) (flatten map_terrain))
 
 let calculate_score () =  (*Set coefs here*)
 let (ars_val,nb_ville,explored_size,visible_size) = (get_arsenal_value(),get_nb_ville(),get_explored_size(),get_visible_size()) in
-let f = float_of_int in
-	(*Printf.printf "Arsenal value : %f \nNb_Ville : %f \nExplored_size : %f \nVisible_size : %f \n"  
+(*let f = float_of_int in
+	Printf.printf "Arsenal value : %f \nNb_Ville : %f \nExplored_size : %f \nVisible_size : %f \n"  
 			(f ars_val *. 0.1) (f nb_ville*. 10.0) (f explored_size *. 0.2)  (f visible_size *. 0.05)  ;*)
 	
      float_of_int   ( ars_val) *. 0.1 

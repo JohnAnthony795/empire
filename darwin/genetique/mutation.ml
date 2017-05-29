@@ -150,6 +150,7 @@ let muter_predicat (predicat:t_predicat) (unite_type:uniteville) =
     
 
 let rec muter_arbre chance arbre (unite_type:uniteville)= 
+		let chance = if chance > 0 then chance else 1 in
     match arbre with 
     | Node (a,b,c)  ->  
     if ((Random.int chance) = (chance-1)) then
