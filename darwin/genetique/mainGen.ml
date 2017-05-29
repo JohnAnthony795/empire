@@ -26,7 +26,7 @@ open ToolsArbres
 open Types
 open TypesGen
 
-let individusASelectionner = 12 (* DOIT ETRE PAIR!!!! *)
+let individusASelectionner = 10 (* DOIT ETRE PAIR!!!! *)
 
 let iterations = 2000 (* nombre de générations à simuler avant de s'arrêter; on pourrait la mettre en paramètre *)
 

@@ -117,7 +117,7 @@ let game =
 (* TODO: le premier joueur doit configurer la partie. *)
 let port =
   let rec loop i =
-    if i >= Array.length Sys.argv - 1 then 19301 else
+    if i >= Array.length Sys.argv - 1 then 9301 else
     if Sys.argv.(i) = "-sport" then ios (Sys.argv.(i + 1)) else
       loop (i + 1) in
   loop 0

@@ -150,7 +150,7 @@ let main id =
     else marshal_read_cand "marshaled_foret_cand.frt"
   in*)
 
-  init_socket "127.0.0.1" 19301;
+  init_socket "127.0.0.1" 9301;
 
   receive (); (* on reçoit les infos du début *)
   while (get_score () = -1.0) do
