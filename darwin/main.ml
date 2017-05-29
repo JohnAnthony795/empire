@@ -25,9 +25,14 @@ let () = Random.self_init()
 
 let marshal_read_cand filename =
   let ic = open_in_bin filename in
-  let return = (Marshal.from_channel ic : TypesGen.t_candidat) in
-  close_in ic;
-  return
+	try begin	
+		let return = (Marshal.from_channel ic : TypesGen.t_candidat) in
+		close_in ic;
+		return
+	end
+  with End_of_file -> 
+		close_in ic;
+		failwith "Erreur main.marshal_read_popu"
 
 let marshal_write filename element =
   let oc = open_out_bin filename in
@@ -115,7 +120,9 @@ let compute_Action id unite_type foret = (* prend une id t_ID de piece et return
                                   match coords with
                                   | (-1,-1) -> (Move (id,random_direction))
                                   | _ -> Transporter (id,(fst coords),(snd coords)))
-        | Set_city_prod (cid,unite) -> Set_city_prod (id,unite)
+        | Set_city_prod (cid,unite) -> let prod = (get_city_production id) in
+                    if((compare (Some(unite)) prod)=0) then (Do_nothing (id)) else Set_city_prod (id,unite)
+                                      
         | End_turn -> End_turn
         | Do_nothing (cid) -> Do_nothing (id)) 
     | Node (t1,p,t2) -> if evaluate_pred p id then action_from_tree t1 id else action_from_tree t2 id
@@ -129,12 +136,12 @@ let compute_Action id unite_type foret = (* prend une id t_ID de piece et return
    id = 1 -> on est un candidat *)
 let main id =
   init_data ();
-  (*let foret = if id = 0 then ToolsArbres.read_arbre "foret_ref.frt"
+  let foret = if id = 0 then ToolsArbres.read_arbre "foret_ref.frt"
     else ToolsArbres.read_arbre "foret_cand.frt"
-  in*)
-	let (foret,_) = if id = 0 then marshal_read_cand "marshaled_foret_ref.frt"
-    else marshal_read_cand "marshaled_foret_cand.frt"
   in
+	(*let (foret,_) = if id = 0 then marshal_read_cand "marshaled_foret_ref.frt"
+    else marshal_read_cand "marshaled_foret_cand.frt"
+  in*)
 
   init_socket "127.0.0.1" 9301;
 
@@ -153,6 +160,7 @@ let main id =
         | _ -> (get_score () = -1.0)) do
 
       let next_unite = get_next_movable () in
+      if Opt.doPrint then Printf.printf "UNITE ------------------ %d\n%!" (fst next_unite) else ();
       handle_action (compute_Action (fst next_unite) (unite_to_uniteville (snd next_unite)) foret);
     done;
     (*Fin du tour*)

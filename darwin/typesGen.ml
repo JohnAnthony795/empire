@@ -49,12 +49,12 @@ let arbre0 = Leaf End_turn
 (* let arbre0 = Node (Leaf End_turn,Nb_unite_allie_proche (ARMY,7,Inf),Node (Leaf End_turn,Nb_unite_allie_proche (ARMY,7,Inf),Leaf End_turn)) *)
 
 let arbreUnite = Leaf (Explorer (1,1,1))
-let arbreVille0 = Node (Leaf (Do_nothing (1)), Unite_en_production, Leaf (Set_city_prod (1,ARMY)))
+let arbreVille0 =  Leaf (Set_city_prod (1,ARMY))
 let arbreArmy = Node (Leaf (Envahir (1,1,1)), Nb_ville_ennemie_proche(10,1,SupEq), Leaf (Explorer (1,1,1)))
 let arbreVille = Node (Leaf (Do_nothing (1)), Unite_en_production, 
                       Node (Leaf (Set_city_prod (1,ARMY)), Nb_unite_allie_proche (8,ARMY,5,Inf), Leaf (Set_city_prod (1,FIGHT))))
 
-let foret0 = (arbre0, arbre0, arbre0, arbre0, arbre0, arbreVille0)
+let foret0 = (arbre0, arbre0, arbre0, arbre0, arbre0, arbre0)
 
 let candidat0 = (foret0, 12.0)
 

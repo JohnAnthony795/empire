@@ -108,12 +108,14 @@ let write_population fichier pop =  (*writes population pop to file fichier*)
   let rec pop_tocode  p = 
     match p with 
     |[] -> ""
-    |(foret,score)::cs -> string_of_float score ^ "|" ^ forest_tocode foret ^ "\n" ^ pop_tocode cs 
+    |(foret,score)::cs -> (match cs with
+                          | (foret2,score2)::cs2 -> string_of_float score ^ "|" ^ forest_tocode foret ^ "\n" ^ pop_tocode cs 
+                          | [] -> string_of_float score ^ "|" ^ forest_tocode foret )
 
   in
   (* Write message to file *)
   let oc = open_out fichier in
-  fprintf oc "%s\n" (pop_tocode pop);
+  fprintf oc "%s" (pop_tocode pop);
   close_out oc             	 (* flush and close the channel *)
 
 

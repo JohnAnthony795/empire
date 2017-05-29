@@ -23,7 +23,7 @@ let config =
   }
 
 let init_tables () =
-  Random.self_init ();
+  (*Random.self_init ();*)
 
   Hashtbl.add piece_types 0
     { a_id = 0

@@ -171,8 +171,8 @@ let traiter_message message =
 
 let receive_next () =
   match !input_channel with
-  | Some (ic) -> input_line ic
-  | None -> "Input_channel not initialized"
+  | Some (ic) -> (try input_line ic with End_of_file -> failwith "ERREUR interfaceCom.receive_next: End_of_file")
+  | None -> failwith "ERREUR interfaceCom.receive_next: Input_channel not initialized"
 
 let rec receive () =
   match receive_next () with
