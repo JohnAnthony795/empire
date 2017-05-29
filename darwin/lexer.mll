@@ -50,6 +50,7 @@ rule token = parse
 | "NBUAP"          { NBUAP }
 | "NBVAP"          { NBVAP }
 | "NBVEP"          { NBVEP }
+| "NBVNP"		   { NBVNP }
 | "LIADJ"          { LIADJ }
 | "TR"             { TR }
 | "FOG"            { FOG }

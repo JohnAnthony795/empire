@@ -19,7 +19,6 @@ let eval_candidat_contre_Captain candidat =
   let _ = ToolsArbres.write_arbre "foret_cand.frt" foret in
   (*let _ = marshal_write "marshaled_foret_cand.frt" foret in*)
   let _ = Unix.system "../empire-server/Main.native > /dev/null &" in (*pas de sortie serveur*)
-  Unix.sleep 1;
   let _ = Unix.system "../empire-captain/ai1.py localhost 9301 > /dev/null &" in
   let score = Main.main 1 in (* renvoie le score de ce candidat contre Captain *)
   (foret, score)
@@ -30,7 +29,6 @@ let eval_candidat candidat =
   (*let _ = marshal_write "marshaled_foret_cand.frt" foret in*)
   (*let _ = Unix.system "xterm -hold -e \"../empire-server/Main.native\" &" in (*version de debug, ouvre l'out serveur dans un terminal*)*)
   let _ = Unix.system "../empire-server/Main.native > /dev/null &" in (*pas de sortie serveur*)
-  let _ = Unix.sleep 1 in
   let _ = Unix.system "./main.native 0 > /dev/null &" in
   (* un bloc try/with pour relancer le prog s'il rencontre une ECONNREFUSED *)
   try

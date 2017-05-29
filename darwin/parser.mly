@@ -9,7 +9,7 @@ open Printf (*for debug purposes*)
                                         %token <Types.unites> UNITE
                                                               %token <Types.direction> DIR
 
-%token NBUAP NBVAP NBVEP LIADJ TR FOG UKWN UEP
+%token NBUAP NBVAP NBVEP NBVNP LIADJ TR FOG UKWN UEP
 %token MV AT EX EN ENN TRA SCP ET DN
 
 %token LPAREN RPAREN HASH VIRG COLON QMARK EMARK
@@ -54,6 +54,7 @@ open Printf (*for debug purposes*)
     NBUAP COLON INT COLON UNITE COLON INT COLON COMP     { Nb_unite_allie_proche ($3,$5,$7,$9) }
 | NBVAP COLON INT COLON INT COLON COMP                 { Nb_ville_allie_proche ($3,$5,$7) }
 | NBVEP COLON INT COLON INT COLON COMP                 { Nb_ville_ennemie_proche ($3,$5,$7) }
+| NBVNP COLON INT COLON INT COLON COMP                 { Nb_ville_neutre_proche ($3,$5,$7) }
 | LIADJ                                                { Littoral_adjacent }
 | TR                                                   { Transport }
 | FOG COLON INT                                        { Fog_proche ($3)}

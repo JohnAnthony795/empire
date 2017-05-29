@@ -48,6 +48,7 @@ type t_predicat= (* rajouter des prédicats en masse*)
   | Nb_unite_allie_proche of ( int *  unites * int * comparateur) (* distance proximité/ type unité /Nb unités/ plus ou moins de Nb unités proche *)
   | Nb_ville_allie_proche of (int  * int * comparateur) (*distance proximité/Nb ville/plus ou moins de Nb ville allie proche*)
   | Nb_ville_ennemie_proche of (int  * int * comparateur) (*distance proximité/Nb ville/plus ou moins de Nb ville ennemie proche*)
+  | Nb_ville_neutre_proche of (int  * int * comparateur) (*distance proximité/Nb ville/plus ou moins de Nb ville ennemie proche*)
   | Littoral_adjacent (* presence de littoral dans une case adjacente*)
   | Transport (*présence de l'unité dans un transport*)
   | Fog_proche of (int) (* distance proximité *)
@@ -90,6 +91,7 @@ let pred_to_string p = match p with   (*tenir à jour avec les prédicats *)
   | Nb_unite_allie_proche (d,u,n,c) -> "Nb de "^ (unite_to_string u) ^ " allies proches d'une distance de" ^ (string_of_int d) ^ " " ^ (comparateur_to_string c) ^ " " ^ (string_of_int n) ^ "?"
   | Nb_ville_allie_proche (d,n,c) -> "Nb de villes allies proches d'une distance de " ^  (string_of_int d) ^ " " ^ (comparateur_to_string c) ^ " " ^ (string_of_int n) ^ "?"
   | Nb_ville_ennemie_proche (d,n,c) -> "Nb de villes ennemies proches d'une distance de "  ^ (string_of_int d) ^ " " ^ (comparateur_to_string c) ^ " " ^ (string_of_int n) ^ "?"
+  | Nb_ville_neutre_proche (d,n,c) -> "Nb de villes neutres proches d'une distance de "  ^ (string_of_int d) ^ " " ^ (comparateur_to_string c) ^ " " ^ (string_of_int n) ^ "?"
   | Littoral_adjacent -> "Presence de littoral dans une case adjacente ?"
   | Transport -> "Présence de l'unité dans un transport ?"
   | Fog_proche d -> "Présence du brouillard de guerre proche d'une distance de " ^ (string_of_int d) ^"?"
@@ -127,6 +129,7 @@ let pred_to_code p = match p with   (*tenir à jour avec les prédicats ;)  STAN
   | Nb_unite_allie_proche (d,u,n,c) -> "?NBUAP:" ^ (string_of_int d) ^ ":" ^ (unite_to_code u) ^ ":" ^ (string_of_int n) ^ ":" ^ (comparateur_to_string c) 
   | Nb_ville_allie_proche (d,n,c) -> "?NBVAP:" ^ (string_of_int d) ^ ":" ^ (string_of_int n) ^ ":" ^ (comparateur_to_string c) 
   | Nb_ville_ennemie_proche (d,n,c) -> "?NBVEP:" ^ (string_of_int d) ^ ":" ^ (string_of_int n) ^ ":" ^ (comparateur_to_string c) 
+  | Nb_ville_neutre_proche (d,n,c) -> "?NBVNP:" ^ (string_of_int d) ^ ":" ^ (string_of_int n) ^ ":" ^ (comparateur_to_string c) 
   | Littoral_adjacent -> "?LIADJ" 
   | Transport -> "?TR"
   | Fog_proche (d) -> "?FOG:" ^ (string_of_int d)

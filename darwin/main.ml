@@ -94,6 +94,13 @@ let compute_Action id unite_type foret = (* prend une id t_ID de piece et return
        | Eq -> nbproche = n
        | InfEq -> nbproche <= n
        | SupEq -> nbproche >= n)
+		| Nb_ville_neutre_proche (d,n,c) -> let nbproche = (get_nb_ville_proche_neutre piece_id d) in
+      (match c with
+       | Inf -> nbproche < n
+       | Sup -> nbproche > n
+       | Eq -> nbproche = n
+       | InfEq -> nbproche <= n
+       | SupEq -> nbproche >= n)
     | Littoral_adjacent -> littoral_adj piece_id (* presence de littoral dans une case adjacente*)
     | Transport -> transport piece_id (*présence de l'unité dans un transport*)
     | Fog_proche (d) -> fog_proche piece_id d (* distance proximité *)
