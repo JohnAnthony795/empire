@@ -152,7 +152,7 @@ let muter_predicat (predicat:t_predicat) (unite_type:uniteville) =
 let rec muter_arbre chance arbre (unite_type:uniteville)= 
     match arbre with 
     | Node (a,b,c)  ->  
-    if ((Random.int chance) = (chance-1)) then
+    if (if(chance<=0) then true else ((Random.int chance) = (chance-1))) then
         match (Random.int 4) with
             | 0 -> (muter_arbre (chance-1) a unite_type)
             | 1 -> (muter_arbre (chance-1) c unite_type)
@@ -162,7 +162,7 @@ let rec muter_arbre chance arbre (unite_type:uniteville)=
         
       else 
         Node ((muter_arbre (chance-1) a unite_type),b,(muter_arbre (chance-1) c unite_type))
-    | Leaf action   ->  if ((Random.int chance) = (chance-1)) then
+    | Leaf action   ->  if (if(chance<=0) then true else ((Random.int chance) = (chance-1))) then
         (muter_action action unite_type (Random.int 2))
       else
         Leaf action
