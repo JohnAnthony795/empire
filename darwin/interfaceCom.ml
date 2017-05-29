@@ -66,9 +66,9 @@ let open_connection sockaddr =
   (*(Unix.in_channel_of_descr sock , Unix.out_channel_of_descr sock)*)
   with exn -> Unix.close sock ; raise exn
 
-let shutdown_connection inchan =
+let shutdown_connection () =
   (*f.printf "Closing client socket\n\n";*)
-  Unix.shutdown (Unix.descr_of_in_channel inchan) Unix.SHUTDOWN_SEND
+  Unix.close (get_socket ())
 
 
 (* Création d'un socket client et connexion au serveur *)

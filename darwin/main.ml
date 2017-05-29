@@ -182,7 +182,8 @@ let main id =
     reset_move_all ();
   done;
   if Opt.doPrint then Printf.printf "fin de partie : %d \n%!" id else ();
-  get_score ()
+  shutdown_connection ();
+	get_score ()
 
 let () = if ((Array.length Sys.argv) > 1) then let _ = main (int_of_string Sys.argv.(1)) in ()
 
