@@ -71,6 +71,7 @@ let select_n_proportional pool n = (*version avec possibilité de choisir plusie
     let win_nb = (Random.float total) in (*entre 0 et total*)
     let rec find_winner pool number =
       match pool with
+      |(f,s)::[] -> (f,s)
       |(f,s)::inds -> if s >= number then (f,s)
         else find_winner inds (number-.s)
       |_ -> failwith "ERREUR: select n proportional pas au point on dirait"
@@ -89,9 +90,10 @@ let select_n_proportional_bis pool n = (*version avec IMpossibilité de choisir 
     let win_nb = (Random.float total) in 
     let rec find_winner pool number =
       match pool with
+      |(f,s)::[] -> (f,s)
       |(f,s)::inds -> if s >= number then (f,s)
-        else find_winner inds (number-.s)
-      |_ -> failwith "ERREUR: select n proportional pas au point on dirait"
+       		      else find_winner inds (number-.s)
+      |_ -> failwith "ERREUR: select n proportional toujours pas au point on dirait" 
     in
     if n = 0 then acu
     else
