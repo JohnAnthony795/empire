@@ -130,7 +130,7 @@ let main () =
   let rec mainLoop popu nbreGen =
     print_endline ("\nGénération n° "^ (string_of_int nbreGen));
     print_population popu;
-    let popu1 = Evaluation.evaluer popu Evaluation.AFF10 in (* Met à jour le score d'adaptabilité de chaque individu *)
+    let popu1 = Evaluation.evaluer popu in (* Met à jour le score d'adaptabilité de chaque individu *)
     let popu2 = Selection.select_n_parents popu1 individusASelectionner 1 in (* popu2 garde les meilleurs individus ; c'est là que se passent les affrontements *)
     let popu3 = Croisement.main_cross popu2 in (* popu3 sont les nouveaux individus obtenus par recombinaison *)
     (*print_population popu3 ;*)
@@ -160,7 +160,9 @@ let main () =
 
 let () =
   (* let _ = marshal_write "marshaled_pop" (popu0,0) in *)
-  (*let _ = ToolsArbres.write_population "current_gen.pop" popu0 in*)
+  if nbreGenInitial = 0 then
+		let _ = ToolsArbres.write_population "current_gen.pop" popu0 in ();
+	else ();
   print_endline "Start mainGen.";
   Random.self_init ();
   main ()
