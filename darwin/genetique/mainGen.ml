@@ -34,10 +34,15 @@ let iterations = 2000 (* nombre de générations à simuler avant de s'arrêter;
 
 let marshal_read_popu filename =
   let ic = open_in_bin filename in
-  let return = (Marshal.from_channel ic : t_stockage) in
-  close_in ic;
-  return
-
+  try begin
+		let return = (Marshal.from_channel ic : t_stockage) in
+		close_in ic;
+		return
+	end
+  with End_of_file -> 
+		close_in ic;
+		failwith "Erreur mainGen.marshal_read_popu"
+		
 let marshal_write filename element =
   let oc = open_out_bin filename in
   Marshal.to_channel oc element [Marshal.Closures; Marshal.Compat_32];

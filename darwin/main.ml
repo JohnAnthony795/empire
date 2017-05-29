@@ -25,9 +25,14 @@ let () = Random.self_init()
 
 let marshal_read_cand filename =
   let ic = open_in_bin filename in
-  let return = (Marshal.from_channel ic : TypesGen.t_candidat) in
-  close_in ic;
-  return
+	try begin	
+		let return = (Marshal.from_channel ic : TypesGen.t_candidat) in
+		close_in ic;
+		return
+	end
+  with End_of_file -> 
+		close_in ic;
+		failwith "Erreur main.marshal_read_popu"
 
 let marshal_write filename element =
   let oc = open_out_bin filename in
