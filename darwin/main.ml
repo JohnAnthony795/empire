@@ -160,6 +160,7 @@ let main id =
         | _ -> (get_score () = -1.0)) do
 
       let next_unite = get_next_movable () in
+      if Opt.doPrint then Printf.printf "UNITE ------------------ %d\n%!" (fst next_unite) else ();
       handle_action (compute_Action (fst next_unite) (unite_to_uniteville (snd next_unite)) foret);
     done;
     (*Fin du tour*)

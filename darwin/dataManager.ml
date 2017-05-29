@@ -260,9 +260,13 @@ let get_nb_ville_proche_ennemi pid distance =
     (let acu = ref(0) in
      for i=0 to (!map_width-1) do
        for j=0 to (!map_height-1) do
+        (*Printf.printf "gnvep %d %d\n%!" i j;*)
+        try
          match (map_terrain.(i).(j)) with
          | (Neutral, _) -> if ((tiles_distance (unite.q,unite.r) (i,j))<distance) then acu := !acu+1
          | _ -> ()
+       with
+       Not_found -> Printf.printf "%d %d\n" i j;()
        done; 
      done;
      !acu)
@@ -825,6 +829,10 @@ let reset_move_all () =
   liste_ville_alliee := List.map reset_move_ville !liste_ville_alliee
 
 let set_move_to_zero cid =
+  let piece = get_unite cid in
+  if (piece.pid <> -1) then
+  update_unite_alliee piece.q piece.r cid piece.unite_type piece.hp 0
+else
   let cid_is cid (element:allie) = element.cid = cid in
   let cid_is_not cid (element:allie) = element.cid <> cid in
   let ville = List.find (cid_is cid) !liste_ville_alliee in (* ville à update *)
