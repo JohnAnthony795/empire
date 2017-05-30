@@ -45,25 +45,25 @@ let random_operator nombre=
 let random_city_pred nombre=
     match nombre with 
               | 0 -> Littoral_adjacent
-              | 1 -> Fog_proche (Random.int 10)
+              | 1 -> Fog_proche (Random.int 15)
               (*| 2 -> Unite_en_production*)
-              | 2 -> Nb_unite_allie_proche (Random.int 10,(random_unit (Random.int 5)),(Random.int 10),(random_operator (Random.int 5)))
-              | 3 -> Nb_ville_allie_proche (Random.int 10,(Random.int 10),(random_operator (Random.int 5)))
-              | 4 -> Nb_ville_ennemie_proche (Random.int 10,Random.int 10,(random_operator (Random.int 5)))
-              | 5 -> Nb_ville_neutre_proche (Random.int 10,Random.int 10,(random_operator (Random.int 5)))							
-							| 6 -> Unknown_proche (Random.int 10)
+              | 2 -> Nb_unite_allie_proche (Random.int 15,(random_unit (Random.int 5)),(Random.int 10),(random_operator (Random.int 5)))
+              | 3 -> Nb_ville_allie_proche (Random.int 15,(Random.int 10),(random_operator (Random.int 5)))
+              | 4 -> Nb_ville_ennemie_proche (Random.int 15,Random.int 10,(random_operator (Random.int 5)))
+              | 5 -> Nb_ville_neutre_proche (Random.int 15,Random.int 10,(random_operator (Random.int 5)))							
+							| 6 -> Unknown_proche (Random.int 15)
               | _ -> failwith "muter_candidat : valeur non attendue"
     
 let random_unit_pred nombre =
     match nombre with
-                | 0 -> Nb_unite_allie_proche (Random.int 10,(random_unit (Random.int 5)),(Random.int 10),(random_operator (Random.int 5)))
-                | 1 -> Nb_ville_allie_proche (Random.int 10,(Random.int 10),(random_operator (Random.int 5)))
-                | 2 -> Nb_ville_ennemie_proche (Random.int 10,Random.int 10,(random_operator (Random.int 5)))
-                | 3 -> Nb_ville_neutre_proche (Random.int 10,Random.int 10,(random_operator (Random.int 5)))
+                | 0 -> Nb_unite_allie_proche (Random.int 15,(random_unit (Random.int 5)),(Random.int 10),(random_operator (Random.int 5)))
+                | 1 -> Nb_ville_allie_proche (Random.int 15,(Random.int 10),(random_operator (Random.int 5)))
+                | 2 -> Nb_ville_ennemie_proche (Random.int 15,Random.int 10,(random_operator (Random.int 5)))
+                | 3 -> Nb_ville_neutre_proche (Random.int 15,Random.int 10,(random_operator (Random.int 5)))
                 | 4 -> Littoral_adjacent
                 | 5 -> Transport
-                | 6 -> Fog_proche (Random.int 10)
-								| 7 -> Unknown_proche (Random.int 10)
+                | 6 -> Fog_proche (Random.int 15)
+								| 7 -> Unknown_proche (Random.int 15)
                 | _ -> failwith "muter_candidat : valeur non attendue"
     
 let random_city_action nombre=
@@ -119,7 +119,7 @@ let muter_action (action:t_action) (unite_type:uniteville) nombre :t_arbre=
               | _ -> failwith "muter_candidat : valeur non attendue")
     | ARMY -> (match nombre with
             | 0 -> Node ((random_army_action (Random.int 4)),(random_unit_pred (Random.int 8)),(random_army_action (Random.int 4)))
-            | 1 -> (random_army_action (Random.int 3))
+            | 1 -> (random_army_action (Random.int 4))
             | _ -> failwith "muter_candidat : valeur non attendue")
     | FIGHT -> (match nombre with
             | 0 -> Node ((random_fight_action (Random.int 2)),(random_unit_pred (Random.int 8)),(random_fight_action (Random.int 2)))
@@ -140,18 +140,18 @@ let muter_action (action:t_action) (unite_type:uniteville) nombre :t_arbre=
     
 let muter_predicat (predicat:t_predicat) (unite_type:uniteville) = 
     match unite_type with 
-    | CITY -> (random_city_pred (Random.int 5))
+    | CITY -> (random_city_pred (Random.int 7))
     | _ -> (match (Random.int 2) with
-              | 0 -> (random_unit_pred (Random.int 6))
+              | 0 -> (random_unit_pred (Random.int 8))
               | 1 -> (match predicat with
-                | Nb_unite_allie_proche (a,b,c,d) -> Nb_unite_allie_proche (Random.int 10,(random_unit (Random.int 5)),(Random.int 10),d)
-                | Nb_ville_allie_proche (a,b,c) -> Nb_ville_allie_proche (Random.int 10,(Random.int 10),c)
-                | Nb_ville_ennemie_proche (a,b,c) -> Nb_ville_ennemie_proche (Random.int 10,Random.int 10,c)
-                | Nb_ville_neutre_proche (a,b,c) -> Nb_ville_ennemie_proche (Random.int 10,Random.int 10,c)
+                | Nb_unite_allie_proche (a,b,c,d) -> Nb_unite_allie_proche (Random.int 15,(random_unit (Random.int 5)),(Random.int 10),d)
+                | Nb_ville_allie_proche (a,b,c) -> Nb_ville_allie_proche (Random.int 15,(Random.int 10),c)
+                | Nb_ville_ennemie_proche (a,b,c) -> Nb_ville_ennemie_proche (Random.int 15,Random.int 10,c)
+                | Nb_ville_neutre_proche (a,b,c) -> Nb_ville_ennemie_proche (Random.int 15,Random.int 10,c)
                 | Littoral_adjacent -> Littoral_adjacent
                 | Transport -> Transport
-                | Fog_proche (a) -> Fog_proche (Random.int 10)
-                | Unknown_proche (a) -> Unknown_proche (Random.int 10)
+                | Fog_proche (a) -> Fog_proche (Random.int 15)
+                | Unknown_proche (a) -> Unknown_proche (Random.int 15)
                 | Unite_en_production -> Unite_en_production)
               | _ -> failwith "muter_candidat : valeur non attendue")
     
