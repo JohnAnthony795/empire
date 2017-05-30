@@ -39,9 +39,9 @@ open Types
 open Astar
 
 (** DECLARATIONS **)
-let map_width = ref(44)
+let map_width = ref(22)
 
-let map_height = ref(44)
+let map_height = ref(22)
 
 let our_jid = ref(0)
 

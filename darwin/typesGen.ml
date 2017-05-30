@@ -39,7 +39,7 @@ type t_stockage = t_population * int
 
 (**Constantes**)
 
-let taille_population = 20
+let taille_population = 100
 
 let profondeur_max_arbre = 20 
 

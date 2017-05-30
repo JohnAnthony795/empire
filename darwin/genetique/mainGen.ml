@@ -26,7 +26,7 @@ open ToolsArbres
 open Types
 open TypesGen
 
-let individusASelectionner = 10 (* DOIT ETRE PAIR!!!! *)
+let individusASelectionner = 26 (* DOIT ETRE PAIR!!!! *)
 
 let iterations = 2000 (* nombre de générations à simuler avant de s'arrêter; on pourrait la mettre en paramètre *)
 
@@ -131,7 +131,7 @@ let main () =
     print_endline ("\nGénération n° "^ (string_of_int nbreGen));
     print_population popu;
     let popu1 = Evaluation.evaluer popu in (* Met à jour le score d'adaptabilité de chaque individu *)
-    let popu2 = Selection.select_n_parents popu1 individusASelectionner 2 in (* popu2 garde les meilleurs individus ; c'est là que se passent les affrontements *)
+    let popu2 = Selection.select_n_parents popu1 individusASelectionner 3 in (* popu2 garde les meilleurs individus ; c'est là que se passent les affrontements *)
     let popu3 = Croisement.main_cross popu2 in (* popu3 sont les nouveaux individus obtenus par recombinaison *)
     (*print_population popu3 ;*)
     let popu4 = Mutation.mute popu3 in (* ces individus recombinés ont ensuite des chances de muter pour donner popu4 *)

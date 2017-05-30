@@ -7,6 +7,11 @@ let marshal_write filename element =
   close_out oc;
   ()
 
+let custom_slep f = 
+	let start = Unix.gettimeofday() in
+	let rec loop () = if Unix.gettimeofday() > start +. f then () else loop () in
+	loop ()
+
 (* 0 => la ref affronte tout le monde, dont elle-même; son score est donc réévalué à chaque tour
 	 1 => la ref affronte tout le monde, sauf elle-même; son score n'est pas réévalué, mais baisse de 5% à chaque tour
 	 2 => la ref affronte tout le monde, sauf elle-même; elle affronte tout à la fin l'IA ayant le meilleur score pour s'évaluer elle-même
@@ -29,6 +34,7 @@ let eval_candidat candidat =
   (*let _ = marshal_write "marshaled_foret_cand.frt" foret in*)
   (*let _ = Unix.system "xterm -hold -e \"../empire-server/Main.native\" &" in (*version de debug, ouvre l'out serveur dans un terminal*)*)
   let _ = Unix.system "../empire-server/Main.native > /dev/null &" in (*pas de sortie serveur*)
+  let _ =  custom_slep 0.1 in
   let _ = Unix.system "./main.native 0 > /dev/null &" in
   (* un bloc try/with pour relancer le prog s'il rencontre une ECONNREFUSED *)
   try
