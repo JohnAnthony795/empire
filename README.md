@@ -2,10 +2,10 @@
 Projet d'IA pour le RTS TBS-Empire dans le cadre des projets tutorés de 4ème année.
 
 ## Contributeurs
-Jérémy Basso (Loko)
-Sandor Bügel (JohnAnthony795)
-Sébastien Lanore (SebLanore)
-Louis Rivière (Arrakis)
+_Jérémy Basso (Loko)
+_Sandor Bügel (JohnAnthony795)
+_Sébastien Lanore (SebLanore)
+_Louis Rivière (Arrakis)
 
 ## Make guide :
 
@@ -22,7 +22,7 @@ Louis Rivière (Arrakis)
  - ajouter le code du prédicat dans pred_to_code de la forme : "?CODE:" ^ arg1_to_string ^ ":" ^ arg2_to_string
     
 ### Dans darwin/main.ml :
-  ajouter dans le pattern-matching de compute_Action le nouveau predicat, le faire renvoyer le bool en question 
+  - ajouter dans le pattern-matching de compute_Action le nouveau predicat, le faire renvoyer le bool en question 
 
 ### Dans darwin/dataManager.ml : 
 - ajouter dans les getters le/les fonctions qui permettent d'évaluer le prédicat (si possible directement renvoyer un bool pour éviter de coder trop dans le main)
