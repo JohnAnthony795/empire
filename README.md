@@ -34,6 +34,7 @@ Projet d'IA pour le RTS TBS-Empire dans le cadre des projets tutorés de 4ème a
  
 ### Dans darwin/lexer.mll :
   - ajouter le code du prédicat dans la partie dédiée (en bas)
+	
 ### Dans darwin/genetique/mutation.ml :
   - ajouter les options de mutation du prédicat.
   - incrementer les valeurs de la sélection aléatoire
@@ -57,25 +58,34 @@ Projet d'IA pour le RTS TBS-Empire dans le cadre des projets tutorés de 4ème a
   - ajouter les options de mutation de l'action.
   - incrementer les valeurs de la sélection aléatoire
   
+	
 ## Comment lancer un match :
-### choisir les adversaires :
-### Ajouter un observateur :
 
-## Comment lancer une session d'entrainement : 
+En lançant un serveur (empire-server/Main.native), on peut ensuite ajouter tous les joueurs souhaités. "darwin/main.native 0" fait participer
+Darwin à la partie en utilisant l'arbre stocké dans foret_ref.frt (par défaut, le dernier arbre à être le meilleur de sa génération).
+Lancer Darwin avec un autre argument utilise l'arbre stocké dans foret_cand.frt. On peut ensuite faire participer n'importe quel autre joueur 
+humain ou IA à la partie.
+Alternativement, lancer empire-scripts/execute-darwin-obs-capt.sh lance une partie via l'interface GTK entre foret_ref.frt et Captain, avec un observateur.
+
+### Ajouter un observateur : //TODO
+
+
+## Comment lancer une session d'entrainement :
+Lancer darwin/mainGen.native lance une session d'entraînement sur plusieurs générations, en utilisant les paramètres fixés en dur dans le code (cf. ci-dessous).
 
 ## Comment modifier les options d'entrainement :
 ### Choisir la taille de la population et le nombre d'individus renouvelés par génération :
- - dans darxwin/typeGen.ml  modifier la valeur de "taille_population" 
- - dans darxwin/genetique/mainGen.ml  modifier la valeur de "individusASelectionner" (doit rester pair)
+ - dans darwin/typeGen.ml  modifier la valeur de "taille_population" 
+ - dans darwin/genetique/mainGen.ml  modifier la valeur de "individusASelectionner" (doit rester pair)
  
 ### Remise à zéro de la population :
-   - dans darwin/nbreGen.cfg mettre la valeur de la génération à 0 (à pour effet dinstancier le fichier currentGen.pop en arbre vide)
+   - dans darwin/nbreGen.cfg mettre la valeur de la génération à 0 (a pour effet d'instancier le fichier currentGen.pop en arbre vide au lancement)
 
-### Choisir le type de référencement : 
-    - dans darwin/genetique/evaluation.ml changer la valeur de "methode_ref" en fonction du commentaire situé en amont de sa    déclaration.
+### Choisir le type d'évaluation : 
+    - dans darwin/genetique/evaluation.ml changer la valeur de "methode_ref" en fonction du commentaire situé en amont de sa déclaration.
 
 ### Choisir le type de Sélection : 
   - dans darwin/genetique/mainGen.ml Dans la fonction main lors de l'appel de Selection.selection modifier la valeur du dernier paramètre
-
+	
 ### Comment modifier la taille de la carte d'entraïnement :
-   - dans 
+   - la définir dans le DataManager et empire-server/Main.ml simultanément
