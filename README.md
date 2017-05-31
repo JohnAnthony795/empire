@@ -2,10 +2,10 @@
 Projet d'IA pour le RTS TBS-Empire dans le cadre des projets tutorés de 4ème année.
 
 ## Contributeurs
-_Jérémy Basso (Loko)
-_Sandor Bügel (JohnAnthony795)
-_Sébastien Lanore (SebLanore)
-_Louis Rivière (Arrakis)
+- Jérémy Basso (Loko)
+- Sandor Bügel (JohnAnthony795)
+- Sébastien Lanore (SebLanore)
+- Louis Rivière (Arrakis)
 
 ## Make guide :
 
@@ -59,13 +59,23 @@ _Louis Rivière (Arrakis)
   
 ## Comment lancer un match :
 ### choisir les adversaires :
+### Ajouter un observateur :
 
 ## Comment lancer une session d'entrainement : 
 
 ## Comment modifier les options d'entrainement :
+### Choisir la taille de la population et le nombre d'individus renouvelés par génération :
+ - dans darxwin/typeGen.ml  modifier la valeur de "taille_population" 
+ - dans darxwin/genetique/mainGen.ml  modifier la valeur de "individusASelectionner" (doit rester pair)
+ 
 ### Remise à zéro de la population :
    - dans darwin/nbreGen.cfg mettre la valeur de la génération à 0 (à pour effet dinstancier le fichier currentGen.pop en arbre vide)
+
 ### Choisir le type de référencement : 
-    - dans darwin/genetique/evaluation.ml changer la valeur de "methode_ref" en fonction du commentaire situé en amont de sa déclaration.
+    - dans darwin/genetique/evaluation.ml changer la valeur de "methode_ref" en fonction du commentaire situé en amont de sa    déclaration.
+
+### Choisir le type de Sélection : 
+  - dans darwin/genetique/mainGen.ml Dans la fonction main lors de l'appel de Selection.selection modifier la valeur du dernier paramètre
+
 ### Comment modifier la taille de la carte d'entraïnement :
    - dans 
