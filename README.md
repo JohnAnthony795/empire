@@ -37,5 +37,13 @@ Louis Rivière (M. Rivière Louis)
 
 ## Comment ajouter une action :
 
-TODO
+TODO:
+## Comment lancer un match :
+### choisir les adversaires :
 
+## Comment lancer une session d'entrainement : 
+
+## Comment modifier les options d'entrainement :
+### Remise à zéro de la population :
+### Choisir le type de référencement : Contre captain :
+### Comment modifier la taille de la carte d'entraïnement :
