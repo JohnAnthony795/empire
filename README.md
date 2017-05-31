@@ -2,16 +2,16 @@
 Projet d'IA pour le RTS TBS-Empire dans le cadre des projets tutorés de 4ème année.
 
 ## Contributeurs
-	- Jérémy Basso (Loko)
-	- Sandor Bügel (JohnAnthony795)
-	- Sébastien Lanore (SebLanore)
-	- Louis Rivière (Arrakis)
+- Jérémy Basso (Loko)
+- Sandor Bügel (JohnAnthony795)
+- Sébastien Lanore (SebLanore)
+- Louis Rivière (Arrakis)
 
 ## Make guide :
 
-	- make all pour tout compiler
-	- make clean pour effacer tous les exécutables et autres fichiers regénérables
-	- make nous pour compiler les fichiers de darwin et de empire-server, permettant de lancer l'entraînement sans interface graphique
+- make all pour tout compiler
+- make clean pour effacer tous les exécutables et autres fichiers regénérables
+- make nous pour compiler les fichiers de darwin et de empire-server, permettant de lancer l'entraînement sans interface graphique
 
 
 ## Comment ajouter un prédicat :
