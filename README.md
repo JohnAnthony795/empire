@@ -64,5 +64,8 @@ Louis Rivière (Arrakis)
 
 ## Comment modifier les options d'entrainement :
 ### Remise à zéro de la population :
-### Choisir le type de référencement : Contre captain :
+   - dans darwin/nbreGen.cfg mettre la valeur de la génération à 0 (à pour effet dinstancier le fichier currentGen.pop en arbre vide)
+### Choisir le type de référencement : 
+    - dans darwin/genetique/evaluation.ml changer la valeur de "methode_ref" en fonction du commentaire situé en amont de sa déclaration.
 ### Comment modifier la taille de la carte d'entraïnement :
+   - dans 
