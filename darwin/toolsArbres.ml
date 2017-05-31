@@ -13,7 +13,6 @@ let rec replace pred sub tree =
   else match tree with
     | Leaf _ -> tree
     | Node (a,b,c) -> Node (replace pred sub a, b,replace pred sub c)
-;;
 
 
 let strSplit strToSplit delim =
@@ -28,10 +27,6 @@ let strSplit strToSplit delim =
       List.rev (str :: toks) in
   aux strToSplit []
 
-
-let file = "IA.ads";;
-
-
 let parseforet line = (*lit la ligne retourne le t_foret *)
   let lexbuf = Lexing.from_string (line^"\n") in
   Parser.foret Lexer.token lexbuf 
@@ -43,7 +38,6 @@ let forest_tocode (tarmy,tpatrol,tbattleship,ttransporter,tfight,tcity) =
       Leaf a -> action_to_code a
     |Node (t1,p,t2) -> "(" ^ (arbre_tocode t1) ^ "," ^ (pred_to_code p) ^ "," ^ (arbre_tocode t2) ^ ")"
   in
-
   arbre_tocode tarmy ^ "#"
   ^ arbre_tocode tpatrol ^ "#"
   ^ arbre_tocode tbattleship ^ "#"
@@ -117,13 +111,4 @@ let write_population fichier pop =  (*writes population pop to file fichier*)
   let oc = open_out fichier in
   fprintf oc "%s" (pop_tocode pop);
   close_out oc             	 (* flush and close the channel *)
-
-
-
-(** TODO **)
-(* 
-
-- read_population : unit -> t_population
-
-*)
 

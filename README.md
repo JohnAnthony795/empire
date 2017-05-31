@@ -9,13 +9,15 @@ Louis Rivière (M. Rivière Louis)
 
 ## Make guide :
 
-TODO
+ - make all pour tout compiler
+ - make clean pour effacer tous les exécutables et autres fichiers regénérables
+ - make nous pour compiler les fichiers de darwin et de empire-server, permettant de lancer l'entraînement sans interface graphique
 
 
 ## Comment ajouter un prédicat :
 
-### Dans darwin/Types.ml : 
- - ajouter le prédicat dans le type t_predicat avec son type (commenter da façon explicite)
+### Dans darwin/types.ml : 
+ - ajouter le prédicat dans le type t_predicat avec son type, sans oublier de l'ajouter dans darwin/types.mli
  - ajouter le printer du predicat dans pred_to_string
  - ajouter le code du prédicat dans pred_to_code de la forme : "?CODE:" ^ arg1_to_string ^ ":" ^ arg2_to_string
     
@@ -33,5 +35,7 @@ TODO
 ### Dans darwin/lexer.mll :
   - ajouter le code du prédicat dans la partie dédiée (en bas)
 
+## Comment ajouter une action :
 
+TODO
 

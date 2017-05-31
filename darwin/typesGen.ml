@@ -12,19 +12,22 @@ let print_population pop =
 		print_aux pop 1
 
 let print_population_all pop =
-  List.map (fun x -> match x with
-      | (foret,score) -> match foret with
-        | (a,b,c,d,e,f) -> print_tree a 0;
-          Printf.printf "\n%!";
-          print_tree b 0;
-          Printf.printf "\n%!";
-          print_tree c 0;
-          Printf.printf "\n%!";
-          print_tree d 0;
-          Printf.printf "\n%!";
-          print_tree e 0;
-          Printf.printf "\n%!";
-          print_tree f 0) pop; ()
+	let print_candidat cand =
+		let ((a,b,c,d,e,f),_) = cand in
+		print_tree a 0;
+    Printf.printf "\n%!";
+    print_tree b 0;
+    Printf.printf "\n%!";
+    print_tree c 0;
+    Printf.printf "\n%!";
+    print_tree d 0;
+    Printf.printf "\n%!";
+    print_tree e 0;
+    Printf.printf "\n%!";
+    print_tree f 0;
+		()
+	in let _ = List.map print_candidat pop in
+	()
 
 (**types**)
 
@@ -60,6 +63,7 @@ let candidat0 = (foret0, 12.0)
 
 let popu0 = [candidat0;candidat0; candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0;candidat0; candidat0;]
 
+(* génère une population de End_turn de la taille passée en argument *)
 let genere_popu nombre =
 	let rec loop i acu =
 		if i >= nombre then

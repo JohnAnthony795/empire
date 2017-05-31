@@ -1,41 +1,3 @@
-(* Objectif: -assurer la communication entre le serveur ( prend des strings)
-            et  le decision tree ( sort des actions)
-           -Lire les data envoyées par le serveur et les envoyer au DataManager *)
-
-
-(* Fonctions publiques à faire :
-    - send : t_action -> unit   //reçoit un type action de Tree/main, le convertit en string et l'envoie au serveur par le socket
-    - init_socket : unit -> unit 
-    Fonctions privées :
-    - send_to_server : string -> unit //l'envoi concret du message par le socket
-    - action_to_string : t_action -> string
-    - traiter_message : string -> unit //parser qui appelle les fonctions appropriées (du package DATA) ou qui se termine s'il recoit get_action (pour rendre la main au main)
-*) 
-
-(* Actions possibles :
-    - end_game
-    - end_turn
-    - dump_map
-    - fog_off (cheat qui sera désactivé)
-    - moves ; pid ; q ; r
-    - move ; pid ; dir_id
-    - set_city_production ; cid ; pid
-    - get_width
-    - get_height
-    - get_piece_types_names
-    - can_move ; pid ; did
-    - can_enter ; pid ; did
-    - can_attack ; pid ; did
-    - get_piece_id_by_loc ; q ; r
-    - get_transported_names_by_loc ; q ; r
-    - get_info_city ; cid
-    - get_info_piece ; pid
-    - get_city_production ; cid
-    - get_list_cities
-    - get_list_pieces
-    - get_list_movables
-    - get_city_id_by_loc ; q ; r
-*)
 
 open Unix
 open DataManager
@@ -46,7 +8,8 @@ open Types
 (* Canaux de communication en variables globales *)
 (* On utilise des refs pour pouvoir modifier leur valeur *)
 (* On utilise le type option pour pouvoir les initialiser à None *)
-(* Pour accéder à un canal, il faut matcher "Some c" et "None" puis utiliser "!c" pour accéder au canal lui-même *)
+(* Pour accéder à un canal, il faut matcher "Some c" et "None" puis utiliser "!c" pour accéder au canal lui-même
+	 ou utiliser get_socket () *)
 let input_channel = ref(None)
 let output_channel = ref(None)
 let socket = ref(None)
@@ -127,15 +90,6 @@ let unites_to_ptid u = match u with
   | PATROL -> "3"
   | BATTLESHIP -> "4"
 
-(*  pid : piece_id
-      ppid : parent_piece_id
-      tp_pid: transport_piece_id
-      cid : city_id
-      jid : numéro d'un joueur (0 ou 1)
-      ptid : piece_type_id (0-> ARMY, 1-> FIGHT, 2-> TRANSPORT, 3-> PATROL, 4-> BATTLESHIP)
-      hits : piece.p_hits  (points de vie restants)
-*)
-
 (***** RECEPTION *****)
 
 let traiter_message message =
@@ -211,7 +165,7 @@ let send_to_server message =
 (* TODO : toutes les choses à faire avant d'envoyer une action au serveur (exemple : update dataManager) *)
 let handle_action action =
   let fonctionToDo = match action with
-    | Move (pid, did) -> send_to_server (action_to_string action);receive () (*TODO *)
+    | Move (pid, did) -> send_to_server (action_to_string action);receive ()
     | Attaquer (pid,q,r) -> send_to_server (action_to_string action);receive ()
     | Explorer (pid,q,r) -> send_to_server (action_to_string action);receive ()
     | Envahir (pid,q,r) -> send_to_server (action_to_string action);receive ()
@@ -219,10 +173,8 @@ let handle_action action =
     | Transporter (pid,q,r) -> send_to_server (action_to_string action);receive ()
     | Set_city_prod (cid, ptid) -> DataManager.set_city_production cid ptid;send_to_server (action_to_string action); receive ()
     | End_turn -> increment_turn_counter (); send_to_server (action_to_string action); if (get_score () = -1.0) then receive ()
-    | Do_nothing (cid) -> DataManager.set_move_to_zero cid (*; Printf.printf "La ville %d ne fait rien.\n%!" cid*)
+    | Do_nothing (cid) -> DataManager.set_move_to_zero cid
   in
   fonctionToDo  (* on effectue la fonction souhaitée *)
 (* puis on envoie le message au serveur *)
-
-
 

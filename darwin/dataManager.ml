@@ -1,51 +1,15 @@
-(*
-Quand on découvre une ville ennemie, a-t-on l'information sur ce qu'elle contient ? L'a-t-on en temps réel ?
-
-Contient des fonction de manipulation et lecture de données (en mémoire)
-
-Données stockées:
-taille à récupérer via get_width get_height
--Carte du terrain
--Carte des ennemis (villes ennemies / unités ennemis ( +suppositions?))
-
--Tableau listes d'unités (piece * Coordonnees)
--Tableau liste villes alliées (city)
--Tableau liste villes neutres (city_id, coords, visible ou non, plus visible depuis x tours)
--Tableau liste villes ennemies (city_id, coords)
-
-
-Fonctions à développer:
-
-publiques :
-- traiter_set_visible
-
-privées :
--Set_tile: Coordonnees * type -> unit()  // maj de la map case par case 
--Set_city:
--Manipulation des tableaux d'unte
-	-Ajouter_unite: piece -> Coordonnes -> unit()
-	-Update_unite : piece_id -> unit() //modifie les points de vie ou le mouvement ou autre
-	-Retirer_unite: piece_id -> unit() //retire une unité du tableau
--Manipulation des tableaux de ville
-	-Capturer_ville
-	-Perdre_ville
-	-Update_ville //depuis combien de tours on ne la voit plus
-- Update_presence : unit() -> unit() //estime les positions ennemies
-- 
-
-*)
 
 open Types
 open Astar
 
 (** DECLARATIONS **)
-let map_width = ref(22)
-
-let map_height = ref(22)
+let map_width = ref(44)  (* ces valeurs doivent être correctes EN DUR dans le code... en effet, on crée une matrice *)
+let map_height = ref(44) (* map_width * map_height avant de récupérer la vraie taille du terrain *)
 
 let our_jid = ref(0)
-
 let current_turn = ref(0)
+
+let a_gagne = ref(None) (* pour détecter la fin de partie *)
 
 let directions =
   [(+1,  0); (+1, -1); ( 0, -1); (-1,  0); (-1, +1); ( 0, +1)]
@@ -53,7 +17,7 @@ let directions =
 let directions_array =
   [| (+1,  0); (+1, -1); ( 0, -1);
      (-1,  0); (-1, +1); ( 0, +1)
-  |] ;;
+  |]
 
 (***** SETTERS *****)
 
@@ -76,8 +40,6 @@ let increment_turn_counter () =
 
 (* permet de calculer la vraie distance  entre deux cases *)
 let tiles_distance (qa, ra) (qb, rb) = (abs (qa - qb) + abs (qa + ra - qb - rb) + abs (ra - rb)) / 2
-
-let tile_delta (q1, r1) (q2, r2) = q2 - q1, r2 - r1
 
 let ptid_to_unites ptid = match ptid with
   | 0 -> ARMY
@@ -113,6 +75,10 @@ let unite_to_productionTime unite_type = match unite_type with
   | PATROL -> 15
   | BATTLESHIP -> 40
 
+let flatten matrix = (*turns a matrix (package Array) to a list. Loses info but easier to manipulate*)
+  let v1 = Array.to_list matrix in (*we should have a list of arrays here*)
+  let v2 = List.map (Array.to_list) v1 in (*flattening all arrays insinde the list*)
+  List.concat v2  (*merging the 'terrain List List' into a 'terrain List'*)	
 
 (***** CARTES *****)
 
@@ -199,14 +165,12 @@ let set_city_production cid unite_type =
   let ville = List.find (cid_is cid) !liste_ville_alliee in (* ville à update *)
   let autresVilles = List.filter (cid_is_not cid) !liste_ville_alliee in (* toutes les villes sauf celle à udpate *)
   let tours = unite_to_productionTime unite_type in (* nombre de tours de production *)
-
   liste_ville_alliee := {q= ville.q ; r= ville.r ; cid = cid ; prod = Some(unite_type) ; tours_restants = tours ; mov = 0} :: autresVilles
 
 let get_city_production cid =
   let cid_is cid element = element.cid = cid in
   let ville = List.find (cid_is cid) !liste_ville_alliee in
   ville.prod
-
 
 (* Liste villes ennemies *)
 type (*ville*) ennemi = {q : int ;r : int ;cid : int }
@@ -218,7 +182,7 @@ let add_ville_ennemi q r cid =
   if List.exists (cid_is cid) !liste_ville_ennemie then ()
   else liste_ville_ennemie := {q=q ; r=r ; cid=cid} :: !liste_ville_ennemie
 
-let rec rm_ennemi rmcid =
+let rm_ennemi rmcid =
   let pred id alpha = alpha.cid <> id in
   liste_ville_ennemie := List.filter (pred rmcid) !liste_ville_ennemie
 
@@ -242,8 +206,7 @@ let get_nb_unite_proche unites pid distance=
   else 
     let ville = get_ville_allie pid in
     List.length (List.filter (fun (element:unite_list) -> ((element.pid <> pid) && (element.unite_type =unites) && ((tiles_distance (ville.q,ville.r) (element.q,element.r))<distance))) !liste_unites)
-
-
+		
 let get_nb_ville_proche_allie pid distance =
   let unite = get_unite pid in
   if (unite.pid <> -1) then
@@ -268,7 +231,6 @@ let get_nb_ville_proche_neutre pid distance =
 		let acu = ref(0) in
      for i=0 to (!map_width-1) do
        for j=0 to (!map_height-1) do
-        (*Printf.printf "gnvep %d %d\n%!" i j;*)
         try
          match (map_terrain.(i).(j)) with
          | (Neutral, _) -> if ((tiles_distance (unite.q,unite.r) (i,j))<distance) then acu := !acu+1
@@ -322,8 +284,6 @@ let littoral_adj pid =
 
 (**Fonctions de scores fin de partie**)
 
-let a_gagne = ref(None)
-
 (*
 SCORE: le score est la somme de valeurs concrete en mémoire fois un coefficient d'importance.
 Les quantités considérées sont:
@@ -333,7 +293,7 @@ Les quantités considérées sont:
 -taille de la zone visible
 *)
 
-(*Getteurs de quantitées:*)
+(*Getters de quantités:*)
 let get_nb_unite type_unite = 
   match type_unite with
   |ARMY -> List.length (List.filter (fun (x : unite_list) -> (x.unite_type) = ARMY) (!liste_unites)) (*egalité de contenu*)
@@ -342,7 +302,7 @@ let get_nb_unite type_unite =
   |FIGHT ->  List.length (List.filter (fun (x : unite_list) -> x.unite_type = FIGHT) (!liste_unites))
   |TRANSPORT ->  List.length (List.filter (fun (x : unite_list) -> x.unite_type = TRANSPORT) (!liste_unites))
 
-let get_arsenal_value () = 	
+let get_arsenal_value () = 	(* on mesure la valeur d'une unité au nombre de tours nécessaire à sa construction *)
   (get_nb_unite ARMY) * 5		
   +(get_nb_unite PATROL) * 15
   +(get_nb_unite BATTLESHIP) * 40
@@ -352,26 +312,16 @@ let get_arsenal_value () =
 let get_nb_ville () = List.length (!liste_ville_alliee)
 
 let get_explored_size() =
-  let flatten matrix = (*turns a matrix (package Array) to a list. Loses info but easier to handle*)
-    let v1 = Array.to_list matrix in (*we should have a list of arrays here*)
-    let v2 = List.map (Array.to_list) v1 in (*flattening all arrays insinde the list*)
-    List.concat v2  (*merging the 'terrain List List' into a 'terrain List'*)		
-  in 
   (!map_height * !map_width) - List.length (List.filter (fun x-> match x with (t,_) -> t = Unknown) (flatten map_terrain)) (*TODO _ bizarre pas ltemp*)
 
 let get_visible_size() = 
-  let flatten matrix = (*turns a matrix (package Array) to a list. Loses info but easier to handle*)
-    let v1 = Array.to_list matrix in (*we should have a list of arrays here*)
-    let v2 = List.map (Array.to_list) v1 in (*flattening all arrays insinde the list*)
-    List.concat v2  (*merging the 'terrain List List' into a 'terrain List'*)		
-  in 
   (!map_height * !map_width) - List.length (List.filter (fun x-> match x with (_,visible) -> visible = false) (flatten map_terrain))
 
 let calculate_score () =  (*Set coefs here*)
 let (ars_val,nb_ville,explored_size,visible_size) = (get_arsenal_value(),get_nb_ville(),get_explored_size(),get_visible_size()) in
-let f = float_of_int in
-	(*Printf.printf "Arsenal value : %f \nNb_Ville : %f \nExplored_size : %f \nVisible_size : %f \n"  
-			(f ars_val *. 0.1) (f nb_ville*. 10.0) (f explored_size *. 0.2)  (f visible_size *. 0.05)  ;*)
+(*let foi = float_of_int in
+Printf.printf "Arsenal value : %f \nNb_Ville : %f \nExplored_size : %f \nVisible_size : %f \n"  
+			(f ars_val *. 0.1) (f nb_ville*. 10.0) (f explored_size *. 0.2)  (f visible_size *. 0.05)  ;*) (*printer détaillé des scores*)
 	
      float_of_int   ( ars_val) *. 0.1 
   +. float_of_int( nb_ville)   *. 10.0
@@ -483,7 +433,6 @@ let get_coords_fog pid =
       !acu)
 
 
-
 (*TODO Get closest coords visible of unexplored area*)
 (*Récupère les coords de l'unité ennemi la plus proche que l'on peut attaquer *)
 let get_closest_ennemy_coords pid =
@@ -508,7 +457,6 @@ let get_closest_ennemy_coords pid =
 
 let get_closest_ennemy_city_coords pid =
   let unite = get_unite pid in
-  (*if (unite.pid <> -1) then*)
   let list_coords = get_coords_ville !liste_ville_ennemie in
   match list_coords with
   | [] -> (-1,-1)
@@ -531,12 +479,7 @@ let get_closest_neutral_city_coords pid =
            | _ -> (  List.fold_left (fun (qa,ra) (qb,rb) 
                                       -> if ((tiles_distance (unite.q,unite.r) (qa,ra)) < (tiles_distance (unite.q,unite.r) (qb,rb))) then 
                                           (qa,ra) else (qb,rb)) (List.hd !acu) !acu)
-																 
-																 (*else
-  let ville = get_ville_allie pid in
-  List.fold_left (fun (qa,ra) (qb,rb) 
-  -> if ((tiles_distance (ville.q,ville.r) (qa,ra)) < (tiles_distance (ville.q,ville.r) (qb,rb))) then 
-  (qa,ra) else (qb,rb)) (List.hd list_coords) list_coords*)
+
 
 (** Renvoie les coords de la case visible, adjacente a une case fog, la plus pres *)
 let get_closest_fog_coords pid =
@@ -552,7 +495,6 @@ let get_closest_fog_coords pid =
 
 let get_closest_transport_coords pid =
   let unite = get_unite pid in
-  (*if (unite.pid <> -1) then*)
   let list_coords = (match unite.unite_type with
       | ARMY -> (get_coords_unite (List.filter (fun (x:unite_ennemies_list) -> (match (map_terrain.(x.q).(x.r)) with 
           | (Ground,_) -> true
@@ -569,12 +511,6 @@ let get_closest_transport_coords pid =
   | _ -> ( List.fold_left (fun (qa,ra) (qb,rb) 
                             -> if ((tiles_distance (unite.q,unite.r) (qa,ra)) < (tiles_distance (unite.q,unite.r) (qb,rb))) then 
                                 (qa,ra) else (qb,rb)) (List.hd list_coords) list_coords)
-
-(*else
-  let ville = get_ville_allie pid in
-  List.fold_left (fun (qa,ra) (qb,rb) 
-  -> if ((tiles_distance (ville.q,ville.r) (qa,ra)) < (tiles_distance (ville.q,ville.r) (qb,rb))) then 
-  (qa,ra) else (qb,rb)) (List.hd list_coords) list_coords*)
 
 
 (*Cherche le chemin le plsu court vers l'unité ennemi la plus proche et renvoie des coordonnées possible pour moves*)
@@ -1040,10 +976,8 @@ let traiter_city_units_limit args =
   if pid <> -1 then
     set_move_to_zero_unite (pid)
 
+(* TODO: stocker l'information et en faire un prédicat pour villes *)
 (*Le joueur a atteint son quota d'unites*)
 let traiter_created_units_limit args = ()
-
-
-
 
 

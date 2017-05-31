@@ -1,33 +1,23 @@
-(*
-Définition des types customs utilisés:
-	- Type de retour pour les fonctions (SUCCES/FAILURE ? unit ? bool ?)
 
-Définir des fonctions d'affichage des types.
-Il semble que les types doivent avoir des majuscules.
-*)
+open Printf
 
-(*#directory "../empire-server/_build/sources/"*)
-(*open Ebase (*... fichier avec les types*) *)
-
-open Printf;;
-
-type direction = Up | Down | Right | Left | Upleft | Downright ;; (* 0 | 1 | 2 | 3 | 4 | 5;;*)
+type direction = Up | Down | Right | Left | Upleft | Downright  (* 0 | 1 | 2 | 3 | 4 | 5*)
 (* 2|1|
-   						   3| |0
-   					        |4|5 *)
-type piece_id= int;;
+   3| |0
+    |4|5 *)
+type piece_id = int
 
-type city_id= int;;
+type city_id = int
 
-type piece_type_id= int;;
+type piece_type_id = int
 
-type unites = ARMY | TRANSPORT | FIGHT | BATTLESHIP | PATROL ;;
+type unites = ARMY | TRANSPORT | FIGHT | BATTLESHIP | PATROL
 
-type move = piece_id * direction ;;  (* si pas déjà défini*)
+type move = piece_id * direction (* si pas déjà défini*)
 
 type set_city_production =
   city_id * unites
-;;  (*définition dans Server/Empire.ml*)
+(*définition dans Server/Empire.ml*)
 
 type t_action = (*pass*)
   | Move of move
@@ -39,8 +29,6 @@ type t_action = (*pass*)
   | Set_city_prod of set_city_production
   | End_turn
   | Do_nothing of (int)
-
-(* TODO : rajouter l'action pass pour qu'une unité ne joue pas immédiatement *)
 
 type comparateur = Inf | Sup | Eq | InfEq | SupEq;;
 
@@ -59,8 +47,7 @@ type t_arbre =
   | Leaf of t_action
   | Node of (t_arbre * t_predicat * t_arbre)
 
-type t_foret =  t_arbre * t_arbre * t_arbre * t_arbre * t_arbre * t_arbre ;; (* 5 unités , ville , (stratégie ?) *)
-
+type t_foret =  t_arbre * t_arbre * t_arbre * t_arbre * t_arbre * t_arbre (* 5 unités , ville , (stratégie ?) *)
 
 (*fonctions de print verbeux des types:*)
 

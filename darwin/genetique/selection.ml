@@ -15,7 +15,6 @@ Trier la pop pour extraction facile?
 
 (*open Types*)
 open TypesGen
-open Random (*ajouter*)
 
 (**Fonctions utilitaires:**)
 let () =
@@ -31,7 +30,7 @@ let remove pop wanted =
 	aux_rmv [] pop wanted 
 	
 
-(*best beetween 2 individuals, according to score*)
+(*best between 2 individuals, according to score*)
 let best ind1 ind2 =
   match (ind1,ind2) with
     ((f1,s1),(f2,s2)) -> if s1 >= s2 then ind1 else ind2
@@ -44,8 +43,8 @@ let bestOfList lInd =
   in
   List.fold_left best lIndHd lInd
 
-(*Somme des scores de tout les individus ( bonne indication de fitness globale btw)*)
-let scores_sum pool = (*.+?*)
+(*Somme des scores de tous les individus (bonne indication de fitness globale btw) *)
+let scores_sum pool =
   let sum_ind total ind  =
     match (ind) with
       ((f1,s1)) -> s1 +. total
@@ -108,7 +107,6 @@ let select_n_parents pool n methode =  (*fonction générique de sélection, don
   | 2 -> select_n_proportional_bis pool n
   | 3 -> select_n_proportional pool n
   | x -> failwith ("ERREUR: il n'y a pas de méthode"^ string_of_int x)
-
 
 
 (**merge des parents/enfants**)

@@ -1,18 +1,3 @@
-(*
-Le main lit et exploite les arbres, puis utilise interfaceCom pour communiquer les décisions au serveur. Il utilise aussi le dataManager pour LIRE des infos sur la carte (interfaceCom s'occupe de peupler le dataManager).
-@Params: optionnels: 1 arbre  -> sélection (affronte un opposant random)
-			   rien	-> on lit l'arbre depuis le fichier IA.ads et on affronte un 						   autre joueur sur le serveur
-@Retour:	score d'adaptabilité (fonction de : victoire, couverture, nombre d'unité, villes...)
-
-
-- read_arbre : string/FILE -> t_foret (Lecture d'arbre from fichier)
-- compute_Action : t_ID -> t_action (Parcours d'arbre:(appelle le datamanager pour avoir des infos précises))
-
-
-note : mettre la lecture/écriture de fichier dans un fichier à part?
-
-*)
-
 
 open Types
 open Printf
@@ -23,10 +8,17 @@ let () = Random.self_init()
 
 (** TOOLS **)
 
-let marshal_read_cand filename =
+(* Fonctions de sérialisation pour lecture et écriture depuis un channel (par exemple un fichier)
+	 Nous avons eu des SEGFAULT inattendues, c'est pourquoi nous avons arrêté de les utiliser pour revenir au
+	 parser lex/yacc qui fonctionnait 
+	 Elles sont ici pour archive (et potentielle réutilisation). *)
+
+(*
+(* ex: marshal_read "marshaled_pop" TypesGen.t_population *)
+let marshal_read filename type =
   let ic = open_in_bin filename in
 	try begin	
-		let return = (Marshal.from_channel ic : TypesGen.t_candidat) in
+		let return = (Marshal.from_channel ic : type) in
 		close_in ic;
 		return
 	end
@@ -39,13 +31,17 @@ let marshal_write filename element =
   Marshal.to_channel oc element [Marshal.Closures; Marshal.Compat_32];
   close_out oc;
 	()
-	
+*)	
 
 type uniteville = ARMY | FIGHT | TRANSPORT | PATROL | BATTLESHIP | CITY ;;
 
 let unite_to_uniteville (unite:unites) :uniteville =
   match unite with 
-  |ARMY -> ARMY | TRANSPORT -> TRANSPORT | FIGHT -> FIGHT | BATTLESHIP -> BATTLESHIP | PATROL -> PATROL
+  | ARMY -> ARMY
+	| TRANSPORT -> TRANSPORT
+	| FIGHT -> FIGHT
+	| BATTLESHIP -> BATTLESHIP
+	| PATROL -> PATROL
 
 let get_arbre foret (ptid:uniteville) =
   let (a1,a2,a3,a4,a5,a6) = foret in
@@ -153,14 +149,12 @@ let main id =
   let foret = if id = 0 then ToolsArbres.read_arbre "foret_ref.frt"
     else ToolsArbres.read_arbre "foret_cand.frt"
   in
-	(*let (foret,_) = if id = 0 then marshal_read_cand "marshaled_foret_ref.frt"
-    else marshal_read_cand "marshaled_foret_cand.frt"
-  in*)
 
   init_socket "127.0.0.1" 9301;
 
   receive (); (* on reçoit les infos du début *)
-  while (get_score () = -1.0) do
+  
+	while (get_score () = -1.0) do
     (* get next unité/ville à jouer *)
     (*Printf.printf  "nouveau tour : %d et next playable %d \n%!" id (get_next_playable ());*)
     while(match get_next_playable () with

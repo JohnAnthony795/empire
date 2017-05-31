@@ -2,7 +2,7 @@ open Types
 open TypesGen
 
 (*let mutation (population:t_population) = ()*)
-type uniteville = ARMY | FIGHT | TRANSPORT | PATROL | BATTLESHIP | CITY ;;
+type uniteville = ARMY | FIGHT | TRANSPORT | PATROL | BATTLESHIP | CITY
 
 let () = Random.self_init()
 
@@ -10,7 +10,7 @@ let mutation_chance = 10
 
 let rec depth (arbre :t_arbre) = match arbre with
   | Leaf _ -> 0
-  | Node (a,_,b) -> 1 + max (depth a) (depth b);;
+  | Node (a,_,b) -> 1 + max (depth a) (depth b)
 
 let random_depth arbre = Random.int (depth arbre)
 
@@ -23,16 +23,7 @@ let random_unit nombre: unites =
       | 4 -> PATROL
       | _ -> failwith "muter_candidat : valeur non attendue"
     
-    (*let random_direction =
-      match (Random.int 6) with
-      | 0 -> Up
-      | 1 -> Down
-      | 2 -> Right
-      | 3 -> Left
-      | 4 -> Upleft
-      | 5 -> Downright
-      | _ -> failwith "muter_candidat : valeur non attendue"
-    in*)
+		
 let random_operator nombre=
       match nombre with
       | 0 -> Inf
@@ -181,12 +172,3 @@ let muter_candidat candidat =
   
 let mute population  = 
   List.map (muter_candidat) population;;
-
-let main () =
-  Printf.printf "Test tree\n %!";
-
-  Printf.printf "Nouvel arbre :\n %!";
-
-  print_population (mute [(arbre0,arbre0,arbre0,arbre0,arbre0,arbre0), 10.0] )
-
-

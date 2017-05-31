@@ -1,3 +1,3 @@
 
-let doPrint = false (* booléen pour définir si on est censés print ou pas ! *)
+let doPrint = false (* booléen pour définir si on est censé print ou pas ! *)
 

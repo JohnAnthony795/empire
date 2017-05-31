@@ -1,13 +1,7 @@
 
 (** TOOLS **)
 
-let marshal_write filename element =
-  let oc = open_out_bin filename in
-  Marshal.to_channel oc element [Marshal.Closures; Marshal.Compat_32];
-  close_out oc;
-  ()
-
-let custom_slep f = 
+let custom_sleep f = 
 	let start = Unix.gettimeofday() in
 	let rec loop () = if Unix.gettimeofday() > start +. f then () else loop () in
 	loop ()
@@ -24,6 +18,7 @@ let eval_candidat_contre_Captain candidat =
   let _ = ToolsArbres.write_arbre "foret_cand.frt" foret in
   (*let _ = marshal_write "marshaled_foret_cand.frt" foret in*)
   let _ = Unix.system "../empire-server/Main.native > /dev/null &" in (*pas de sortie serveur*)
+	let _ =  custom_sleep 0.1 in (* sleep nécessaire ou non selon le PC qui exécute le programme *)
   let _ = Unix.system "../empire-captain/ai1.py localhost 9301 > /dev/null &" in
   let score = Main.main 1 in (* renvoie le score de ce candidat contre Captain *)
   (foret, score)
@@ -34,7 +29,7 @@ let eval_candidat candidat =
   (*let _ = marshal_write "marshaled_foret_cand.frt" foret in*)
   (*let _ = Unix.system "xterm -hold -e \"../empire-server/Main.native\" &" in (*version de debug, ouvre l'out serveur dans un terminal*)*)
   let _ = Unix.system "../empire-server/Main.native > /dev/null &" in (*pas de sortie serveur*)
-  let _ =  custom_slep 0.1 in
+  let _ =  custom_sleep 0.1 in (* sleep nécessaire ou non selon le PC qui exécute le programme *)
   let _ = Unix.system "./main.native 0 > /dev/null &" in
   (* un bloc try/with pour relancer le prog s'il rencontre une ECONNREFUSED *)
   try
