@@ -2,7 +2,7 @@ type direction = Up | Down | Right | Left | Upleft | Downright (* 0 | 1 | 2 | 3 
 (* 2|1|
    3| |0
     |4|5 *)
-		
+
 type piece_id = int
 
 type city_id = int
@@ -23,7 +23,7 @@ type t_action =
   | Explorer of (int*int*int)
   | Envahir of (int*int*int)
   | Envahir_neutre of (int*int*int)	
-	| Transporter of (int*int*int)
+  | Transporter of (int*int*int)
   | Set_city_prod of set_city_production 
   | End_turn 
   | Do_nothing of (int)
@@ -36,9 +36,9 @@ type t_predicat= (* rajouter des prédicats en masse*)
   | Nb_ville_ennemie_proche of (int  * int * comparateur) (*distance proximité/Nb ville/plus ou moins de Nb ville ennemie proche*)
   | Nb_ville_neutre_proche of (int  * int * comparateur) (*distance proximité/Nb ville/plus ou moins de Nb ville ennemie proche*)
   | Littoral_adjacent (* presence de littoral dans une case adjacente*)
-	| Transport (*présence de l'unité dans un transport*)
-	| Fog_proche of (int) (* distance proximité *)
-	| Unknown_proche of (int) (* distance proximité *)
+  | Transport (*présence de l'unité dans un transport*)
+  | Fog_proche of (int) (* distance proximité *)
+  | Unknown_proche of (int) (* distance proximité *)
   | Unite_en_production
 
 type t_arbre = 

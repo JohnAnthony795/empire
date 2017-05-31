@@ -22,13 +22,13 @@ let () =
 
 (*removes a candidate from a population ONCE, Si il n'y est pas fail*)
 let remove pop wanted =
-	let rec aux_rmv acu p w  = 
-      		match p with
-		| [] -> failwith "Candidat pas présent dans la liste"
-		| c::cs -> if (c = w) then acu @ cs else aux_rmv (c::acu) cs w (*change l'ordre des elements, peut etre replacé par @*)
-	in
-	aux_rmv [] pop wanted 
-	
+  let rec aux_rmv acu p w  = 
+    match p with
+    | [] -> failwith "Candidat pas présent dans la liste"
+    | c::cs -> if (c = w) then acu @ cs else aux_rmv (c::acu) cs w (*change l'ordre des elements, peut etre replacé par @*)
+  in
+  aux_rmv [] pop wanted 
+
 
 (*best between 2 individuals, according to score*)
 let best ind1 ind2 =
@@ -91,7 +91,7 @@ let select_n_proportional_bis pool n = (*version avec IMpossibilité de choisir 
       match pool with
       |(f,s)::[] -> (f,s)
       |(f,s)::inds -> if s >= number then (f,s)
-       		      else find_winner inds (number-.s)
+        else find_winner inds (number-.s)
       |_ -> failwith "ERREUR: select n proportional toujours pas au point on dirait" 
     in
     if n = 0 then acu

@@ -40,7 +40,7 @@ type t_predicat= (* rajouter des prédicats en masse*)
   | Littoral_adjacent (* presence de littoral dans une case adjacente*)
   | Transport (*présence de l'unité dans un transport*)
   | Fog_proche of (int) (* distance proximité *)
-	| Unknown_proche of (int) (* distance proximité *)
+  | Unknown_proche of (int) (* distance proximité *)
   | Unite_en_production (* Test si la ville est en train de produire une unite *)
 
 type t_arbre =
@@ -83,7 +83,7 @@ let pred_to_string p = match p with   (*tenir à jour avec les prédicats *)
   | Transport -> "Présence de l'unité dans un transport ?"
   | Fog_proche d -> "Présence du brouillard de guerre proche d'une distance de " ^ (string_of_int d) ^"?"
   | Unknown_proche d -> "Présence de cases inexplorées à moins de " ^ (string_of_int d) ^" cases ?"
-	| Unite_en_production -> "Unite en cours de production par la ville?"
+  | Unite_en_production -> "Unite en cours de production par la ville?"
 
 let action_to_string a = match a with
   | Move (id,dir) -> "Move id°" ^ (string_of_int id) ^ " " ^ (direction_to_string dir)
@@ -91,7 +91,7 @@ let action_to_string a = match a with
   | Explorer (id,q,r) -> "Explorer id°"^ (string_of_int id) ^ " " ^(string_of_int q)^ " " ^(string_of_int r)
   | Envahir (id,q,r) -> "Envahir id°"^ (string_of_int id) ^ " " ^(string_of_int q)^ " " ^(string_of_int r)
   | Envahir_neutre (id,q,r)	-> "Envahir (neutre) id°"^ (string_of_int id) ^ " " ^(string_of_int q)^ " " ^(string_of_int r)
-	| Transporter (id,q,r) -> "Transporter id°"^ (string_of_int id) ^ " " ^(string_of_int q)^ " " ^(string_of_int r)
+  | Transporter (id,q,r) -> "Transporter id°"^ (string_of_int id) ^ " " ^(string_of_int q)^ " " ^(string_of_int r)
   | Set_city_prod (id,p_type) -> "Set_city_prod id°" ^ (string_of_int id) ^ " " ^ (unite_to_string p_type) (*clarifier le piece type id avec un piece type id to string??*)
   | End_turn -> "End_turn"
   | Do_nothing (id) -> "Do_nothing id°" ^ (string_of_int id) 
@@ -120,7 +120,7 @@ let pred_to_code p = match p with   (*tenir à jour avec les prédicats ;)  STAN
   | Littoral_adjacent -> "?LIADJ" 
   | Transport -> "?TR"
   | Fog_proche (d) -> "?FOG:" ^ (string_of_int d)
-	| Unknown_proche (d) -> "?UKWN:" ^ (string_of_int d)
+  | Unknown_proche (d) -> "?UKWN:" ^ (string_of_int d)
   | Unite_en_production -> "?UEP"
 
 let action_to_code a = match a with (* tenir a jour aussi  STANDARD : mettre un '!' au debut *)
@@ -129,7 +129,7 @@ let action_to_code a = match a with (* tenir a jour aussi  STANDARD : mettre un 
   | Explorer (id,q,r) -> "!EX:" ^ (string_of_int id) ^ ":" ^ (string_of_int q) ^ ":" ^ (string_of_int r)
   | Envahir (id,q,r) -> "!EN:" ^ (string_of_int id) ^ ":" ^ (string_of_int q) ^ ":" ^ (string_of_int r)
   | Envahir_neutre (id,q,r) -> "!ENN:" ^ (string_of_int id) ^ ":" ^ (string_of_int q) ^ ":" ^ (string_of_int r)  
-	| Transporter (id,q,r) -> "!TRA:" ^ (string_of_int id) ^ ":" ^ (string_of_int q) ^ ":" ^ (string_of_int r)
+  | Transporter (id,q,r) -> "!TRA:" ^ (string_of_int id) ^ ":" ^ (string_of_int q) ^ ":" ^ (string_of_int r)
   | Set_city_prod (id,p_type) -> "!SCP:" ^ (string_of_int id) ^ ":" ^ (unite_to_code p_type) (*clarifier le piece type id avec un piece type id to string??*)
   | End_turn -> "!ET"
   | Do_nothing (id) -> "!DN:" ^ (string_of_int id) 

@@ -6,7 +6,7 @@ open Types
 exception Eof
 
 let dir_of_code s = match s with
-    "U" -> Up
+  |"U" -> Up
   |"D" -> Down
   |"R" -> Right
   |"L" -> Left
@@ -15,7 +15,7 @@ let dir_of_code s = match s with
   | _ -> failwith "dir_of_code: unhandled case"
 
 let unite_of_code s = match s with
-    'A' -> ARMY
+  |'A' -> ARMY
   |'T' -> TRANSPORT
   |'F' -> FIGHT
   |'B' -> BATTLESHIP
@@ -23,7 +23,7 @@ let unite_of_code s = match s with
   | _ -> failwith "unite_of_code: unhandled case"
 
 let comp_of_code s = match s with
-    "<" -> Inf 
+  | "<" -> Inf 
   | ">" -> Sup
   | "=" -> Eq  
   | "<=" -> InfEq  
@@ -38,8 +38,8 @@ rule token = parse
 | ','              { VIRG }  
 | '('              { LPAREN }
 | ')'              { RPAREN }
-| ':'	             { COLON }
-| '?'	             { QMARK }
+| ':'	           { COLON }
+| '?'	           { QMARK }
 | '!'              { EMARK }
 | ['0'-'9']+ as nb { INT(int_of_string nb) }
 | ('A'|'T'|'F'|'B'|'P') as unite { UNITE(unite_of_code unite)}
@@ -58,16 +58,16 @@ rule token = parse
 | "UEP"            { UEP }
 
 (*actions*)
-| "MV" 	     { MV }
-| "AT"       { AT }
-| "EX" {EX}
-| "EN" {EN}
-| "EN" {ENN}
-| "TRA" {TRA}
+| "MV" 	    	   { MV }
+| "AT"       	   { AT }
+| "EX" 			   {EX}
+| "EN" 			   {EN}
+| "EN" 			   {ENN}
+| "TRA" 		   {TRA}
 | "SCP"            { SCP }
 | "ET"             { ET }
-| "DN"      { DN}
+| "DN"      	   { DN}
 
 | eof              { raise Eof }
-|_                 { token lexbuf }
+| _                { token lexbuf }
 

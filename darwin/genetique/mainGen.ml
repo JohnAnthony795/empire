@@ -14,7 +14,7 @@ open TypesGen
 let individusASelectionner = 26 (* DOIT ETRE PAIR!!!! *)
 
 let iterations = 2000 (* nombre de générations à simuler avant de s'arrêter; on pourrait la mettre en paramètre *)
-                      (* À noter que si le programme est interrompu pour une raison quelconque, la dernière génération est stockée dans current_gen.pop *)
+(* À noter que si le programme est interrompu pour une raison quelconque, la dernière génération est stockée dans current_gen.pop *)
 
 (** TOOLS **)
 
@@ -78,7 +78,7 @@ let main () =
     let popu5 = Selection.merge_generations popu1 popu4 1 in (* on garde parmi la population initiale (popu1) et les nouveaux mutants recombinés (popu4) certains individus pour la prochaine génération *)
     ToolsArbres.write_population "current_gen.pop" popu5; (* on sauvegarde notre population actuelle dans des fichiers *)
     write_nbreGen "nbreGen.cfg" nbreGen ; 
-		if nbreGen < (nbreGenInitial + iterations) then
+    if nbreGen < (nbreGenInitial + iterations) then
       mainLoop popu5 (nbreGen +1)
     else
       ()
@@ -90,8 +90,8 @@ let main () =
 
 let () =
   if nbreGenInitial = 0 then
-		let _ = ToolsArbres.write_population "current_gen.pop" (genere_popu taille_population) in ();
-	else ();
+    let _ = ToolsArbres.write_population "current_gen.pop" (genere_popu taille_population) in ();
+  else ();
   print_endline "Start mainGen.";
   Random.self_init ();
   main ()

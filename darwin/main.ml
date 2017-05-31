@@ -9,9 +9,9 @@ let () = Random.self_init()
 (** TOOLS **)
 
 (* Fonctions de sérialisation pour lecture et écriture depuis un channel (par exemple un fichier)
-	 Nous avons eu des SEGFAULT inattendues, c'est pourquoi nous avons arrêté de les utiliser pour revenir au
-	 parser lex/yacc qui fonctionnait 
-	 Elles sont ici pour archive (et potentielle réutilisation). *)
+   	 Nous avons eu des SEGFAULT inattendues, c'est pourquoi nous avons arrêté de les utiliser pour revenir au
+   	 parser lex/yacc qui fonctionnait 
+   	 Elles sont ici pour archive (et potentielle réutilisation). *)
 
 (*
 (* ex: marshal_read "marshaled_pop" TypesGen.t_population *)
@@ -38,10 +38,10 @@ type uniteville = ARMY | FIGHT | TRANSPORT | PATROL | BATTLESHIP | CITY ;;
 let unite_to_uniteville (unite:unites) :uniteville =
   match unite with 
   | ARMY -> ARMY
-	| TRANSPORT -> TRANSPORT
-	| FIGHT -> FIGHT
-	| BATTLESHIP -> BATTLESHIP
-	| PATROL -> PATROL
+  | TRANSPORT -> TRANSPORT
+  | FIGHT -> FIGHT
+  | BATTLESHIP -> BATTLESHIP
+  | PATROL -> PATROL
 
 let get_arbre foret (ptid:uniteville) =
   let (a1,a2,a3,a4,a5,a6) = foret in
@@ -90,7 +90,7 @@ let compute_Action id unite_type foret = (* prend une id t_ID de piece et return
        | Eq -> nbproche = n
        | InfEq -> nbproche <= n
        | SupEq -> nbproche >= n)
-		| Nb_ville_neutre_proche (d,n,c) -> let nbproche = (get_nb_ville_proche_neutre piece_id d) in
+    | Nb_ville_neutre_proche (d,n,c) -> let nbproche = (get_nb_ville_proche_neutre piece_id d) in
       (match c with
        | Inf -> nbproche < n
        | Sup -> nbproche > n
@@ -109,30 +109,30 @@ let compute_Action id unite_type foret = (* prend une id t_ID de piece et return
     | Leaf a -> (match a with 
         | Move (pid,dir) -> Move (id,dir)
         | Attaquer (pid,q,r) -> (let coords = (get_coords_attaquer id) in 
-                                  match coords with
-                                  | (-1,-1) -> (Move (id,random_direction))
-                                  | _ -> Attaquer (id,(fst coords),(snd coords)))
+                                 match coords with
+                                 | (-1,-1) -> (Move (id,random_direction))
+                                 | _ -> Attaquer (id,(fst coords),(snd coords)))
         | Explorer (pid,q,r) -> (let coords = (get_coords_explorer id) in 
-                                  match coords with
-                                  | (-1,-1) -> (Move (id,random_direction))
-                                  | _ -> Explorer (id,(fst coords),(snd coords)))
+                                 match coords with
+                                 | (-1,-1) -> (Move (id,random_direction))
+                                 | _ -> Explorer (id,(fst coords),(snd coords)))
         | Envahir (pid,q,r) -> (let coords = (get_coords_envahir id) in 
-                                  match coords with
-                                  (*| (-1,-1) -> (Move (id,random_direction))*)
-																	| (-1,-1) -> Do_nothing (id)
-                                  | _ -> Envahir (id,(fst coords),(snd coords)))
-				| Envahir_neutre (pid,q,r) -> (let coords = (get_coords_envahir_neutre id) in 
-                                  match coords with
-                                  (*| (-1,-1) -> (Move (id,random_direction))*)
-																	| (-1,-1) -> Do_nothing (id)
-                                  | _ -> Envahir (id,(fst coords),(snd coords)))
+                                match coords with
+                                (*| (-1,-1) -> (Move (id,random_direction))*)
+                                | (-1,-1) -> Do_nothing (id)
+                                | _ -> Envahir (id,(fst coords),(snd coords)))
+        | Envahir_neutre (pid,q,r) -> (let coords = (get_coords_envahir_neutre id) in 
+                                       match coords with
+                                       (*| (-1,-1) -> (Move (id,random_direction))*)
+                                       | (-1,-1) -> Do_nothing (id)
+                                       | _ -> Envahir (id,(fst coords),(snd coords)))
         | Transporter (pid,q,r) -> (let coords = (get_coords_transporter id) in 
-                                  match coords with
-                                  | (-1,-1) -> (Move (id,random_direction))
-                                  | _ -> Transporter (id,(fst coords),(snd coords)))
+                                    match coords with
+                                    | (-1,-1) -> (Move (id,random_direction))
+                                    | _ -> Transporter (id,(fst coords),(snd coords)))
         | Set_city_prod (cid,unite) -> let prod = (get_city_production id) in
-                    if((compare (Some(unite)) prod)=0) then (Do_nothing (id)) else Set_city_prod (id,unite)
-                                      
+          if((compare (Some(unite)) prod)=0) then (Do_nothing (id)) else Set_city_prod (id,unite)
+
         | End_turn -> End_turn
         | Do_nothing (cid) -> Do_nothing (id)) 
     | Node (t1,p,t2) -> if evaluate_pred p id then action_from_tree t1 id else action_from_tree t2 id
@@ -153,8 +153,8 @@ let main id =
   init_socket "127.0.0.1" 9301;
 
   receive (); (* on reçoit les infos du début *)
-  
-	while (get_score () = -1.0) do
+
+  while (get_score () = -1.0) do
     (* get next unité/ville à jouer *)
     (*Printf.printf  "nouveau tour : %d et next playable %d \n%!" id (get_next_playable ());*)
     while(match get_next_playable () with
@@ -177,7 +177,7 @@ let main id =
   done;
   if Opt.doPrint then Printf.printf "fin de partie : %d \n%!" id else ();
   shutdown_connection ();
-	get_score ()
+  get_score ()
 
 let () = if ((Array.length Sys.argv) > 1) then let _ = main (int_of_string Sys.argv.(1)) in ()
 

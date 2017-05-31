@@ -103,8 +103,8 @@ let write_population fichier pop =  (*writes population pop to file fichier*)
     match p with 
     |[] -> ""
     |(foret,score)::cs -> (match cs with
-                          | (foret2,score2)::cs2 -> string_of_float score ^ "|" ^ forest_tocode foret ^ "\n" ^ pop_tocode cs 
-                          | [] -> string_of_float score ^ "|" ^ forest_tocode foret )
+        | (foret2,score2)::cs2 -> string_of_float score ^ "|" ^ forest_tocode foret ^ "\n" ^ pop_tocode cs 
+        | [] -> string_of_float score ^ "|" ^ forest_tocode foret )
 
   in
   (* Write message to file *)

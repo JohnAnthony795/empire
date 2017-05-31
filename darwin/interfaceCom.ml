@@ -9,7 +9,7 @@ open Types
 (* On utilise des refs pour pouvoir modifier leur valeur *)
 (* On utilise le type option pour pouvoir les initialiser à None *)
 (* Pour accéder à un canal, il faut matcher "Some c" et "None" puis utiliser "!c" pour accéder au canal lui-même
-	 ou utiliser get_socket () *)
+   	 ou utiliser get_socket () *)
 let input_channel = ref(None)
 let output_channel = ref(None)
 let socket = ref(None)

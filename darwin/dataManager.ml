@@ -206,7 +206,7 @@ let get_nb_unite_proche unites pid distance=
   else 
     let ville = get_ville_allie pid in
     List.length (List.filter (fun (element:unite_list) -> ((element.pid <> pid) && (element.unite_type =unites) && ((tiles_distance (ville.q,ville.r) (element.q,element.r))<distance))) !liste_unites)
-		
+
 let get_nb_ville_proche_allie pid distance =
   let unite = get_unite pid in
   if (unite.pid <> -1) then
@@ -223,34 +223,34 @@ let get_nb_ville_proche_ennemi pid distance =
   else
     let ville = get_ville_allie pid in
     List.length (List.filter (fun (element:ennemi) -> (tiles_distance (ville.q,ville.r) (element.q,element.r))<distance) !liste_ville_ennemie)
-		 
+
 (* villes neutres *)
 let get_nb_ville_proche_neutre pid distance =
   let unite = get_unite pid in
   if (unite.pid <> -1) then
-		let acu = ref(0) in
-     for i=0 to (!map_width-1) do
-       for j=0 to (!map_height-1) do
+    let acu = ref(0) in
+    for i=0 to (!map_width-1) do
+      for j=0 to (!map_height-1) do
         try
-         match (map_terrain.(i).(j)) with
-         | (Neutral, _) -> if ((tiles_distance (unite.q,unite.r) (i,j))<distance) then acu := !acu+1
-         | _ -> ()
-       with
-       Not_found -> Printf.printf "%d %d\n" i j;()
-       done; 
-     done;
-     !acu
-	else
+          match (map_terrain.(i).(j)) with
+          | (Neutral, _) -> if ((tiles_distance (unite.q,unite.r) (i,j))<distance) then acu := !acu+1
+          | _ -> ()
+        with
+          Not_found -> Printf.printf "%d %d\n" i j;()
+      done; 
+    done;
+    !acu
+  else
     let ville = get_ville_allie pid in
-		let acu = ref(0) in
-     for i=0 to (!map_width-1) do
-       for j=0 to (!map_height-1) do
-         match (map_terrain.(i).(j)) with
-         | (Neutral, _) -> if ((tiles_distance (ville.q,ville.r) (i,j))<distance) then acu := !acu+1
-         | _ -> ()
-       done; 
-     done;
-     !acu
+    let acu = ref(0) in
+    for i=0 to (!map_width-1) do
+      for j=0 to (!map_height-1) do
+        match (map_terrain.(i).(j)) with
+        | (Neutral, _) -> if ((tiles_distance (ville.q,ville.r) (i,j))<distance) then acu := !acu+1
+        | _ -> ()
+      done; 
+    done;
+    !acu
 
 let get_nb_ville_proche_ennemi_old pid distance =
   let unite = get_unite pid in
@@ -318,12 +318,12 @@ let get_visible_size() =
   (!map_height * !map_width) - List.length (List.filter (fun x-> match x with (_,visible) -> visible = false) (flatten map_terrain))
 
 let calculate_score () =  (*Set coefs here*)
-let (ars_val,nb_ville,explored_size,visible_size) = (get_arsenal_value(),get_nb_ville(),get_explored_size(),get_visible_size()) in
-(*let foi = float_of_int in
-Printf.printf "Arsenal value : %f \nNb_Ville : %f \nExplored_size : %f \nVisible_size : %f \n"  
-			(f ars_val *. 0.1) (f nb_ville*. 10.0) (f explored_size *. 0.2)  (f visible_size *. 0.05)  ;*) (*printer détaillé des scores*)
-	
-     float_of_int   ( ars_val) *. 0.1 
+  let (ars_val,nb_ville,explored_size,visible_size) = (get_arsenal_value(),get_nb_ville(),get_explored_size(),get_visible_size()) in
+  (*let foi = float_of_int in
+    Printf.printf "Arsenal value : %f \nNb_Ville : %f \nExplored_size : %f \nVisible_size : %f \n"  
+    			(f ars_val *. 0.1) (f nb_ville*. 10.0) (f explored_size *. 0.2)  (f visible_size *. 0.05)  ;*) (*printer détaillé des scores*)
+
+  float_of_int   ( ars_val) *. 0.1 
   +. float_of_int( nb_ville)   *. 10.0
   +. float_of_int( explored_size) *. 0.2
   +. float_of_int( visible_size ) *. 0.05
@@ -336,7 +336,7 @@ let set_victoire msg =
   in
   let prescore = calculate_score () in 
   let victoire = (if (int_of_string msgHd) = !our_jid then (Printf.printf "WIN : Score total : %f\n" (prescore*.1.3) ;1.3) 
-else (Printf.printf "LOSE : Score total : %f\n" (prescore*.0.7) ; 0.7)) in (*En tant que multiplicateur*)
+                  else (Printf.printf "LOSE : Score total : %f\n" (prescore*.0.7) ; 0.7)) in (*En tant que multiplicateur*)
   a_gagne := Some(victoire *. prescore)     
 
 (* score pour draw *)
@@ -465,20 +465,20 @@ let get_closest_ennemy_city_coords pid =
                                  (qa,ra) else (qb,rb)) (List.hd list_coords) list_coords)
 
 let get_closest_neutral_city_coords pid =
-	let unite = get_unite pid in
-	let acu = ref([]) in
-           for i=0 to (!map_width-1) do
-             for j=0 to (!map_height-1) do
-               match (map_terrain.(i).(j)) with
-               | (Neutral, _) -> acu := (i,j)::!acu
-               | _ -> ()
-             done; 
-           done; 
-           match !acu with
-           | [] -> (-1,-1)
-           | _ -> (  List.fold_left (fun (qa,ra) (qb,rb) 
-                                      -> if ((tiles_distance (unite.q,unite.r) (qa,ra)) < (tiles_distance (unite.q,unite.r) (qb,rb))) then 
-                                          (qa,ra) else (qb,rb)) (List.hd !acu) !acu)
+  let unite = get_unite pid in
+  let acu = ref([]) in
+  for i=0 to (!map_width-1) do
+    for j=0 to (!map_height-1) do
+      match (map_terrain.(i).(j)) with
+      | (Neutral, _) -> acu := (i,j)::!acu
+      | _ -> ()
+    done; 
+  done; 
+  match !acu with
+  | [] -> (-1,-1)
+  | _ -> (  List.fold_left (fun (qa,ra) (qb,rb) 
+                             -> if ((tiles_distance (unite.q,unite.r) (qa,ra)) < (tiles_distance (unite.q,unite.r) (qb,rb))) then 
+                                 (qa,ra) else (qb,rb)) (List.hd !acu) !acu)
 
 
 (** Renvoie les coords de la case visible, adjacente a une case fog, la plus pres *)
@@ -629,7 +629,7 @@ let get_coords_explorer pid =
       | Some l -> do_path l)
 
 let get_coords_envahir_neutre pid =
-	let first_coords = get_closest_neutral_city_coords pid in
+  let first_coords = get_closest_neutral_city_coords pid in
   let coords = (
     match first_coords with
     | (-1,-1) -> (let fog_coords = get_closest_fog_coords pid in 
@@ -691,7 +691,7 @@ let get_coords_envahir_neutre pid =
       match path with
       | None -> (*Printf.printf("Erreur moves !!!\n%!");*)(-1,-1)
       | Some l -> do_path l)
-			
+
 let get_coords_envahir pid =
   let first_coords = get_closest_ennemy_city_coords pid in
   let coords = (
@@ -843,14 +843,14 @@ let reset_move_all () =
 let set_move_to_zero cid =
   let piece = get_unite cid in
   if (piece.pid <> -1) then
-  update_unite_alliee piece.q piece.r cid piece.unite_type piece.hp 0
-else
-  let cid_is cid (element:allie) = element.cid = cid in
-  let cid_is_not cid (element:allie) = element.cid <> cid in
-  let ville = List.find (cid_is cid) !liste_ville_alliee in (* ville à update *)
-  let autresVilles = List.filter (cid_is_not cid) !liste_ville_alliee in (* toutes les villes sauf celle à udpate *)
+    update_unite_alliee piece.q piece.r cid piece.unite_type piece.hp 0
+  else
+    let cid_is cid (element:allie) = element.cid = cid in
+    let cid_is_not cid (element:allie) = element.cid <> cid in
+    let ville = List.find (cid_is cid) !liste_ville_alliee in (* ville à update *)
+    let autresVilles = List.filter (cid_is_not cid) !liste_ville_alliee in (* toutes les villes sauf celle à udpate *)
 
-  liste_ville_alliee := {q= ville.q ; r= ville.r ; cid = cid ; prod = ville.prod ; tours_restants = ville.tours_restants ; mov = 0} :: autresVilles
+    liste_ville_alliee := {q= ville.q ; r= ville.r ; cid = cid ; prod = ville.prod ; tours_restants = ville.tours_restants ; mov = 0} :: autresVilles
 
 let set_move_to_zero_unite pid =
   let piece = List.find (fun (element:unite_list) -> element.pid = pid) !liste_unites in 

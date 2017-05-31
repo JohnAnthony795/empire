@@ -2,14 +2,14 @@
 (** TOOLS **)
 
 let custom_sleep f = 
-	let start = Unix.gettimeofday() in
-	let rec loop () = if Unix.gettimeofday() > start +. f then () else loop () in
-	loop ()
+  let start = Unix.gettimeofday() in
+  let rec loop () = if Unix.gettimeofday() > start +. f then () else loop () in
+  loop ()
 
 (* 0 => la ref affronte tout le monde, dont elle-même; son score est donc réévalué à chaque tour
-	 1 => la ref affronte tout le monde, sauf elle-même; son score n'est pas réévalué, mais baisse de 5% à chaque tour
-	 2 => la ref affronte tout le monde, sauf elle-même; elle affronte tout à la fin l'IA ayant le meilleur score pour s'évaluer elle-même
-	 3 => Captain prend le rôle de ref, et tout le monde l'affronte *)
+   	 1 => la ref affronte tout le monde, sauf elle-même; son score n'est pas réévalué, mais baisse de 5% à chaque tour
+   	 2 => la ref affronte tout le monde, sauf elle-même; elle affronte tout à la fin l'IA ayant le meilleur score pour s'évaluer elle-même
+   	 3 => Captain prend le rôle de ref, et tout le monde l'affronte *)
 
 let methode_ref = 2
 
@@ -18,7 +18,7 @@ let eval_candidat_contre_Captain candidat =
   let _ = ToolsArbres.write_arbre "foret_cand.frt" foret in
   (*let _ = marshal_write "marshaled_foret_cand.frt" foret in*)
   let _ = Unix.system "../empire-server/Main.native > /dev/null &" in (*pas de sortie serveur*)
-	let _ =  custom_sleep 0.1 in (* sleep nécessaire ou non selon le PC qui exécute le programme *)
+  let _ =  custom_sleep 0.1 in (* sleep nécessaire ou non selon le PC qui exécute le programme *)
   let _ = Unix.system "../empire-captain/ai1.py localhost 9301 > /dev/null &" in
   let score = Main.main 1 in (* renvoie le score de ce candidat contre Captain *)
   (foret, score)
