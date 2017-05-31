@@ -67,8 +67,6 @@ Lancer Darwin avec un autre argument utilise l'arbre stocké dans foret_cand.frt
 humain ou IA à la partie.
 Alternativement, lancer empire-scripts/execute-darwin-obs-capt.sh lance directement une partie via l'interface GTK entre foret_ref.frt et Captain, avec un observateur.
 
-### Ajouter un observateur : //TODO
-
 
 ## Comment lancer une session d'entrainement :
 Lancer darwin/mainGen.native lance une session d'entraînement sur plusieurs générations, en utilisant les paramètres fixés en dur dans le code (cf. ci-dessous).
